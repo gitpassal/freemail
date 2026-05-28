@@ -2,7 +2,7 @@ name: 🚀 Deploy freemail to Cloudflare Workers
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
     paths:
       - "src/**"
       - "public/**"
@@ -31,6 +31,8 @@ jobs:
       JWT_TOKEN: ${{ secrets.JWT_TOKEN || vars.JWT_TOKEN }}
       SESSION_EXPIRE_DAYS: ${{ secrets.SESSION_EXPIRE_DAYS || vars.SESSION_EXPIRE_DAYS || '365' }}
       MAIL_DOMAIN: ${{ secrets.MAIL_DOMAIN || vars.MAIL_DOMAIN }}
+      APP_NAME: ${{ secrets.APP_NAME || vars.APP_NAME }}
+      APP_REPO_URL: ${{ secrets.APP_REPO_URL || vars.APP_REPO_URL }}
 
     outputs:
       worker_url: ${{ steps.deploy.outputs.worker_url }}
@@ -91,6 +93,30 @@ jobs:
           # 替换 R2 bucket 名称
           sed -i "s/^[[:space:]]*bucket_name = .*/bucket_name = \"${R2_BUCKET_NAME}\"/" "$CONFIG_FILE"
 
+          set_toml_var() {
+            VAR_NAME="$1" VAR_VALUE="$2" CONFIG_FILE="$CONFIG_FILE" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const file = process.env.CONFIG_FILE;
+          const key = process.env.VAR_NAME;
+          const value = process.env.VAR_VALUE || '';
+          const line = `${key}=${JSON.stringify(value)}`;
+          const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const pattern = new RegExp(`^${escapedKey}=.*$`, 'm');
+          let text = fs.readFileSync(file, 'utf8');
+
+          if (pattern.test(text)) {
+            text = text.replace(pattern, line);
+          } else if (text.includes('[vars]')) {
+            text = text.replace(/(\[vars\]\n)/, `$1${line}\n`);
+          } else {
+            text += `\n[vars]\n${line}\n`;
+          }
+
+          fs.writeFileSync(file, text);
+          NODE
+          }
+
           # 注入环境变量（如果设置了的话）
           if [ -n "$ADMIN_NAME" ]; then
             sed -i "s|^ADMIN_NAME=.*|ADMIN_NAME=\"${ADMIN_NAME}\"|" "$CONFIG_FILE"
@@ -126,6 +152,14 @@ jobs:
 
           if [ -n "$MAIL_DOMAIN" ]; then
             sed -i "s|^MAIL_DOMAIN=.*|MAIL_DOMAIN=\"${MAIL_DOMAIN}\"|" "$CONFIG_FILE"
+          fi
+
+          if [ -n "$APP_NAME" ]; then
+            set_toml_var APP_NAME "$APP_NAME"
+          fi
+
+          if [ -n "$APP_REPO_URL" ]; then
+            set_toml_var APP_REPO_URL "$APP_REPO_URL"
           fi
 
           # RESEND_API_KEY: 如果未设置则从配置中删除

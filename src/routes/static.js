@@ -20,6 +20,11 @@ const PROTECTED = new Set([
   '/mailbox', '/mailbox.html', '/html/mailbox.html'
 ]);
 
+const DEFAULT_APP_NAME = "iDing's临时邮箱";
+const DEFAULT_APP_REPO_URL = 'https://github.com/idinging/freemail';
+const APP_TEMPLATE_PATH = '/html/app.html';
+const NO_STORE_CACHE_CONTROL = 'no-store, no-cache, must-revalidate, max-age=0';
+
 const KNOWN_PATHS = new Set([
   '/', '/index.html', '/favicon.svg',
   '/login', '/login.html',
@@ -39,6 +44,54 @@ function serveAsset(c, targetPath) {
   if (!c.env.ASSETS?.fetch) return c.notFound();
   if (targetPath) return c.env.ASSETS.fetch(new Request(new URL(targetPath, c.req.url), c.req.raw));
   return c.env.ASSETS.fetch(c.req.raw);
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[char]);
+}
+
+function getAppName(value) {
+  const appName = String(value || '').trim();
+  return appName || DEFAULT_APP_NAME;
+}
+
+function getAppRepoUrl(value) {
+  const repoUrl = String(value || '').trim();
+  if (!repoUrl) return DEFAULT_APP_REPO_URL;
+
+  try {
+    const parsed = new URL(repoUrl);
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') return parsed.toString();
+  } catch (_) {}
+
+  return DEFAULT_APP_REPO_URL;
+}
+
+async function serveAppTemplate(c) {
+  const resp = await serveAsset(c, APP_TEMPLATE_PATH);
+
+  try {
+    const text = await resp.text();
+    const body = text
+      .replace(/__APP_NAME__/g, escapeHtml(getAppName(c.env.APP_NAME)))
+      .replace(/__APP_REPO_URL__/g, escapeHtml(getAppRepoUrl(c.env.APP_REPO_URL)));
+    const headers = new Headers(resp.headers);
+    headers.set('Content-Type', 'text/html; charset=utf-8');
+    headers.set('Cache-Control', NO_STORE_CACHE_CONTROL);
+    return new Response(body, {
+      status: resp.status,
+      statusText: resp.statusText,
+      headers
+    });
+  } catch (_) {
+    return resp;
+  }
 }
 
 async function redirectIfLoggedIn(c, redirectTo) {
@@ -99,6 +152,8 @@ router.get('*', async (c) => {
       if (!allowed) return c.redirect('/', 302);
     }
   }
+
+  if (pathname === APP_TEMPLATE_PATH) return serveAppTemplate(c);
 
   return serveAsset(c, PATH_MAP[pathname] || null);
 });

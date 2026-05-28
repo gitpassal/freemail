@@ -21,6 +21,8 @@ JWT_TOKEN="dfvhluhdaslufhvdv"
 JWT_TOKENGUEST_PASSWORD="dfsfsfxzcv"
 SESSION_EXPIRE_DAYS="365"
 MAIL_DOMAIN="你的域名列表"
+APP_NAME="iDing's临时邮箱"
+APP_REPO_URL="https://github.com/idinging/freemail"
 
 
 
