@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import router from '../src/routes/static.js';
 
 const APP_TEMPLATE = '<span class="brand-text">__APP_NAME__</span><a id="repo" href="__APP_REPO_URL__">GitHub</a>';
@@ -39,4 +40,10 @@ test('falls back to safe default branding when repo URL is not http or https', a
   const body = await response.text();
   assert.match(body, /iDing&#39;s临时邮箱/);
   assert.match(body, /href="https:\/\/github\.com\/idinging\/freemail"/);
+});
+
+test('runs worker before serving the app template asset', async () => {
+  const wranglerConfig = await readFile(new URL('../wrangler.toml', import.meta.url), 'utf8');
+
+  assert.match(wranglerConfig, /run_worker_first\s*=\s*\[[\s\S]*"\/html\/app\.html"/);
 });
