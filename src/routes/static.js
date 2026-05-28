@@ -23,6 +23,7 @@ const PROTECTED = new Set([
 const DEFAULT_APP_NAME = "iDing's临时邮箱";
 const DEFAULT_APP_REPO_URL = 'https://github.com/idinging/freemail';
 const APP_TEMPLATE_PATH = '/html/app.html';
+const APP_TEMPLATE_PATHS = new Set([APP_TEMPLATE_PATH, '/html/app']);
 const NO_STORE_CACHE_CONTROL = 'no-store, no-cache, must-revalidate, max-age=0';
 
 const KNOWN_PATHS = new Set([
@@ -35,7 +36,7 @@ const KNOWN_PATHS = new Set([
   '/mock.js', '/route-guard.js', '/app-mobile.js', '/app-mobile.css',
   '/auth-guard.js', '/storage.js', '/theme-toggle.js',
   '/toast-utils.js', '/mailbox-settings.js',
-  '/html/mailbox.html', '/html/mailboxes.html', '/html/admin.html', '/html/app.html',
+  '/html/mailbox.html', '/html/mailboxes.html', '/html/admin.html', '/html/app.html', '/html/app',
   '/templates/app.html', '/templates/footer.html',
   '/templates/loading.html', '/templates/loading-inline.html', '/templates/toast.html',
 ]);
@@ -153,7 +154,7 @@ router.get('*', async (c) => {
     }
   }
 
-  if (pathname === APP_TEMPLATE_PATH) return serveAppTemplate(c);
+  if (APP_TEMPLATE_PATHS.has(pathname)) return serveAppTemplate(c);
 
   return serveAsset(c, PATH_MAP[pathname] || null);
 });

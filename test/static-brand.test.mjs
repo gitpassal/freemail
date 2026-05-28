@@ -42,8 +42,24 @@ test('falls back to safe default branding when repo URL is not http or https', a
   assert.match(body, /href="https:\/\/github\.com\/idinging\/freemail"/);
 });
 
+test('injects branding on the extensionless app template route', async () => {
+  const response = await router.request('https://example.com/html/app', {}, {
+    ASSETS: assetsWithTemplate(),
+    APP_NAME: 'Passal 临时邮箱',
+    APP_REPO_URL: 'https://github.com/gitpassal/freemail'
+  });
+
+  assert.equal(response.status, 200);
+
+  const body = await response.text();
+  assert.match(body, /Passal 临时邮箱/);
+  assert.doesNotMatch(body, /__APP_NAME__|__APP_REPO_URL__/);
+});
+
 test('runs worker before serving the app template asset', async () => {
   const wranglerConfig = await readFile(new URL('../wrangler.toml', import.meta.url), 'utf8');
 
   assert.match(wranglerConfig, /run_worker_first\s*=\s*\[[\s\S]*"\/html\/app\.html"/);
+  assert.match(wranglerConfig, /run_worker_first\s*=\s*\[[\s\S]*"\/html\/app"/);
+  assert.match(wranglerConfig, /html_handling\s*=\s*"none"/);
 });

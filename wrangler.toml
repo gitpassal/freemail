@@ -32,6 +32,7 @@ APP_REPO_URL="https://github.com/idinging/freemail"
 directory = "public"
 # 显式指定绑定名，确保在 Worker 中通过 env.ASSETS 可用
 binding = "ASSETS"
+html_handling = "none"
 run_worker_first = [
   "/",
   "/index.html",
@@ -43,6 +44,7 @@ run_worker_first = [
   "/mailbox.html",
   "/mailboxes.html",
   "/html/app.html",
+  "/html/app",
   "/html/admin.html",
   "/html/mailbox.html",
   "/html/mailboxes.html",
