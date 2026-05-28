@@ -28,6 +28,24 @@ export async function api(path, options = {}) {
   return r;
 }
 
+async function readJsonResponse(response) {
+  const text = await response.text();
+  if (!response.ok) {
+    let message = text || `HTTP ${response.status}`;
+    try {
+      const parsed = JSON.parse(text);
+      message = parsed.error || parsed.message || message;
+    } catch (_) {}
+    throw new Error(message);
+  }
+
+  try {
+    return text ? JSON.parse(text) : null;
+  } catch (_) {
+    throw new Error(text || 'Invalid JSON response');
+  }
+}
+
 /**
  * 获取用户列表
  * @param {object} params - 查询参数
@@ -38,7 +56,7 @@ export async function getUsers(params = {}) {
   if (params.page) query.set('page', params.page);
   if (params.size) query.set('size', params.size);
   const r = await api(`/api/users?${query.toString()}`);
-  return r.json();
+  return readJsonResponse(r);
 }
 
 /**
@@ -88,7 +106,7 @@ export async function getUserMailboxes(userId, params = {}) {
   if (params.page) query.set('page', params.page);
   if (params.size) query.set('size', params.size);
   const r = await api(`/api/users/${userId}/mailboxes?${query.toString()}`);
-  return r.json();
+  return readJsonResponse(r);
 }
 
 /**
@@ -125,7 +143,7 @@ export async function unassignMailbox(username, address) {
  */
 export async function getSettings() {
   const r = await api('/api/settings');
-  return r.json();
+  return readJsonResponse(r);
 }
 
 /**
@@ -139,8 +157,7 @@ export async function updateSettings(data) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
-  if (!r.ok) throw new Error(await r.text());
-  return r.json();
+  return readJsonResponse(r);
 }
 
 export default {

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { handleEmailReceive } from '../src/email/receiver.js';
+import { initDatabase } from '../src/db/init.js';
 import { issueCfAliasMailbox } from '../src/db/mailboxes.js';
 import { AUTO_CREATE_UNKNOWN_MAILBOXES_KEY } from '../src/db/settings.js';
 import { normalizeEmailAlias } from '../src/utils/common.js';
@@ -114,6 +115,24 @@ class FakeD1 {
   async exec() {}
 }
 
+class FakeRuntimeD1 extends FakeD1 {
+  constructor() {
+    super();
+    this.name = `runtime-${Date.now()}-${Math.random()}`;
+  }
+
+  prepare(sql) {
+    return new FakeStatement(this, sql);
+  }
+
+  async exec(sql) {
+    if (String(sql || '').trim().includes('\n')) {
+      throw new Error(`D1_EXEC_ERROR: Error in line 1: ${String(sql).trim().split('\n')[0]}: incomplete input: SQLITE_ERROR`);
+    }
+    return { success: true };
+  }
+}
+
 test('normalizes legacy aliases while preserving .cf### mailboxes', () => {
   assert.equal(
     normalizeEmailAlias('Giffgaff.cf123@ProtonPass.org'),
@@ -122,6 +141,14 @@ test('normalizes legacy aliases while preserving .cf### mailboxes', () => {
   assert.equal(normalizeEmailAlias('foo.bar@protonpass.org'), 'bar@protonpass.org');
   assert.equal(normalizeEmailAlias('foo+bar@protonpass.org'), 'bar@protonpass.org');
   assert.equal(normalizeEmailAlias('foo-bar@protonpass.org'), 'bar@protonpass.org');
+});
+
+test('initializes cf alias and settings tables with D1 runtime-compatible SQL', async () => {
+  const db = new FakeRuntimeD1();
+
+  await initDatabase(db);
+
+  assert.equal(db.systemSettings.get(AUTO_CREATE_UNKNOWN_MAILBOXES_KEY), '0');
 });
 
 test('issues unique .cf### mailboxes and does not reuse deleted codes', async () => {

@@ -185,11 +185,11 @@ if (lenRange && lenVal) { lenRange.value = String(getStoredLength()); lenVal.tex
 function updateCustomPlaceholder() {
   if (!els.customLocalOverlay) return;
   const cfSuffix = !!els.customCfSuffixOverlay?.checked;
-  els.customLocalOverlay.placeholder = cfSuffix ? '输入前缀，如 giffgaff' : '仅限字母/数字/._-';
+  els.customLocalOverlay.placeholder = cfSuffix ? 'Enter prefix, e.g. giffgaff' : '仅限字母/数字/._-';
 }
 els.customCfSuffixOverlay?.addEventListener('change', updateCustomPlaceholder);
 updateCustomPlaceholder();
-if (els.toggleCustom) els.toggleCustom.onclick = () => { if (els.customOverlay) { const vis = els.customOverlay.style.display !== 'none'; els.customOverlay.style.display = vis ? 'none' : 'flex'; if (!vis) setTimeout(() => els.customLocalOverlay?.focus(), 50); }};
+if (els.toggleCustom) els.toggleCustom.onclick = () => { if (els.customOverlay) { const vis = els.customOverlay.style.display !== 'none'; els.customOverlay.style.display = vis ? 'none' : 'grid'; if (!vis) setTimeout(() => els.customLocalOverlay?.focus(), 50); }};
 if (els.createCustomOverlay) els.createCustomOverlay.onclick = () => createCustomMailbox(els, domainSelect, api, showToast, loadMailboxes);
 
 // 侧边栏

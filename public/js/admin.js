@@ -150,7 +150,7 @@ async function loadUsers() {
     bindUserEvents();
   } catch (e) {
     console.error('加载用户失败:', e);
-    showToast('加载失败', 'error');
+    showToast(e.message || '加载失败', 'error');
   } finally {
     if (els.usersLoading) els.usersLoading.style.display = 'none';
   }
@@ -194,7 +194,7 @@ async function loadSettings() {
     els.autoCreateUnknown.checked = !!settings.auto_create_unknown_mailboxes;
   } catch (e) {
     console.error('加载系统设置失败:', e);
-    showToast('加载系统设置失败', 'error');
+    showToast(e.message || '加载系统设置失败', 'error');
   }
 }
 
@@ -362,7 +362,7 @@ async function loadUserMailboxes() {
       selectedUserInfo.innerHTML = `<span class="selected-user-name">${currentViewingUser.username}</span>`;
     }
   } catch(e) {
-    showToast('加载邮箱失败', 'error');
+    showToast(e.message || '加载邮箱失败', 'error');
   } finally {
     if (els.userMailboxesLoading) els.userMailboxesLoading.style.display = 'none';
   }

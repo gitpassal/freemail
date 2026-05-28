@@ -82,7 +82,7 @@ export async function handleMailboxesApi(request, db, mailDomains, url, path, op
           for (const item of existing) {
             if (item.prefix === local && item.domain === chosenDomain) usedCodes.add(item.code);
           }
-          if (usedCodes.size >= 1000) return errorResponse('该前缀的 .cf### 编码已用完', 409);
+          if (usedCodes.size >= 1000) return errorResponse('该前缀的 Suffix 已用完', 409);
           do {
             const arr = new Uint32Array(1);
             crypto.getRandomValues(arr);

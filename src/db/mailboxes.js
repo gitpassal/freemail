@@ -34,7 +34,7 @@ function randomCodeCandidate() {
 }
 
 function exhaustedCfAliasCodesError() {
-  const error = new Error('该前缀的 .cf### 编码已用完');
+  const error = new Error('该前缀的 Suffix 已用完');
   error.statusCode = 409;
   return error;
 }

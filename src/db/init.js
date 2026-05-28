@@ -39,21 +39,26 @@ export async function initDatabase(db) {
  */
 async function performFirstTimeSetup(db) {
   // 快速检查：如果所有必要表存在，执行字段迁移后返回
+  let coreTablesExist = false;
   try {
     await db.prepare('SELECT 1 FROM mailboxes LIMIT 1').all();
     await db.prepare('SELECT 1 FROM messages LIMIT 1').all();
     await db.prepare('SELECT 1 FROM users LIMIT 1').all();
     await db.prepare('SELECT 1 FROM user_mailboxes LIMIT 1').all();
     await db.prepare('SELECT 1 FROM sent_emails LIMIT 1').all();
-    // 所有5个必要表都存在，执行字段迁移
+    coreTablesExist = true;
+  } catch (e) {
+    // 有核心表不存在，继续初始化
+    console.log('检测到数据库表不完整，开始初始化...');
+  }
+
+  if (coreTablesExist) {
+    // 所有5个必要表都存在，执行字段迁移和新表初始化
     await migrateMailboxesFields(db);
     await migrateSentEmailsFields(db);
     await ensureCfAliasCodesTable(db);
     await ensureSystemSettingsTable(db);
     return;
-  } catch (e) {
-    // 有表不存在，继续初始化
-    console.log('检测到数据库表不完整，开始初始化...');
   }
   
   // 创建表结构（仅在表不存在时）- 包含新字段 forward_to 和 is_favorite
@@ -94,19 +99,7 @@ async function createIndexes(db) {
 }
 
 async function ensureCfAliasCodesTable(db) {
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS cf_alias_codes (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      prefix TEXT NOT NULL,
-      domain TEXT NOT NULL,
-      code TEXT NOT NULL,
-      local_part TEXT NOT NULL,
-      address TEXT NOT NULL,
-      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE(prefix, domain, code),
-      UNIQUE(address)
-    );
-  `);
+  await db.exec("CREATE TABLE IF NOT EXISTS cf_alias_codes (id INTEGER PRIMARY KEY AUTOINCREMENT, prefix TEXT NOT NULL, domain TEXT NOT NULL, code TEXT NOT NULL, local_part TEXT NOT NULL, address TEXT NOT NULL, created_at TEXT DEFAULT CURRENT_TIMESTAMP, UNIQUE(prefix, domain, code), UNIQUE(address));");
   await db.exec('CREATE INDEX IF NOT EXISTS idx_cf_alias_codes_prefix_domain ON cf_alias_codes(prefix, domain);');
   await backfillCfAliasCodes(db);
 }
@@ -133,17 +126,8 @@ async function backfillCfAliasCodes(db) {
 }
 
 async function ensureSystemSettingsTable(db) {
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS system_settings (
-      key TEXT PRIMARY KEY,
-      value TEXT NOT NULL,
-      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
-  await db.prepare(`
-    INSERT OR IGNORE INTO system_settings (key, value)
-    VALUES ('auto_create_unknown_mailboxes', '0')
-  `).run();
+  await db.exec("CREATE TABLE IF NOT EXISTS system_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT DEFAULT CURRENT_TIMESTAMP);");
+  await db.prepare("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('auto_create_unknown_mailboxes', '0')").run();
 }
 
 /**

@@ -310,7 +310,7 @@ export async function mockApi(path, options = {}) {
             .map(item => item.code)
         );
         if (usedCodes.size >= 1000) {
-          return new Response('该前缀的 .cf### 编码已用完', { status: 409 });
+          return new Response('该前缀的 Suffix 已用完', { status: 409 });
         }
 
         do {
