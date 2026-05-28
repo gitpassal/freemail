@@ -13,6 +13,19 @@ function assetsWithTemplate(template = APP_TEMPLATE) {
   };
 }
 
+function trackingAssets(responseBody = '<meta name="mail-domains" content="">') {
+  const paths = [];
+  return {
+    paths,
+    fetch: async (request) => {
+      paths.push(new URL(request.url).pathname);
+      return new Response(responseBody, {
+        headers: { 'Content-Type': 'text/html; charset=utf-8' }
+      });
+    }
+  };
+}
+
 test('injects public app branding into the app template from env', async () => {
   const response = await router.request('https://example.com/html/app.html', {}, {
     ASSETS: assetsWithTemplate(),
@@ -62,4 +75,22 @@ test('runs worker before serving the app template asset', async () => {
   assert.match(wranglerConfig, /run_worker_first\s*=\s*\[[\s\S]*"\/html\/app\.html"/);
   assert.match(wranglerConfig, /run_worker_first\s*=\s*\[[\s\S]*"\/html\/app"/);
   assert.match(wranglerConfig, /html_handling\s*=\s*"none"/);
+});
+
+test('serves index and login html explicitly when html handling is disabled', async () => {
+  const indexAssets = trackingAssets();
+  const indexResponse = await router.request('https://example.com/', {}, {
+    ASSETS: indexAssets,
+    MAIL_DOMAIN: 'protonpass.org'
+  });
+
+  assert.equal(indexAssets.paths[0], '/index.html');
+  assert.match(await indexResponse.text(), /protonpass\.org/);
+
+  const loginAssets = trackingAssets('<html>login</html>');
+  await router.request('https://example.com/login', {}, {
+    ASSETS: loginAssets
+  });
+
+  assert.equal(loginAssets.paths[0], '/login.html');
 });

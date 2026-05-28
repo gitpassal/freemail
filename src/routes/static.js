@@ -95,11 +95,11 @@ async function serveAppTemplate(c) {
   }
 }
 
-async function redirectIfLoggedIn(c, redirectTo) {
+async function redirectIfLoggedIn(c, redirectTo, assetPath = null) {
   const JWT_TOKEN = c.env.JWT_TOKEN || c.env.JWT_SECRET || '';
   const payload = await resolveAuthPayload(c.req.raw, JWT_TOKEN);
   if (payload) return c.redirect(redirectTo, 302);
-  return serveAsset(c);
+  return serveAsset(c, assetPath);
 }
 
 const router = new Hono();
@@ -111,7 +111,7 @@ router.get('/', async (c) => {
   if (payload?.role === 'mailbox') return c.redirect('/html/mailbox.html', 302);
   if (!c.env.ASSETS?.fetch) return c.redirect('/login.html', 302);
 
-  const resp = await c.env.ASSETS.fetch(c.req.raw);
+  const resp = await serveAsset(c, '/index.html');
   try {
     const text = await resp.text();
     return new Response(
@@ -121,8 +121,8 @@ router.get('/', async (c) => {
   } catch (_) { return resp; }
 });
 
-router.get('/login', async (c) => redirectIfLoggedIn(c, '/'));
-router.get('/login.html', async (c) => redirectIfLoggedIn(c, '/'));
+router.get('/login', async (c) => redirectIfLoggedIn(c, '/', '/login.html'));
+router.get('/login.html', async (c) => redirectIfLoggedIn(c, '/', '/login.html'));
 
 router.get('*', async (c) => {
   const pathname = new URL(c.req.url).pathname;
