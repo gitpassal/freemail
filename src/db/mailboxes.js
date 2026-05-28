@@ -11,6 +11,38 @@ import {
   getCachedSystemStat
 } from '../utils/cache.js';
 
+const CF_ALIAS_CODE_LIMIT = 1000;
+
+function normalizeCfAliasPrefix(prefix) {
+  const normalized = String(prefix || '').trim().toLowerCase();
+  if (!/^(?=[a-z0-9]*[a-z])[a-z0-9]{1,58}$/.test(normalized)) {
+    throw new Error('前缀不合法，仅限字母数字且至少包含一个字母');
+  }
+  return normalized;
+}
+
+function normalizeDomain(domain) {
+  const normalized = String(domain || '').trim().toLowerCase();
+  if (!/^[a-z0-9.-]+\.[a-z0-9.-]+$/.test(normalized)) throw new Error('域名无效');
+  return normalized;
+}
+
+function randomCodeCandidate() {
+  const arr = new Uint32Array(1);
+  crypto.getRandomValues(arr);
+  return String(arr[0] % CF_ALIAS_CODE_LIMIT).padStart(3, '0');
+}
+
+function exhaustedCfAliasCodesError() {
+  const error = new Error('该前缀的 .cf### 编码已用完');
+  error.statusCode = 409;
+  return error;
+}
+
+function isUniqueConstraintError(error) {
+  return /unique|constraint|SQLITE_CONSTRAINT/i.test(String(error?.message || error || ''));
+}
+
 /**
  * 获取或创建邮箱ID，如果邮箱不存在则自动创建
  * @param {object} db - 数据库连接对象
@@ -66,6 +98,62 @@ export async function getOrCreateMailboxId(db, address) {
   invalidateSystemStatCache('total_mailboxes');
   
   return newId;
+}
+
+export async function issueCfAliasMailbox(db, { prefix, domain }) {
+  const normalizedPrefix = normalizeCfAliasPrefix(prefix);
+  const normalizedDomain = normalizeDomain(domain);
+
+  const issuedRows = await db.prepare(
+    'SELECT code FROM cf_alias_codes WHERE prefix = ? AND domain = ?'
+  ).bind(normalizedPrefix, normalizedDomain).all();
+  const usedCodes = new Set((issuedRows?.results || []).map(row => String(row.code || '').padStart(3, '0')));
+
+  if (usedCodes.size >= CF_ALIAS_CODE_LIMIT) throw exhaustedCfAliasCodesError();
+
+  const tryIssue = async (code) => {
+    const localPart = `${normalizedPrefix}.cf${code}`;
+    const address = `${localPart}@${normalizedDomain}`;
+
+    await db.prepare(`
+      INSERT INTO cf_alias_codes (prefix, domain, code, local_part, address)
+      VALUES (?, ?, ?, ?, ?)
+    `).bind(normalizedPrefix, normalizedDomain, code, localPart, address).run();
+
+    const mailboxId = await getOrCreateMailboxId(db, address);
+    return {
+      mailboxId,
+      address,
+      prefix: normalizedPrefix,
+      cfCode: code,
+      localPart
+    };
+  };
+
+  for (let attempt = 0; attempt < 64; attempt++) {
+    const code = randomCodeCandidate();
+    if (usedCodes.has(code)) continue;
+    try {
+      return await tryIssue(code);
+    } catch (error) {
+      if (!isUniqueConstraintError(error)) throw error;
+      usedCodes.add(code);
+      if (usedCodes.size >= CF_ALIAS_CODE_LIMIT) throw exhaustedCfAliasCodesError();
+    }
+  }
+
+  for (let i = 0; i < CF_ALIAS_CODE_LIMIT; i++) {
+    const code = String(i).padStart(3, '0');
+    if (usedCodes.has(code)) continue;
+    try {
+      return await tryIssue(code);
+    } catch (error) {
+      if (!isUniqueConstraintError(error)) throw error;
+      usedCodes.add(code);
+    }
+  }
+
+  throw exhaustedCfAliasCodesError();
 }
 
 /**

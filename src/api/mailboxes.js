@@ -9,6 +9,7 @@ import { extractEmail, generateRandomId } from '../utils/common.js';
 import { getCachedUserQuota, getCachedSystemStat } from '../utils/cache.js';
 import {
   getOrCreateMailboxId,
+  issueCfAliasMailbox,
   toggleMailboxPin,
   getTotalMailboxCount,
   assignMailboxToUser
@@ -65,30 +66,66 @@ export async function handleMailboxesApi(request, db, mailDomains, url, path, op
     if (isMock) {
       try {
         const body = await request.json();
+        const cfSuffix = !!body.cfSuffix;
         const local = String(body.local || '').trim().toLowerCase();
-        const valid = /^[a-z0-9._-]{1,64}$/i.test(local);
+        const valid = cfSuffix ? /^(?=[a-z0-9]*[a-z])[a-z0-9]{1,58}$/i.test(local) : /^[a-z0-9._-]{1,64}$/i.test(local);
         if (!valid) return errorResponse('非法用户名', 400);
         const domains = MOCK_DOMAINS;
         const domainIdx = Math.max(0, Math.min(domains.length - 1, Number(body.domainIndex || 0)));
         const chosenDomain = domains[domainIdx] || domains[0];
-        const email = `${local}@${chosenDomain}`;
-        return Response.json({ email, expires: Date.now() + 3600000 });
+        let cfCode = '';
+        let localPart = local;
+        if (cfSuffix) {
+          const usedCodes = new Set();
+          const existing = globalThis.__MOCK_CF_ALIAS_CODES__ || [];
+          globalThis.__MOCK_CF_ALIAS_CODES__ = existing;
+          for (const item of existing) {
+            if (item.prefix === local && item.domain === chosenDomain) usedCodes.add(item.code);
+          }
+          if (usedCodes.size >= 1000) return errorResponse('该前缀的 .cf### 编码已用完', 409);
+          do {
+            const arr = new Uint32Array(1);
+            crypto.getRandomValues(arr);
+            cfCode = String(arr[0] % 1000).padStart(3, '0');
+          } while (usedCodes.has(cfCode));
+          localPart = `${local}.cf${cfCode}`;
+          existing.push({ prefix: local, domain: chosenDomain, code: cfCode, local_part: localPart, address: `${localPart}@${chosenDomain}` });
+        }
+        const email = `${localPart}@${chosenDomain}`;
+        return Response.json({ email, prefix: cfSuffix ? local : undefined, cfCode: cfSuffix ? cfCode : undefined, expires: Date.now() + 3600000 });
       } catch (_) { return errorResponse('Bad Request', 400); }
     }
     
     try {
       const body = await request.json();
+      const cfSuffix = !!body.cfSuffix;
       const local = String(body.local || '').trim().toLowerCase();
-      const valid = /^[a-z0-9._-]{1,64}$/i.test(local);
+      const valid = cfSuffix ? /^(?=[a-z0-9]*[a-z])[a-z0-9]{1,58}$/i.test(local) : /^[a-z0-9._-]{1,64}$/i.test(local);
       if (!valid) return errorResponse('非法用户名', 400);
       const domains = Array.isArray(mailDomains) ? mailDomains : [(mailDomains || 'temp.example.com')];
       const domainIdx = Math.max(0, Math.min(domains.length - 1, Number(body.domainIndex || 0)));
       const chosenDomain = domains[domainIdx] || domains[0];
-      const email = `${local}@${chosenDomain}`;
       
       try {
         const payload = getJwtPayload(request, options);
         const userId = payload?.userId;
+        if (userId) {
+          const quota = await getCachedUserQuota(db, userId);
+          if (quota.used >= quota.limit) return errorResponse('已达到邮箱上限', 400);
+        }
+
+        if (cfSuffix) {
+          const issued = await issueCfAliasMailbox(db, { prefix: local, domain: chosenDomain });
+          if (userId) await assignMailboxToUser(db, { userId, address: issued.address });
+          return Response.json({
+            email: issued.address,
+            prefix: issued.prefix,
+            cfCode: issued.cfCode,
+            expires: Date.now() + 3600000
+          });
+        }
+
+        const email = `${local}@${chosenDomain}`;
         if (userId) {
           await assignMailboxToUser(db, { userId, address: email });
         } else {
@@ -96,7 +133,7 @@ export async function handleMailboxesApi(request, db, mailDomains, url, path, op
         }
         return Response.json({ email, expires: Date.now() + 3600000 });
       } catch (e) {
-        return errorResponse(String(e?.message || '创建失败'), 400);
+        return errorResponse(String(e?.message || '创建失败'), Number(e?.statusCode || 400));
       }
     } catch (_) { return errorResponse('Bad Request', 400); }
   }

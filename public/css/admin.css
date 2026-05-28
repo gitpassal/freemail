@@ -219,6 +219,45 @@
   padding: 20px;
 }
 
+.settings-card {
+  padding: 20px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.75);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.setting-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.setting-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.setting-desc {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.setting-toggle {
+  flex-shrink: 0;
+}
+
 .action-header {
   margin-bottom: 16px;
 }

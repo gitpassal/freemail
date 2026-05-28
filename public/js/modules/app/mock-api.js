@@ -8,6 +8,10 @@ export const MOCK_STATE = {
   domains: ['example.com'],
   mailboxes: [],
   emailsByMailbox: new Map(),
+  cfAliasCodes: [],
+  settings: {
+    auto_create_unknown_mailboxes: false
+  },
   nextMailboxId: 100
 };
 
@@ -151,6 +155,24 @@ export async function mockApi(path, options = {}) {
     return new Response(JSON.stringify(MOCK_STATE.domains), { headers: jsonHeaders });
   }
 
+  // GET/PATCH /api/settings
+  if (url.pathname === '/api/settings') {
+    if (!options.method || options.method === 'GET') {
+      return new Response(JSON.stringify(MOCK_STATE.settings), { headers: jsonHeaders });
+    }
+    if (options.method === 'PATCH') {
+      try {
+        const body = typeof options.body === 'string' ? JSON.parse(options.body || '{}') : (options.body || {});
+        if (typeof body.auto_create_unknown_mailboxes !== 'undefined') {
+          MOCK_STATE.settings.auto_create_unknown_mailboxes = !!body.auto_create_unknown_mailboxes;
+        }
+        return new Response(JSON.stringify(MOCK_STATE.settings), { headers: jsonHeaders });
+      } catch (_) {
+        return new Response('Bad Request', { status: 400 });
+      }
+    }
+  }
+
   // GET /api/generate
   if (url.pathname === '/api/generate') {
     const len = Number(url.searchParams.get('length') || '8');
@@ -268,16 +290,52 @@ export async function mockApi(path, options = {}) {
   if (url.pathname === '/api/create' && options.method === 'POST') {
     try {
       const body = typeof options.body === 'string' ? JSON.parse(options.body || '{}') : (options.body || {});
-      const local = String((body.local || '').trim());
-      if (!/^[A-Za-z0-9._-]{1,64}$/.test(local)) {
+      const cfSuffix = !!body.cfSuffix;
+      const local = String((body.local || '').trim()).toLowerCase();
+      const valid = cfSuffix
+        ? /^(?=[A-Za-z0-9]*[A-Za-z])[A-Za-z0-9]{1,58}$/.test(local)
+        : /^[A-Za-z0-9._-]{1,64}$/.test(local);
+      if (!valid) {
         return new Response('非法用户名', { status: 400 });
       }
       const domainIndex = Number(body.domainIndex || 0);
       const domain = MOCK_STATE.domains[Math.max(0, Math.min(MOCK_STATE.domains.length - 1, domainIndex))] || 'example.com';
-      const email = `${local}@${domain}`;
+      let localPart = local;
+      let cfCode = '';
+
+      if (cfSuffix) {
+        const usedCodes = new Set(
+          MOCK_STATE.cfAliasCodes
+            .filter(item => item.prefix === local && item.domain === domain)
+            .map(item => item.code)
+        );
+        if (usedCodes.size >= 1000) {
+          return new Response('该前缀的 .cf### 编码已用完', { status: 409 });
+        }
+
+        do {
+          const arr = new Uint32Array(1);
+          crypto.getRandomValues(arr);
+          cfCode = String(arr[0] % 1000).padStart(3, '0');
+        } while (usedCodes.has(cfCode));
+
+        localPart = `${local}.cf${cfCode}`;
+      }
+
+      const email = `${localPart}@${domain}`;
       
       if (MOCK_STATE.mailboxes.find(m => m.address === email)) {
         return new Response('邮箱地址已存在', { status: 409 });
+      }
+
+      if (cfSuffix) {
+        MOCK_STATE.cfAliasCodes.push({
+          prefix: local,
+          domain,
+          code: cfCode,
+          local_part: localPart,
+          address: email
+        });
       }
       
       const newMailbox = { 
@@ -291,7 +349,12 @@ export async function mockApi(path, options = {}) {
         is_favorite: 0
       };
       MOCK_STATE.mailboxes.unshift(newMailbox);
-      return new Response(JSON.stringify({ email, expires: Date.now() + 3600000 }), { headers: jsonHeaders });
+      return new Response(JSON.stringify({
+        email,
+        prefix: cfSuffix ? local : undefined,
+        cfCode: cfSuffix ? cfCode : undefined,
+        expires: Date.now() + 3600000
+      }), { headers: jsonHeaders });
     } catch (_) {
       return new Response('Bad Request', { status: 400 });
     }

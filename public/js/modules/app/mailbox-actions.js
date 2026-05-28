@@ -127,11 +127,16 @@ export async function generateNameMailbox(elements, lenRange, domainSelect, api,
  * @param {Function} loadMailboxes - 加载邮箱函数
  */
 export async function createCustomMailbox(elements, domainSelect, api, showToast, loadMailboxes) {
-  const { customLocalOverlay, customOverlay } = elements;
+  const { customLocalOverlay, customOverlay, customCfSuffixOverlay } = elements;
   
   try {
     const local = (customLocalOverlay?.value || '').trim();
-    if (!/^[A-Za-z0-9._-]{1,64}$/.test(local)) {
+    const cfSuffix = !!customCfSuffixOverlay?.checked;
+    if (cfSuffix && !/^(?=[A-Za-z0-9]*[A-Za-z])[A-Za-z0-9]{1,58}$/.test(local)) {
+      showToast('前缀不合法，仅限字母数字且至少包含一个字母', 'warn');
+      return;
+    }
+    if (!cfSuffix && !/^[A-Za-z0-9._-]{1,64}$/.test(local)) {
       showToast('用户名不合法，仅限字母/数字/._-', 'warn');
       return;
     }
@@ -140,7 +145,7 @@ export async function createCustomMailbox(elements, domainSelect, api, showToast
     const r = await api('/api/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ local, domainIndex })
+      body: JSON.stringify({ local, domainIndex, cfSuffix })
     });
     
     if (!r.ok) throw new Error(await r.text());

@@ -3,7 +3,18 @@
  * @module admin
  */
 
-import { api, getUsers, createUser, updateUser, deleteUser, getUserMailboxes, assignMailbox, unassignMailbox } from './modules/admin/api.js';
+import {
+  api,
+  getSettings,
+  getUsers,
+  createUser,
+  updateSettings,
+  updateUser,
+  deleteUser,
+  getUserMailboxes,
+  assignMailbox,
+  unassignMailbox
+} from './modules/admin/api.js';
 import { formatTime, renderUserRow, renderUserList, generateSkeletonRows, renderPagination } from './modules/admin/user-list.js';
 import { fillEditForm, collectEditFormData, validateEditForm, resetEditState } from './modules/admin/user-edit.js';
 
@@ -55,6 +66,8 @@ const els = {
   unassignSubmit: document.getElementById('unassign-submit'),
   unassignName: document.getElementById('unassign-name'),
   unassignMail: document.getElementById('unassign-mail'),
+
+  autoCreateUnknown: document.getElementById('setting-auto-create-unknown'),
   
   editModal: document.getElementById('edit-modal'),
   editClose: document.getElementById('edit-close'),
@@ -171,6 +184,36 @@ function updatePagination() {
   if (els.paginationText) els.paginationText.textContent = `显示 ${start}-${end} 条，共 ${totalUsers} 条`;
   if (els.prevPage) els.prevPage.disabled = currentPage <= 1;
   if (els.nextPage) els.nextPage.disabled = currentPage >= totalPages;
+}
+
+async function loadSettings() {
+  if (!els.autoCreateUnknown) return;
+
+  try {
+    const settings = await getSettings();
+    els.autoCreateUnknown.checked = !!settings.auto_create_unknown_mailboxes;
+  } catch (e) {
+    console.error('加载系统设置失败:', e);
+    showToast('加载系统设置失败', 'error');
+  }
+}
+
+async function saveAutoCreateUnknownSetting() {
+  if (!els.autoCreateUnknown) return;
+
+  els.autoCreateUnknown.disabled = true;
+  try {
+    const settings = await updateSettings({
+      auto_create_unknown_mailboxes: !!els.autoCreateUnknown.checked
+    });
+    els.autoCreateUnknown.checked = !!settings.auto_create_unknown_mailboxes;
+    showToast('设置已保存', 'success');
+  } catch (e) {
+    els.autoCreateUnknown.checked = !els.autoCreateUnknown.checked;
+    showToast('设置保存失败', 'error');
+  } finally {
+    els.autoCreateUnknown.disabled = false;
+  }
 }
 
 // 绑定用户操作事件
@@ -462,6 +505,7 @@ async function handleUnassignMailbox() {
 els.back?.addEventListener('click', () => history.back());
 els.logout?.addEventListener('click', async () => { try { await api('/api/logout', { method: 'POST' }); } catch(_) {} location.replace('/html/login.html'); });
 els.usersRefresh?.addEventListener('click', loadUsers);
+els.autoCreateUnknown?.addEventListener('change', saveAutoCreateUnknownSetting);
 els.prevPage?.addEventListener('click', () => { if (currentPage > 1) { currentPage--; loadUsers(); }});
 els.nextPage?.addEventListener('click', () => { const totalPages = Math.ceil(totalUsers / pageSize); if (currentPage < totalPages) { currentPage++; loadUsers(); }});
 
@@ -506,4 +550,5 @@ els.mailboxesPrevPage?.addEventListener('click', () => { if (mailboxPage > 1) { 
 els.mailboxesNextPage?.addEventListener('click', () => { const totalPages = Math.ceil(totalMailboxes / mailboxPageSize); if (mailboxPage < totalPages) { mailboxPage++; loadUserMailboxes(); }});
 
 // 初始化
+loadSettings();
 loadUsers();

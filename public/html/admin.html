@@ -178,6 +178,30 @@
             </div>
           </div>
 
+          <!-- 系统设置 -->
+          <div class="card settings-card">
+            <div class="action-header">
+              <h2>
+                <span class="card-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <use href="/icons/sprites.svg#icon-settings"/>
+                  </svg>
+                </span>
+                <span>System Settings</span>
+              </h2>
+            </div>
+            <div class="setting-row">
+              <div class="setting-copy">
+                <div class="setting-title">Auto-create unknown mailboxes</div>
+                <div class="setting-desc">Allow new recipient addresses to be created when mail arrives.</div>
+              </div>
+              <label class="toggle-label setting-toggle">
+                <input id="setting-auto-create-unknown" type="checkbox" class="toggle-input" />
+                <span class="toggle-switch"></span>
+              </label>
+            </div>
+          </div>
+
           <!-- 用户列表 -->
           <div class="card">
             <div class="card-header">
@@ -626,4 +650,3 @@
     </script>
   </body>
   </html>
-

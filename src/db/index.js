@@ -7,6 +7,7 @@ export { initDatabase, setupDatabase } from './init.js';
 export { getDatabaseWithValidation, getInitializedDatabase } from './connection.js';
 export {
   getOrCreateMailboxId,
+  issueCfAliasMailbox,
   getMailboxIdByAddress,
   checkMailboxOwnership,
   toggleMailboxPin,
@@ -26,3 +27,10 @@ export {
   recordSentEmail,
   updateSentEmail
 } from './sentEmails.js';
+export {
+  getSystemSetting,
+  setSystemSetting,
+  getAutoCreateUnknownMailboxes,
+  setAutoCreateUnknownMailboxes,
+  AUTO_CREATE_UNKNOWN_MAILBOXES_KEY
+} from './settings.js';

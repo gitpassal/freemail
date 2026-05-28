@@ -3,7 +3,12 @@
  * @module email/handler
  */
 
-import { getInitializedDatabase } from '../db/index.js';
+import {
+  getAutoCreateUnknownMailboxes,
+  getInitializedDatabase,
+  getMailboxIdByAddress,
+  getOrCreateMailboxId
+} from '../db/index.js';
 import { extractEmail, normalizeEmailAlias } from '../utils/common.js';
 import { forwardByLocalPart, forwardByMailboxConfig } from './forwarder.js';
 import { parseEmailBody, extractVerificationCode } from './parser.js';
@@ -39,7 +44,16 @@ export async function handleEmailEvent(message, env, ctx) {
     const normalizedAddr = normalizeEmailAlias(resolvedAddr);
     const localPart = (normalizedAddr.split('@')[0] || '').toLowerCase();
 
-    const mailboxForwardTo = await getForwardTarget(DB, normalizedAddr);
+    let mailboxId = await getMailboxIdByAddress(DB, normalizedAddr);
+    if (!mailboxId) {
+      const autoCreateUnknown = await getAutoCreateUnknownMailboxes(DB);
+      if (!autoCreateUnknown) {
+        message.setReject('Mailbox not found');
+        return;
+      }
+    }
+
+    const mailboxForwardTo = mailboxId ? await getForwardTarget(DB, normalizedAddr) : null;
     if (mailboxForwardTo) {
       forwardByMailboxConfig(message, mailboxForwardTo, ctx);
     } else {
@@ -86,19 +100,7 @@ export async function handleEmailEvent(message, env, ctx) {
     let verificationCode = '';
     try { verificationCode = extractVerificationCode({ subject, text: textContent, html: htmlContent }); } catch (_) { }
 
-    const resMb = await DB.prepare('SELECT id FROM mailboxes WHERE address = ?').bind(mailbox.toLowerCase()).all();
-    let mailboxId;
-    if (Array.isArray(resMb?.results) && resMb.results.length) {
-      mailboxId = resMb.results[0].id;
-    } else {
-      const [localPartMb, domain] = (mailbox || '').toLowerCase().split('@');
-      if (localPartMb && domain) {
-        await DB.prepare('INSERT INTO mailboxes (address, local_part, domain, password_hash, last_accessed_at) VALUES (?, ?, ?, NULL, CURRENT_TIMESTAMP)')
-          .bind((mailbox || '').toLowerCase(), localPartMb, domain).run();
-        const created = await DB.prepare('SELECT id FROM mailboxes WHERE address = ?').bind((mailbox || '').toLowerCase()).all();
-        mailboxId = created?.results?.[0]?.id;
-      }
-    }
+    if (!mailboxId) mailboxId = await getOrCreateMailboxId(DB, mailbox);
     if (!mailboxId) throw new Error('无法解析或创建 mailbox 记录');
 
     let toAddrs = '';

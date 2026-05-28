@@ -29,6 +29,35 @@ CREATE INDEX IF NOT EXISTS idx_mailboxes_is_favorite      ON mailboxes(is_favori
 CREATE INDEX IF NOT EXISTS idx_mailboxes_address_created  ON mailboxes(address, created_at DESC);
 
 -- ────────────────────────────────────────
+-- .cf### 邮箱发行记录表
+-- ────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS cf_alias_codes (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  prefix      TEXT NOT NULL,
+  domain      TEXT NOT NULL,
+  code        TEXT NOT NULL,
+  local_part  TEXT NOT NULL,
+  address     TEXT NOT NULL,
+  created_at  TEXT DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(prefix, domain, code),
+  UNIQUE(address)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cf_alias_codes_prefix_domain ON cf_alias_codes(prefix, domain);
+
+INSERT OR IGNORE INTO cf_alias_codes (prefix, domain, code, local_part, address)
+SELECT
+  substr(local_part, 1, instr(local_part, '.cf') - 1) AS prefix,
+  domain,
+  substr(local_part, instr(local_part, '.cf') + 3, 3) AS code,
+  local_part,
+  address
+FROM mailboxes
+WHERE local_part GLOB '[a-zA-Z0-9]*.cf[0-9][0-9][0-9]'
+  AND substr(local_part, 1, instr(local_part, '.cf') - 1) GLOB '*[a-zA-Z]*'
+  AND substr(local_part, 1, instr(local_part, '.cf') - 1) NOT GLOB '*[^a-zA-Z0-9]*';
+
+-- ────────────────────────────────────────
 -- 邮件消息表
 -- ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS messages (
@@ -108,3 +137,15 @@ CREATE TABLE IF NOT EXISTS sent_emails (
 CREATE INDEX IF NOT EXISTS idx_sent_emails_resend_id      ON sent_emails(resend_id);
 CREATE INDEX IF NOT EXISTS idx_sent_emails_status_created ON sent_emails(status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_sent_emails_from_addr      ON sent_emails(from_addr);
+
+-- ────────────────────────────────────────
+-- 系统设置表
+-- ────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS system_settings (
+  key        TEXT PRIMARY KEY,
+  value      TEXT NOT NULL,
+  updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT OR IGNORE INTO system_settings (key, value)
+VALUES ('auto_create_unknown_mailboxes', '0');

@@ -43,6 +43,10 @@ export function normalizeEmailAlias(email) {
   const localPart = normalized.slice(0, atIndex);
   const domain = normalized.slice(atIndex + 1);
 
+  if (/^(?=[a-z0-9]*[a-z])[a-z0-9]+\.cf[0-9]{3}$/.test(localPart)) {
+    return normalized;
+  }
+
   // 查找本地部分中最后一个分隔符的位置（支持 . + - 三种）
   const lastDotIndex = localPart.lastIndexOf('.');
   const lastPlusIndex = localPart.lastIndexOf('+');

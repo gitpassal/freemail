@@ -119,6 +119,30 @@ export async function unassignMailbox(username, address) {
   });
 }
 
+/**
+ * 获取系统设置
+ * @returns {Promise<object>}
+ */
+export async function getSettings() {
+  const r = await api('/api/settings');
+  return r.json();
+}
+
+/**
+ * 更新系统设置
+ * @param {object} data - 设置数据
+ * @returns {Promise<object>}
+ */
+export async function updateSettings(data) {
+  const r = await api('/api/settings', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
 export default {
   api,
   getUsers,
@@ -127,5 +151,7 @@ export default {
   deleteUser,
   getUserMailboxes,
   assignMailbox,
-  unassignMailbox
+  unassignMailbox,
+  getSettings,
+  updateSettings
 };

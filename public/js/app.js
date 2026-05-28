@@ -60,6 +60,7 @@ const els = {
   confirmMessage: document.getElementById('confirm-message'), confirmCancel: document.getElementById('confirm-cancel'), confirmOk: document.getElementById('confirm-ok'),
   emailActions: document.getElementById('email-actions'), toggleCustom: document.getElementById('toggle-custom'),
   customOverlay: document.getElementById('custom-overlay'), customLocalOverlay: document.getElementById('custom-local-overlay'),
+  customCfSuffixOverlay: document.getElementById('custom-cf-suffix-overlay'),
   createCustomOverlay: document.getElementById('create-custom-overlay'), compose: document.getElementById('compose'),
   composeModal: document.getElementById('compose-modal'), composeClose: document.getElementById('compose-close'),
   composeTo: document.getElementById('compose-to'), composeSubject: document.getElementById('compose-subject'),
@@ -181,6 +182,13 @@ if (els.mbSearch) { let t = null; els.mbSearch.oninput = () => { if (t) clearTim
 if (lenRange && lenVal) { lenRange.value = String(getStoredLength()); lenVal.textContent = String(getStoredLength()); updateRangeProgress(lenRange); lenRange.oninput = () => { lenVal.textContent = lenRange.value; saveLength(Number(lenRange.value)); updateRangeProgress(lenRange); };}
 
 // 自定义邮箱
+function updateCustomPlaceholder() {
+  if (!els.customLocalOverlay) return;
+  const cfSuffix = !!els.customCfSuffixOverlay?.checked;
+  els.customLocalOverlay.placeholder = cfSuffix ? '输入前缀，如 giffgaff' : '仅限字母/数字/._-';
+}
+els.customCfSuffixOverlay?.addEventListener('change', updateCustomPlaceholder);
+updateCustomPlaceholder();
 if (els.toggleCustom) els.toggleCustom.onclick = () => { if (els.customOverlay) { const vis = els.customOverlay.style.display !== 'none'; els.customOverlay.style.display = vis ? 'none' : 'flex'; if (!vis) setTimeout(() => els.customLocalOverlay?.focus(), 50); }};
 if (els.createCustomOverlay) els.createCustomOverlay.onclick = () => createCustomMailbox(els, domainSelect, api, showToast, loadMailboxes);
 

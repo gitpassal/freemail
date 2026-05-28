@@ -4,7 +4,11 @@
  */
 
 import { extractEmail, normalizeEmailAlias } from '../utils/common.js';
-import { getOrCreateMailboxId } from '../db/index.js';
+import {
+  getAutoCreateUnknownMailboxes,
+  getMailboxIdByAddress,
+  getOrCreateMailboxId
+} from '../db/index.js';
 import { parseEmailBody, extractVerificationCode } from './parser.js';
 
 /**
@@ -27,7 +31,14 @@ export async function handleEmailReceive(request, db, env) {
     const rawMailbox = extractEmail(to);
     const mailbox = normalizeEmailAlias(rawMailbox);
     const sender = extractEmail(from);
-    const mailboxId = await getOrCreateMailboxId(db, mailbox);
+    let mailboxId = await getMailboxIdByAddress(db, mailbox);
+    if (!mailboxId) {
+      const autoCreateUnknown = await getAutoCreateUnknownMailboxes(db);
+      if (!autoCreateUnknown) {
+        return new Response('Mailbox not found', { status: 404 });
+      }
+      mailboxId = await getOrCreateMailboxId(db, mailbox);
+    }
 
     // 构造简易 EML 并写入 R2
     const now = new Date();

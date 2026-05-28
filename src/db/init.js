@@ -48,6 +48,8 @@ async function performFirstTimeSetup(db) {
     // 所有5个必要表都存在，执行字段迁移
     await migrateMailboxesFields(db);
     await migrateSentEmailsFields(db);
+    await ensureCfAliasCodesTable(db);
+    await ensureSystemSettingsTable(db);
     return;
   } catch (e) {
     // 有表不存在，继续初始化
@@ -60,6 +62,8 @@ async function performFirstTimeSetup(db) {
   await db.exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, password_hash TEXT, role TEXT NOT NULL DEFAULT 'user', can_send INTEGER NOT NULL DEFAULT 0, mailbox_limit INTEGER NOT NULL DEFAULT 10, created_at TEXT DEFAULT CURRENT_TIMESTAMP);");
   await db.exec("CREATE TABLE IF NOT EXISTS user_mailboxes (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, mailbox_id INTEGER NOT NULL, created_at TEXT DEFAULT CURRENT_TIMESTAMP, is_pinned INTEGER NOT NULL DEFAULT 0, UNIQUE(user_id, mailbox_id), FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY(mailbox_id) REFERENCES mailboxes(id) ON DELETE CASCADE);");
   await db.exec("CREATE TABLE IF NOT EXISTS sent_emails (id INTEGER PRIMARY KEY AUTOINCREMENT, resend_id TEXT, from_name TEXT, from_addr TEXT NOT NULL, to_addrs TEXT NOT NULL, subject TEXT NOT NULL, html_content TEXT, text_content TEXT, status TEXT DEFAULT 'queued', scheduled_at TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP, provider TEXT NOT NULL DEFAULT 'resend');");
+  await ensureCfAliasCodesTable(db);
+  await ensureSystemSettingsTable(db);
   
   // 创建索引
   await createIndexes(db);
@@ -87,6 +91,59 @@ async function createIndexes(db) {
   await db.exec(`CREATE INDEX IF NOT EXISTS idx_sent_emails_resend_id ON sent_emails(resend_id);`);
   await db.exec(`CREATE INDEX IF NOT EXISTS idx_sent_emails_status_created ON sent_emails(status, created_at DESC);`);
   await db.exec(`CREATE INDEX IF NOT EXISTS idx_sent_emails_from_addr ON sent_emails(from_addr);`);
+}
+
+async function ensureCfAliasCodesTable(db) {
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS cf_alias_codes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      prefix TEXT NOT NULL,
+      domain TEXT NOT NULL,
+      code TEXT NOT NULL,
+      local_part TEXT NOT NULL,
+      address TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(prefix, domain, code),
+      UNIQUE(address)
+    );
+  `);
+  await db.exec('CREATE INDEX IF NOT EXISTS idx_cf_alias_codes_prefix_domain ON cf_alias_codes(prefix, domain);');
+  await backfillCfAliasCodes(db);
+}
+
+async function backfillCfAliasCodes(db) {
+  try {
+    const rows = await db.prepare(`
+      SELECT address, local_part, domain
+      FROM mailboxes
+      WHERE local_part LIKE '%.cf___'
+    `).all();
+    for (const row of (rows?.results || [])) {
+      const localPart = String(row.local_part || '').toLowerCase();
+      const match = localPart.match(/^((?=[a-z0-9]*[a-z])[a-z0-9]+)\.cf([0-9]{3})$/);
+      if (!match) continue;
+      await db.prepare(`
+        INSERT OR IGNORE INTO cf_alias_codes (prefix, domain, code, local_part, address)
+        VALUES (?, ?, ?, ?, ?)
+      `).bind(match[1], String(row.domain || '').toLowerCase(), match[2], localPart, String(row.address || '').toLowerCase()).run();
+    }
+  } catch (error) {
+    console.error('cf_alias_codes 回填失败:', error);
+  }
+}
+
+async function ensureSystemSettingsTable(db) {
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS system_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+  await db.prepare(`
+    INSERT OR IGNORE INTO system_settings (key, value)
+    VALUES ('auto_create_unknown_mailboxes', '0')
+  `).run();
 }
 
 /**
@@ -225,6 +282,9 @@ export async function setupDatabase(db) {
       provider TEXT NOT NULL DEFAULT 'resend'
     );
   `);
+
+  await ensureCfAliasCodesTable(db);
+  await ensureSystemSettingsTable(db);
   
   // 创建所有索引
   await createIndexes(db);
