@@ -24,6 +24,11 @@ const DEFAULT_APP_NAME = "iDing's临时邮箱";
 const DEFAULT_APP_REPO_URL = 'https://github.com/idinging/freemail';
 const APP_TEMPLATE_PATH = '/html/app.html';
 const APP_TEMPLATE_PATHS = new Set([APP_TEMPLATE_PATH, '/html/app']);
+const BRANDED_TEMPLATE_PATHS = new Set([
+  ...APP_TEMPLATE_PATHS,
+  '/html/admin.html',
+  '/templates/footer.html',
+]);
 const NO_STORE_CACHE_CONTROL = 'no-store, no-cache, must-revalidate, max-age=0';
 
 const KNOWN_PATHS = new Set([
@@ -74,8 +79,9 @@ function getAppRepoUrl(value) {
   return DEFAULT_APP_REPO_URL;
 }
 
-async function serveAppTemplate(c) {
-  const resp = await serveAsset(c, APP_TEMPLATE_PATH);
+async function serveBrandedTemplate(c, targetPath) {
+  const assetPath = APP_TEMPLATE_PATHS.has(targetPath) ? APP_TEMPLATE_PATH : targetPath;
+  const resp = await serveAsset(c, assetPath);
 
   try {
     const text = await resp.text();
@@ -93,6 +99,11 @@ async function serveAppTemplate(c) {
   } catch (_) {
     return resp;
   }
+}
+
+async function serveBrandedAsset(c, targetPath) {
+  if (BRANDED_TEMPLATE_PATHS.has(targetPath)) return serveBrandedTemplate(c, targetPath);
+  return serveAsset(c, targetPath);
 }
 
 async function redirectIfLoggedIn(c, redirectTo, assetPath = null) {
@@ -154,9 +165,10 @@ router.get('*', async (c) => {
     }
   }
 
-  if (APP_TEMPLATE_PATHS.has(pathname)) return serveAppTemplate(c);
+  if (APP_TEMPLATE_PATHS.has(pathname)) return serveBrandedTemplate(c, pathname);
 
-  return serveAsset(c, PATH_MAP[pathname] || null);
+  const targetPath = PATH_MAP[pathname] || null;
+  return serveBrandedAsset(c, targetPath || pathname);
 });
 
 export default router;

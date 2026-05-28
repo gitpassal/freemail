@@ -74,6 +74,7 @@ test('runs worker before serving the app template asset', async () => {
 
   assert.match(wranglerConfig, /run_worker_first\s*=\s*\[[\s\S]*"\/html\/app\.html"/);
   assert.match(wranglerConfig, /run_worker_first\s*=\s*\[[\s\S]*"\/html\/app"/);
+  assert.match(wranglerConfig, /run_worker_first\s*=\s*\[[\s\S]*"\/templates\/footer\.html"/);
   assert.match(wranglerConfig, /html_handling\s*=\s*"none"/);
 });
 
@@ -96,14 +97,34 @@ test('serves index and login html explicitly when html handling is disabled', as
 });
 
 test('serves protected page aliases with explicit html asset paths', async () => {
-  const assets = trackingAssets('<html>admin</html>');
+  const assets = trackingAssets('<html><title>用户管理 - __APP_NAME__</title><span>__APP_NAME__ - 用户管理</span></html>');
   const response = await router.request('https://example.com/admin.html', {
     headers: { Authorization: 'Bearer test-secret' }
   }, {
     ASSETS: assets,
-    JWT_TOKEN: 'test-secret'
+    JWT_TOKEN: 'test-secret',
+    APP_NAME: 'Cloudflare Alias'
   });
 
   assert.equal(response.status, 200);
   assert.equal(assets.paths[0], '/html/admin.html');
+
+  const body = await response.text();
+  assert.match(body, /用户管理 - Cloudflare Alias/);
+  assert.match(body, /Cloudflare Alias - 用户管理/);
+  assert.doesNotMatch(body, /__APP_NAME__/);
+});
+
+test('injects branding into the shared footer template', async () => {
+  const response = await router.request('https://example.com/templates/footer.html', {}, {
+    ASSETS: assetsWithTemplate('© <span id="footer-year"></span> __APP_NAME__ - 简约而不简单'),
+    APP_NAME: 'Cloudflare Alias'
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('Cache-Control'), 'no-store, no-cache, must-revalidate, max-age=0');
+
+  const body = await response.text();
+  assert.match(body, /Cloudflare Alias - 简约而不简单/);
+  assert.doesNotMatch(body, /__APP_NAME__/);
 });
