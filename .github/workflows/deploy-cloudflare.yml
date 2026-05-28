@@ -6,6 +6,7 @@ on:
     paths:
       - "src/**"
       - "public/**"
+      - ".github/workflows/deploy-cloudflare.yml"
       - "wrangler.toml"
   workflow_dispatch:
 
@@ -54,7 +55,7 @@ jobs:
         run: npm install -g wrangler
 
       - name: 📡 禁用 Wrangler 遥测 / Disable wrangler telemetry
-        run: wrangler telemetry disable
+        run: echo "WRANGLER_SEND_METRICS=false" >> "$GITHUB_ENV"
 
       - name: 🔐 验证必要变量 / Validate required variables
         run: |
