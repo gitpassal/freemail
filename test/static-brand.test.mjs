@@ -94,3 +94,16 @@ test('serves index and login html explicitly when html handling is disabled', as
 
   assert.equal(loginAssets.paths[0], '/login.html');
 });
+
+test('serves protected page aliases with explicit html asset paths', async () => {
+  const assets = trackingAssets('<html>admin</html>');
+  const response = await router.request('https://example.com/admin.html', {
+    headers: { Authorization: 'Bearer test-secret' }
+  }, {
+    ASSETS: assets,
+    JWT_TOKEN: 'test-secret'
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(assets.paths[0], '/html/admin.html');
+});

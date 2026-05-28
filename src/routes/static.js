@@ -7,11 +7,11 @@ import { Hono } from 'hono';
 import { resolveAuthPayload } from '../middleware/auth.js';
 
 const PATH_MAP = {
-  '/admin': '/html/admin',
-  '/admin.html': '/html/admin',
-  '/mailbox': '/html/mailbox',
-  '/mailbox.html': '/html/mailbox',
-  '/mailboxes.html': '/html/mailboxes',
+  '/admin': '/html/admin.html',
+  '/admin.html': '/html/admin.html',
+  '/mailbox': '/html/mailbox.html',
+  '/mailbox.html': '/html/mailbox.html',
+  '/mailboxes.html': '/html/mailboxes.html',
 };
 
 const PROTECTED = new Set([
