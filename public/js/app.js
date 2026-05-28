@@ -189,7 +189,16 @@ function updateCustomPlaceholder() {
 }
 els.customCfSuffixOverlay?.addEventListener('change', updateCustomPlaceholder);
 updateCustomPlaceholder();
-if (els.toggleCustom) els.toggleCustom.onclick = () => { if (els.customOverlay) { const vis = els.customOverlay.style.display !== 'none'; els.customOverlay.style.display = vis ? 'none' : 'grid'; if (!vis) setTimeout(() => els.customLocalOverlay?.focus(), 50); }};
+if (els.toggleCustom) els.toggleCustom.onclick = () => {
+  if (els.customOverlay) {
+    const vis = els.customOverlay.style.display !== 'none';
+    const emailText = document.getElementById('email-text');
+    els.customOverlay.style.display = vis ? 'none' : 'grid';
+    els.email?.classList.toggle('custom-open', !vis);
+    if (emailText) emailText.style.display = vis ? '' : 'none';
+    if (!vis) setTimeout(() => els.customLocalOverlay?.focus(), 50);
+  }
+};
 if (els.createCustomOverlay) els.createCustomOverlay.onclick = () => createCustomMailbox(els, domainSelect, api, showToast, loadMailboxes);
 
 // 侧边栏

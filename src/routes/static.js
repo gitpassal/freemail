@@ -20,6 +20,10 @@ const PROTECTED = new Set([
   '/mailbox', '/mailbox.html', '/html/mailbox.html'
 ]);
 
+const MAILBOX_ONLY = new Set([
+  '/mailbox', '/mailbox.html', '/html/mailbox.html'
+]);
+
 const DEFAULT_APP_NAME = "iDing's临时邮箱";
 const DEFAULT_APP_REPO_URL = 'https://github.com/idinging/freemail';
 const APP_TEMPLATE_PATH = '/html/app.html';
@@ -27,19 +31,22 @@ const APP_TEMPLATE_PATHS = new Set([APP_TEMPLATE_PATH, '/html/app']);
 const BRANDED_TEMPLATE_PATHS = new Set([
   ...APP_TEMPLATE_PATHS,
   '/html/admin.html',
+  '/html/mailbox.html',
+  '/html/mailboxes.html',
   '/templates/footer.html',
 ]);
 const NO_STORE_CACHE_CONTROL = 'no-store, no-cache, must-revalidate, max-age=0';
 
 const KNOWN_PATHS = new Set([
   '/', '/index.html', '/favicon.svg',
+  '/manifest.webmanifest', '/apple-touch-icon.png',
   '/login', '/login.html',
   ...Object.keys(PATH_MAP),
   '/app.js', '/app.css', '/app-router.js',
   '/admin.js', '/admin.css', '/login.js', '/login.css',
   '/mailbox.js', '/mailbox.css', '/mailboxes.js',
   '/mock.js', '/route-guard.js', '/app-mobile.js', '/app-mobile.css',
-  '/auth-guard.js', '/storage.js', '/theme-toggle.js',
+  '/auth-guard.js', '/storage.js', '/theme-toggle.js', '/pwa.js', '/pwa.css',
   '/toast-utils.js', '/mailbox-settings.js',
   '/html/mailbox.html', '/html/mailboxes.html', '/html/admin.html', '/html/app.html', '/html/app',
   '/templates/app.html', '/templates/footer.html',
@@ -50,6 +57,18 @@ function serveAsset(c, targetPath) {
   if (!c.env.ASSETS?.fetch) return c.notFound();
   if (targetPath) return c.env.ASSETS.fetch(new Request(new URL(targetPath, c.req.url), c.req.raw));
   return c.env.ASSETS.fetch(c.req.raw);
+}
+
+async function serveManifest(c) {
+  const resp = await serveAsset(c, '/manifest.webmanifest');
+  const headers = new Headers(resp.headers);
+  headers.set('Content-Type', 'application/manifest+json; charset=utf-8');
+  headers.set('Cache-Control', 'public, max-age=3600');
+  return new Response(resp.body, {
+    status: resp.status,
+    statusText: resp.statusText,
+    headers
+  });
 }
 
 function escapeHtml(value) {
@@ -139,6 +158,8 @@ router.get('*', async (c) => {
   const pathname = new URL(c.req.url).pathname;
   const JWT_TOKEN = c.env.JWT_TOKEN || c.env.JWT_SECRET || '';
 
+  if (pathname === '/manifest.webmanifest') return serveManifest(c);
+
   if (!KNOWN_PATHS.has(pathname)
       && !pathname.startsWith('/assets/')
       && !pathname.startsWith('/pic/')
@@ -155,11 +176,11 @@ router.get('*', async (c) => {
   if (PROTECTED.has(pathname)) {
     const payload = await resolveAuthPayload(c.req.raw, JWT_TOKEN);
     if (!payload) {
-      const redirect = pathname.includes('mailbox') ? '/html/mailbox.html' : '/admin.html';
+      const redirect = MAILBOX_ONLY.has(pathname) ? '/html/mailbox.html' : '/admin.html';
       return c.redirect(`/templates/loading.html?redirect=${encodeURIComponent(redirect)}`, 302);
     }
-    if (pathname.includes('mailbox') && payload.role !== 'mailbox') return c.redirect('/', 302);
-    if (!pathname.includes('mailbox')) {
+    if (MAILBOX_ONLY.has(pathname) && payload.role !== 'mailbox') return c.redirect('/', 302);
+    if (!MAILBOX_ONLY.has(pathname)) {
       const allowed = (payload.role === 'admin' || payload.role === 'guest' || payload.role === 'mailbox');
       if (!allowed) return c.redirect('/', 302);
     }

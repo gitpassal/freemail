@@ -115,6 +115,38 @@ test('serves protected page aliases with explicit html asset paths', async () =>
   assert.doesNotMatch(body, /__APP_NAME__/);
 });
 
+test('serves the PWA manifest without auth redirects', async () => {
+  const assets = trackingAssets('{"name":"Cloudflare Alias"}');
+  const response = await router.request('https://example.com/manifest.webmanifest', {}, {
+    ASSETS: assets
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(assets.paths[0], '/manifest.webmanifest');
+  assert.equal(response.headers.get('Content-Type'), 'application/manifest+json; charset=utf-8');
+  assert.match(await response.text(), /Cloudflare Alias/);
+});
+
+test('injects branding into mailbox subpages', async () => {
+  const assets = trackingAssets('<title>邮箱管理 - __APP_NAME__</title><a href="__APP_REPO_URL__">repo</a>');
+  const response = await router.request('https://example.com/mailboxes.html', {
+    headers: { Authorization: 'Bearer test-secret' }
+  }, {
+    ASSETS: assets,
+    JWT_TOKEN: 'test-secret',
+    APP_NAME: 'Cloudflare Alias',
+    APP_REPO_URL: 'https://github.com/gitpassal/freemail'
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(assets.paths[0], '/html/mailboxes.html');
+
+  const body = await response.text();
+  assert.match(body, /邮箱管理 - Cloudflare Alias/);
+  assert.match(body, /href="https:\/\/github\.com\/gitpassal\/freemail"/);
+  assert.doesNotMatch(body, /__APP_NAME__|__APP_REPO_URL__/);
+});
+
 test('injects branding into the shared footer template', async () => {
   const response = await router.request('https://example.com/templates/footer.html', {}, {
     ASSETS: assetsWithTemplate('© <span id="footer-year"></span> __APP_NAME__ - 简约而不简单'),

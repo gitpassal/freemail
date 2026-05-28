@@ -2,9 +2,18 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>邮箱管理 - iDing's临时邮箱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>邮箱管理 - __APP_NAME__</title>
+  <meta name="application-name" content="__APP_NAME__" />
+  <meta name="theme-color" content="#6366f1" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="__APP_NAME__" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,8 +30,10 @@
   <link rel="stylesheet" href="/css/mailboxes.css" />
   <link rel="stylesheet" href="/css/mailboxes-toolbar.css" />
   <link rel="stylesheet" href="/css/mailboxes-subpage.css" />
+  <link rel="stylesheet" href="/css/pwa.css" />
   <!-- 暗黑模式样式 -->
   <!-- 主题切换支持 -->
+  <script src="/js/pwa.js" defer></script>
   <script src="/js/theme-toggle.js"></script>
 </head>
 <body class="page-mailboxes">
@@ -39,7 +50,7 @@
             <use href="/icons/sprites.svg#icon-mail"/>
           </svg>
         </span>
-        <span class="brand-text">iDing's临时邮箱 - 邮箱总览</span>
+        <span class="brand-text">__APP_NAME__ - 邮箱总览</span>
       </div>
       <div class="nav-actions">
         <div class="spacer"></div>
@@ -51,7 +62,7 @@
           </span>
           <span class="btn-text">首页</span>
         </a>
-        <a id="repo" class="btn btn-ghost" href="https://github.com/idinging/freemail" target="_blank" rel="noopener noreferrer" title="GitHub 开源仓库">
+        <a id="repo" class="btn btn-ghost" href="__APP_REPO_URL__" target="_blank" rel="noopener noreferrer" title="GitHub 开源仓库">
           <span class="btn-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <use href="/icons/sprites.svg#icon-github"/>
@@ -444,5 +455,3 @@
   <script type="module" src="/js/mailboxes.js"></script>
 </body>
 </html>
-
-

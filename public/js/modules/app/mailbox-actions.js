@@ -154,6 +154,7 @@ export async function createCustomMailbox(elements, domainSelect, api, showToast
     setCurrentMailbox(data.email);
     updateEmailDisplay(elements, data.email);
     if (customOverlay) customOverlay.style.display = 'none';
+    if (elements.email) elements.email.classList.remove('custom-open');
     
     showToast('已创建邮箱：' + data.email, 'success');
     await loadMailboxes({ forceFresh: true });
@@ -170,10 +171,14 @@ export async function createCustomMailbox(elements, domainSelect, api, showToast
 export function updateEmailDisplay(elements, address) {
   const { email, emailActions, listCard } = elements;
   const emailText = document.getElementById('email-text');
-  if (emailText) emailText.textContent = address;
+  if (emailText) {
+    emailText.textContent = address;
+    emailText.style.display = '';
+  }
   else if (email) email.textContent = address;
   
   email?.classList.add('has-email');
+  email?.classList.remove('custom-open');
   if (emailActions) emailActions.style.display = 'grid';
   if (listCard) listCard.style.display = 'block';
 }
