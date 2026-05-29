@@ -18,7 +18,7 @@
 
 .lang-toggle-login {
   position: fixed;
-  top: 20px;
+  top: calc(var(--safe-area-top, 0px) + 16px);
   right: 72px;
   width: 44px;
   height: 44px;
@@ -569,7 +569,9 @@ body.is-standalone [contenteditable="true"] {
     text-align: center;
   }
 
+  html.is-standalone .generate-action .btn-generate,
   html.is-standalone .btn-generate,
+  html.is-pwa-preview .generate-action .btn-generate,
   html.is-pwa-preview .btn-generate {
     background: rgba(255, 255, 255, 0.96);
     border-color: rgba(226, 232, 240, 0.9);
@@ -811,6 +813,12 @@ body.is-standalone [contenteditable="true"] {
     min-width: 0;
     gap: 10px;
     align-items: stretch;
+  }
+
+  /* 批量按钮整行全宽：恢复显示文字标签（覆盖 mailboxes-toolbar 的隐藏） */
+  html.is-standalone .page-mailboxes .batch-actions .btn span:not(.btn-icon),
+  html.is-pwa-preview .page-mailboxes .batch-actions .btn span:not(.btn-icon) {
+    display: inline;
   }
 
   html.is-standalone .page-mailboxes .searchbar,

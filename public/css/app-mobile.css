@@ -253,9 +253,10 @@
 
 /* 二级页操作条（移动端） */
 @media (max-width: 900px){
-  /* 移动端二级页操作条：只保留发送/清空（刷新隐藏成右上角图标） */
+  /* 移动端二级页操作条：发邮件/清空邮件一行，刷新整行铺底 */
   .mail-actions-mobile{ display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:8px; margin: 10px 0 6px; position: sticky; top: 6px; z-index: 6; }
   .mail-actions-mobile .btn{ width:100%; }
+  .mail-actions-mobile #refresh{ grid-column: 1 / -1; }
 }
 
 /* 横屏优化 */

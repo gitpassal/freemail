@@ -145,37 +145,7 @@
               var btnRefresh = document.getElementById('refresh');
               // 隐藏进入按钮
               try{ var enter = document.getElementById('enter-mailbox'); if (enter) enter.style.display = 'none'; }catch(_){ }
-              // 在标题右侧放置纯图标的刷新按钮（移动端）
-              try{
-                var header = inboxCard ? inboxCard.querySelector('.listcard-header') : null;
-                if (header){
-                  var existing = document.getElementById('m-refresh-icon');
-                  if (!existing){
-                    var iconBtn = document.createElement('button');
-                    iconBtn.id = 'm-refresh-icon';
-                    iconBtn.className = 'btn btn-ghost btn-sm';
-                    iconBtn.title = window.t('common.refresh');
-                    iconBtn.style.justifySelf = 'end';
-                    iconBtn.style.width = '34px';
-                    iconBtn.style.height = '34px';
-                    iconBtn.style.display = 'inline-flex';
-                    iconBtn.style.alignItems = 'center';
-                    iconBtn.style.justifyContent = 'center';
-                    iconBtn.style.padding = '0';
-                    iconBtn.innerHTML = '<span class="btn-icon" style="margin:0">🔄</span>';
-                    header.appendChild(iconBtn);
-                    iconBtn.onclick = function(e){
-                      try{
-                        e.preventDefault(); e.stopPropagation();
-                        var ll = document.getElementById('list-loading');
-                        if (ll) ll.style.display = 'inline-flex';
-                        if (typeof window.refreshEmails === 'function') { window.refreshEmails().finally(function(){ try{ if (ll) ll.style.display='none'; }catch(_){ } }); }
-                        else if (typeof refresh === 'function') { refresh(); }
-                      }catch(_){ }
-                    };
-                  }
-                }
-              }catch(_){ }
+              // 二级页操作行：发邮件/清空邮件 一行，刷新整行铺底（全部对齐，无浮动图标）
               if (!mailActionsWrap){
                 mailActionsWrap = document.getElementById('mail-actions-mobile');
                 if (!mailActionsWrap){
@@ -188,13 +158,12 @@
               }
               if (btnCompose) mailActionsWrap.appendChild(btnCompose);
               if (btnClear) mailActionsWrap.appendChild(btnClear);
-              // 移动视图不再在下方显示刷新按钮，统一使用右上角图标
-              if (btnRefresh) btnRefresh.style.display = 'none';
+              if (btnRefresh) mailActionsWrap.appendChild(btnRefresh);
               if (btnCopy) btnCopy.style.display = 'none';
               try{ var enter = document.getElementById('enter-mailbox'); if (enter) enter.style.display = 'none'; }catch(_){ }
               if (btnCompose) btnCompose.style.display = '';
               if (btnClear) btnClear.style.display = '';
-              // 刷新按钮隐藏（仅保留右上角图标）
+              if (btnRefresh) btnRefresh.style.display = '';
             }
           }catch(_){ }
         };

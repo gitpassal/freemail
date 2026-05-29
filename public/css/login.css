@@ -373,7 +373,7 @@ h1 {
 /* ===== 主题切换按钮 ===== */
 .theme-toggle-login {
   position: fixed;
-  top: 20px;
+  top: calc(var(--safe-area-top, 0px) + 16px);
   right: 20px;
   width: 44px;
   height: 44px;
