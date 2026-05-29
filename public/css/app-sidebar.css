@@ -807,9 +807,11 @@
   gap: 12px;
   position: relative;
 }
-.listcard-title{ 
+.listcard-title{
   margin: 0; display:flex; align-items:center; gap:8px; justify-self: start;
 }
+/* 覆盖 .card h2 的 24px 下边距：否则标题 margin-box 撑满 grid 行高、内容被顶到行顶，与分段控件/倒计时不在同一水平线 */
+.listcard-header .listcard-title{ margin: 0; }
 .view-switch{ 
   justify-self: center; display: inline-flex; background: var(--card-glass); border:1px solid var(--border-glass); border-radius: 999px; overflow:hidden; box-shadow: var(--shadow-glass);
 }

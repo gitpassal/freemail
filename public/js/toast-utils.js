@@ -24,7 +24,7 @@ const ICON_MAP = {
 // Toast容器配置
 const CONTAINER_STYLES = {
   position: 'fixed',
-  top: '24px',
+  top: 'calc(var(--safe-area-top, 0px) + 24px)',
   left: '24px',
   right: 'auto',
   bottom: 'auto',

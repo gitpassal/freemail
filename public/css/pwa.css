@@ -40,6 +40,13 @@
 .lang-toggle-login .lang-label { display: none; }
 .lang-toggle-login svg { width: 20px; height: 20px; }
 
+/* 登录页（standalone）：卡片改为顶部锚定而非垂直居中，避免 iOS 键盘弹出时把整卡上移、logo 顶出视口 */
+html.is-standalone .center,
+html.is-pwa-preview .center {
+  align-items: flex-start;
+  padding-top: calc(var(--safe-area-top, 0px) + 64px);
+}
+
 html {
   min-height: 100%;
   overflow-x: hidden;
