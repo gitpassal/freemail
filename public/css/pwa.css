@@ -3,6 +3,8 @@
   --safe-area-right: env(safe-area-inset-right, 0px);
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
   --safe-area-left: env(safe-area-inset-left, 0px);
+  /* toast 顶部偏移：默认（桌面/普通浏览器）距视口顶 24px */
+  --toast-top: calc(var(--safe-area-top, 0px) + 24px);
 }
 
 /* ===== 语言切换按钮 ===== */
@@ -45,6 +47,13 @@ html.is-standalone .center,
 html.is-pwa-preview .center {
   align-items: flex-start;
   padding-top: calc(var(--safe-area-top, 0px) + 64px);
+}
+
+/* standalone：toast 中心与登录页右上角切换键（top:safe+16、高44、中心 safe+38）对齐；
+   toast 单行高 58 → top = safe+38-29 = safe+9 */
+html.is-standalone,
+html.is-pwa-preview {
+  --toast-top: calc(var(--safe-area-top, 0px) + 9px);
 }
 
 html {
