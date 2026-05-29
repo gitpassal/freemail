@@ -4,31 +4,38 @@
    ============================================= */
 
 (function() {
-  // 当前主题
+  const PREFERENCE_KEY = 'freemail:theme-preference';
+  const LEGACY_KEY = 'freemail:theme';
+  const LIGHT_THEME_COLOR = '#f8fafc';
+  const DARK_THEME_COLOR = '#1e293b';
+
   let currentTheme = 'light';
 
-  // 获取用户保存的主题偏好
   function getSavedTheme() {
     try {
-      return localStorage.getItem('freemail:theme');
+      const saved = localStorage.getItem(PREFERENCE_KEY);
+      return saved === 'light' || saved === 'dark' ? saved : null;
     } catch (e) {
       return null;
     }
   }
 
-  // 保存主题偏好
   function saveTheme(theme) {
     try {
-      localStorage.setItem('freemail:theme', theme);
+      localStorage.setItem(PREFERENCE_KEY, theme);
     } catch (e) {}
   }
 
-  // 检测系统偏好
+  function clearLegacyTheme() {
+    try {
+      localStorage.removeItem(LEGACY_KEY);
+    } catch (e) {}
+  }
+
   function getSystemTheme() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
 
-  // 确定应该使用的主题
   function getEffectiveTheme() {
     const saved = getSavedTheme();
     if (saved) {
@@ -37,25 +44,48 @@
     return getSystemTheme();
   }
 
-  // 应用主题（添加/移除 .dark 类）
+  function updateThemeColor(theme) {
+    const color = theme === 'dark' ? DARK_THEME_COLOR : LIGHT_THEME_COLOR;
+    const metas = document.querySelectorAll('meta[name="theme-color"]');
+    metas.forEach((meta) => meta.setAttribute('content', color));
+  }
+
+  function dispatchThemeChange(theme, source) {
+    window.dispatchEvent(new CustomEvent('themechange', {
+      detail: {
+        theme,
+        source,
+        preference: getSavedTheme() || 'system'
+      }
+    }));
+  }
+
   function applyTheme(theme) {
+    currentTheme = theme;
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
+    updateThemeColor(theme);
   }
 
-  // 切换主题
   function setTheme(theme) {
-    currentTheme = theme;
+    if (theme !== 'light' && theme !== 'dark') return;
     saveTheme(theme);
+    clearLegacyTheme();
     applyTheme(theme);
     updateThemeToggleButton(theme);
-    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
+    dispatchThemeChange(theme, 'manual');
   }
 
-  // 更新切换按钮
+  function applySystemTheme() {
+    const theme = getSystemTheme();
+    applyTheme(theme);
+    updateThemeToggleButton(theme);
+    dispatchThemeChange(theme, 'system');
+  }
+
   function updateThemeToggleButton(theme) {
     const btn = document.getElementById('theme-toggle');
     if (!btn) return;
@@ -68,7 +98,6 @@
     btn.title = theme === 'dark' ? '切换到明亮模式' : '切换到暗黑模式';
   }
 
-  // 创建主题切换按钮
   function createThemeToggleButton() {
     const btn = document.createElement('button');
     btn.id = 'theme-toggle';
@@ -92,7 +121,6 @@
     return btn;
   }
 
-  // 添加切换按钮到页面
   function addThemeToggleToNav() {
     const navActions = document.querySelector('.nav-actions');
     if (!navActions) {
@@ -115,37 +143,34 @@
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     mediaQuery.addEventListener('change', function(e) {
       if (!getSavedTheme()) {
-        setTheme(e.matches ? 'dark' : 'light');
+        applyTheme(e.matches ? 'dark' : 'light');
+        updateThemeToggleButton(currentTheme);
+        dispatchThemeChange(currentTheme, 'system');
       }
     });
   }
 
-  // 监听 localStorage 变化（多标签页同步）
   function watchStorageChanges() {
     window.addEventListener('storage', function(e) {
-      if (e.key === 'freemail:theme' && e.newValue) {
-        setTheme(e.newValue);
+      if (e.key !== PREFERENCE_KEY) return;
+      if (e.newValue === 'light' || e.newValue === 'dark') {
+        applyTheme(e.newValue);
+        updateThemeToggleButton(e.newValue);
+        dispatchThemeChange(e.newValue, 'manual');
+      } else {
+        applySystemTheme();
       }
     });
   }
 
-  // 初始化
   function init() {
-    // 获取主题
+    clearLegacyTheme();
     const theme = getEffectiveTheme();
-    currentTheme = theme;
-
-    // 应用主题（添加 .dark 类）
     applyTheme(theme);
-
-    // 设置切换按钮初始状态
     updateThemeToggleButton(theme);
-
-    // 监听变化
     watchSystemTheme();
     watchStorageChanges();
 
-    // 添加按钮
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', function() {
         setTimeout(addThemeToggleToNav, 300);
@@ -158,10 +183,14 @@
   // 启动
   init();
 
-  // 暴露全局方法
   window.freemailTheme = {
     setTheme: setTheme,
     getTheme: function() { return currentTheme; },
+    getPreference: function() { return getSavedTheme() || 'system'; },
+    useSystem: function() {
+      try { localStorage.removeItem(PREFERENCE_KEY); } catch (e) {}
+      applySystemTheme();
+    },
     toggle: function() { setTheme(currentTheme === 'dark' ? 'light' : 'dark'); }
   };
 })();

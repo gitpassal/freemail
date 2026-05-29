@@ -244,8 +244,14 @@ body.is-standalone [contenteditable="true"] {
     max-width: 100%;
     min-height: 100dvh;
     overflow-x: hidden;
+    background-color: #f8fafc;
     padding-bottom: calc(26px + var(--safe-area-bottom));
     overscroll-behavior-x: none;
+  }
+
+  html.dark.is-standalone body,
+  html.dark.is-pwa-preview body {
+    background-color: #1e293b;
   }
 
   html.is-standalone body *,
@@ -264,6 +270,12 @@ body.is-standalone [contenteditable="true"] {
     min-height: 72px;
     padding: calc(10px + var(--safe-area-top)) max(12px, var(--safe-area-right)) 10px max(12px, var(--safe-area-left));
     gap: 8px;
+    background-color: rgba(248, 250, 252, 0.94);
+  }
+
+  html.dark.is-standalone .topbar,
+  html.dark.is-pwa-preview .topbar {
+    background-color: rgba(30, 41, 59, 0.94);
   }
 
   html.is-standalone .topbar .topbar-inner,
@@ -518,7 +530,39 @@ body.is-standalone [contenteditable="true"] {
 
   html.is-standalone .btn-generate,
   html.is-pwa-preview .btn-generate {
+    background: rgba(255, 255, 255, 0.96);
+    border-color: rgba(226, 232, 240, 0.9);
     color: var(--text);
+  }
+
+  html.is-standalone .btn-generate .btn-icon,
+  html.is-standalone .btn-generate .btn-icon svg,
+  html.is-pwa-preview .btn-generate .btn-icon,
+  html.is-pwa-preview .btn-generate .btn-icon svg {
+    color: var(--primary);
+  }
+
+  html.is-standalone #toggle-custom,
+  html.is-pwa-preview #toggle-custom {
+    background: rgba(255, 255, 255, 0.96);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  html.is-standalone #toggle-custom .btn-icon,
+  html.is-standalone #toggle-custom .btn-icon svg,
+  html.is-pwa-preview #toggle-custom .btn-icon,
+  html.is-pwa-preview #toggle-custom .btn-icon svg {
+    color: var(--primary);
+  }
+
+  html.is-standalone .generate-action .btn > span:not(.btn-icon),
+  html.is-pwa-preview .generate-action .btn > span:not(.btn-icon) {
+    display: inline-flex !important;
+    min-width: 0;
+    overflow: visible;
+    color: currentColor !important;
+    -webkit-text-fill-color: currentColor;
   }
 
   html.is-standalone .btn-primary,
@@ -542,6 +586,13 @@ body.is-standalone [contenteditable="true"] {
     color: #f8fafc;
   }
 
+  html.dark.is-standalone body.is-mobile #toggle-custom,
+  html.dark.is-pwa-preview body.is-mobile #toggle-custom {
+    background: rgba(30, 41, 59, 0.92);
+    border-color: rgba(148, 163, 184, 0.28);
+    color: #f8fafc;
+  }
+
   html.dark.is-standalone body.is-mobile .custom-cf-toggle,
   html.dark.is-pwa-preview body.is-mobile .custom-cf-toggle,
   html.dark.is-standalone body.is-mobile .custom-input,
@@ -553,12 +604,26 @@ body.is-standalone [contenteditable="true"] {
 
   html.is-standalone .admin-page .topbar .brand,
   html.is-pwa-preview .admin-page .topbar .brand {
-    max-width: calc(100vw - 150px);
+    flex: 1 1 0;
+    width: auto;
+    max-width: none;
   }
 
   html.is-standalone .admin-page .nav-actions,
   html.is-pwa-preview .admin-page .nav-actions {
-    max-width: 92px;
+    flex: 0 0 auto;
+    max-width: none;
+    width: auto;
+  }
+
+  html.is-standalone .admin-page .brand-text,
+  html.is-pwa-preview .admin-page .brand-text {
+    display: block;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   html.is-standalone .admin-page .admin-container,
