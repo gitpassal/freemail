@@ -39,7 +39,7 @@ const NO_STORE_CACHE_CONTROL = 'no-store, no-cache, must-revalidate, max-age=0';
 
 const KNOWN_PATHS = new Set([
   '/', '/index.html', '/favicon.svg',
-  '/manifest.webmanifest', '/apple-touch-icon.png',
+  '/manifest.webmanifest', '/apple-touch-icon.png', '/pwa-preview.html',
   '/login', '/login.html',
   ...Object.keys(PATH_MAP),
   '/app.js', '/app.css', '/app-router.js',

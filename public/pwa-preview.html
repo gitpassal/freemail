@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PWA Preview - Cloudflare Alias</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0f172a;
+      --panel: #172033;
+      --panel-2: #111827;
+      --text: #eef2ff;
+      --muted: #9ca3af;
+      --border: rgba(148, 163, 184, 0.26);
+      --ok: #22c55e;
+      --fail: #ef4444;
+      --warn: #f59e0b;
+      --accent: #8b5cf6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, rgba(139, 92, 246, 0.18), transparent 34%), var(--bg);
+      color: var(--text);
+      font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      background: rgba(15, 23, 42, 0.92);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    button,
+    label.toggle {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel);
+      color: var(--text);
+      padding: 8px 11px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    button[aria-pressed="true"] {
+      border-color: rgba(139, 92, 246, 0.86);
+      background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+    }
+
+    label.toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 18px;
+      padding: 18px;
+    }
+
+    .device {
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(17, 24, 39, 0.82);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+      overflow: hidden;
+    }
+
+    .device-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(23, 32, 51, 0.92);
+    }
+
+    .device-title {
+      font-weight: 700;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.14);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status.pass {
+      color: #bbf7d0;
+      background: rgba(34, 197, 94, 0.16);
+    }
+
+    .status.fail {
+      color: #fecaca;
+      background: rgba(239, 68, 68, 0.18);
+    }
+
+    .frame-wrap {
+      padding: 14px;
+      overflow: auto;
+      background: var(--panel-2);
+    }
+
+    iframe {
+      display: block;
+      border: 0;
+      border-radius: 24px;
+      background: white;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 16px 42px rgba(0, 0, 0, 0.35);
+    }
+
+    .report {
+      max-height: 260px;
+      overflow: auto;
+      padding: 12px 14px;
+      border-top: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.74);
+      white-space: pre-wrap;
+      font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #cbd5e1;
+    }
+
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 18px 18px;
+      color: var(--muted);
+    }
+
+    .summary strong {
+      color: var(--text);
+    }
+
+    @media (max-width: 700px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Cloudflare Alias PWA Preview</h1>
+      <div style="color: var(--muted); font-size: 12px;">Same-origin iPhone standalone layout checks</div>
+    </div>
+    <div class="controls" id="route-controls">
+      <button type="button" data-route="/" aria-pressed="true">Home</button>
+      <button type="button" data-route="/html/admin.html" aria-pressed="false">Admin</button>
+      <button type="button" data-route="/html/mailboxes.html" aria-pressed="false">All Mailboxes</button>
+      <label class="toggle"><input id="force-dark" type="checkbox" checked /> Dark</label>
+      <button type="button" id="run-checks">Run checks</button>
+    </div>
+  </header>
+
+  <main id="devices"></main>
+  <div class="summary" id="summary"></div>
+
+  <script>
+    const DEVICES = [
+      { name: 'iPhone 393 x 852', width: 393, height: 852 },
+      { name: 'iPhone 430 x 932', width: 430, height: 932 }
+    ];
+
+    const SELECTORS = {
+      '/': [
+        '.topbar',
+        '#mobile-main-switch',
+        '.generate-card',
+        '.email-display',
+        '.mailbox-config-section',
+        '.config-form',
+        '.generate-action'
+      ],
+      '/html/admin.html': [
+        '.topbar',
+        '.admin-container',
+        '.stats-grid',
+        '.action-buttons',
+        '.settings-card',
+        '.setting-row',
+        '.table-wrapper'
+      ],
+      '/html/mailboxes.html': [
+        '.topbar',
+        '.container',
+        '.toolbar',
+        '.toolbar-row-1',
+        '.toolbar-row-2',
+        '#grid',
+        '.pager'
+      ]
+    };
+
+    let currentRoute = '/';
+
+    function routeUrl(route) {
+      const url = new URL(route, window.location.origin);
+      url.searchParams.set('pwa-preview', '1');
+      url.searchParams.set('_preview_ts', Date.now().toString());
+      return url.pathname + url.search + url.hash;
+    }
+
+    function sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function setDark(doc) {
+      const forceDark = document.getElementById('force-dark').checked;
+      doc.documentElement.classList.toggle('dark', forceDark);
+      doc.body?.classList.toggle('dark', forceDark);
+    }
+
+    function isVisible(win, el) {
+      if (!el || !el.getBoundingClientRect) return false;
+      const style = win.getComputedStyle(el);
+      const rect = el.getBoundingClientRect();
+      return style.display !== 'none' &&
+        style.visibility !== 'hidden' &&
+        Number(style.opacity || '1') !== 0 &&
+        rect.width > 0 &&
+        rect.height > 0;
+    }
+
+    function describe(el) {
+      const parts = [el.tagName.toLowerCase()];
+      if (el.id) parts.push('#' + el.id);
+      if (el.className && typeof el.className === 'string') {
+        const classes = el.className.trim().split(/\s+/).slice(0, 3);
+        if (classes.length) parts.push('.' + classes.join('.'));
+      }
+      return parts.join('');
+    }
+
+    function isInsideContainedScroller(win, el, viewport) {
+      let parent = el.parentElement;
+      while (parent && parent !== win.document.body && parent !== win.document.documentElement) {
+        const style = win.getComputedStyle(parent);
+        const rect = parent.getBoundingClientRect();
+        const clipsX = /(auto|scroll|hidden|clip)/.test(style.overflowX || '');
+        if (clipsX && rect.left >= -2 && rect.right <= viewport + 2) return true;
+        parent = parent.parentElement;
+      }
+      return false;
+    }
+
+    function measureFrame(frame, route) {
+      const win = frame.contentWindow;
+      const doc = frame.contentDocument;
+      const viewport = win.innerWidth;
+      const root = doc.documentElement;
+      const body = doc.body;
+      const failures = [];
+      const warnings = [];
+
+      if (!doc.title || /loading/i.test(doc.title)) {
+        warnings.push('Unexpected title: ' + (doc.title || '(empty)'));
+      }
+
+      const rootScroll = Math.max(root.scrollWidth, body ? body.scrollWidth : 0);
+      if (rootScroll > viewport + 2) {
+        failures.push(`Horizontal overflow: scrollWidth ${rootScroll}px > innerWidth ${viewport}px`);
+      }
+
+      const selectors = SELECTORS[route] || [];
+      selectors.forEach((selector) => {
+        const el = doc.querySelector(selector);
+        if (!el) {
+          failures.push(`Missing selector: ${selector}`);
+          return;
+        }
+        if (!isVisible(win, el)) {
+          failures.push(`Not visible: ${selector}`);
+          return;
+        }
+        const rect = el.getBoundingClientRect();
+        if (rect.left < -2 || rect.right > viewport + 2) {
+          failures.push(`Key selector overflow: ${selector} left=${rect.left.toFixed(1)} right=${rect.right.toFixed(1)} viewport=${viewport}`);
+        }
+      });
+
+      const offenders = [];
+      doc.querySelectorAll('body *').forEach((el) => {
+        if (!isVisible(win, el)) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.left < -2 || rect.right > viewport + 2) {
+          if (isInsideContainedScroller(win, el, viewport)) return;
+          offenders.push({
+            selector: describe(el),
+            left: rect.left,
+            right: rect.right,
+            width: rect.width
+          });
+        }
+      });
+
+      offenders.slice(0, 8).forEach((item) => {
+        failures.push(`Visible overflow: ${item.selector} left=${item.left.toFixed(1)} right=${item.right.toFixed(1)} width=${item.width.toFixed(1)}`);
+      });
+
+      const logs = (win.__pwaPreviewLogs || []).filter((entry) => entry.level === 'error' || entry.level === 'warn');
+      logs.slice(0, 8).forEach((entry) => {
+        warnings.push(`${entry.level}: ${entry.message}`);
+      });
+
+      return { failures, warnings, viewport, rootScroll };
+    }
+
+    async function exerciseHome(frame) {
+      if (currentRoute !== '/') return [];
+      const doc = frame.contentDocument;
+      const button = doc.querySelector('#toggle-custom');
+      if (!button) return ['Missing custom toggle button'];
+      button.click();
+      await sleep(220);
+      const overlay = doc.querySelector('#custom-overlay');
+      if (!overlay) return ['Missing custom overlay'];
+      const win = frame.contentWindow;
+      if (!isVisible(win, overlay)) return ['Custom overlay is not visible after toggle'];
+      const rect = overlay.getBoundingClientRect();
+      if (rect.left < -2 || rect.right > win.innerWidth + 2) {
+        return [`Custom overlay overflow: left=${rect.left.toFixed(1)} right=${rect.right.toFixed(1)} viewport=${win.innerWidth}`];
+      }
+      return [];
+    }
+
+    async function runDeviceCheck(deviceEl) {
+      const frame = deviceEl.querySelector('iframe');
+      const status = deviceEl.querySelector('.status');
+      const report = deviceEl.querySelector('.report');
+      const route = currentRoute;
+
+      status.textContent = 'Checking...';
+      status.className = 'status';
+      report.textContent = '';
+
+      try {
+        const doc = frame.contentDocument;
+        setDark(doc);
+        await sleep(700);
+        const interactionFailures = await exerciseHome(frame);
+        const result = measureFrame(frame, route);
+        const failures = [...interactionFailures, ...result.failures];
+        const lines = [
+          `Route: ${route}`,
+          `Viewport: ${result.viewport}px`,
+          `Scroll width: ${result.rootScroll}px`,
+          failures.length ? '' : 'PASS: no horizontal overflow or missing key controls',
+          ...failures.map((item) => 'FAIL: ' + item),
+          ...result.warnings.map((item) => 'WARN: ' + item)
+        ].filter(Boolean);
+
+        report.textContent = lines.join('\n');
+        status.textContent = failures.length ? 'FAIL' : 'PASS';
+        status.className = failures.length ? 'status fail' : 'status pass';
+        return { ok: failures.length === 0, failures, warnings: result.warnings };
+      } catch (error) {
+        const message = error && error.stack ? error.stack : String(error);
+        report.textContent = 'FAIL: ' + message;
+        status.textContent = 'FAIL';
+        status.className = 'status fail';
+        return { ok: false, failures: [message], warnings: [] };
+      }
+    }
+
+    function renderDevices() {
+      const root = document.getElementById('devices');
+      root.innerHTML = DEVICES.map((device, index) => `
+        <section class="device" data-index="${index}">
+          <div class="device-head">
+            <div class="device-title">${device.name}</div>
+            <div class="status">Loading...</div>
+          </div>
+          <div class="frame-wrap">
+            <iframe title="${device.name}" width="${device.width}" height="${device.height}"></iframe>
+          </div>
+          <div class="report"></div>
+        </section>
+      `).join('');
+    }
+
+    async function loadFrames() {
+      const src = routeUrl(currentRoute);
+      const frames = Array.from(document.querySelectorAll('iframe'));
+      await Promise.all(frames.map((frame) => new Promise((resolve) => {
+        frame.onload = () => resolve();
+        frame.src = src;
+      })));
+      await runAllChecks();
+    }
+
+    async function runAllChecks() {
+      const devices = Array.from(document.querySelectorAll('.device'));
+      const results = [];
+      for (const device of devices) {
+        results.push(await runDeviceCheck(device));
+      }
+      const passed = results.filter((item) => item.ok).length;
+      document.getElementById('summary').innerHTML = `
+        <span><strong>${passed}/${results.length}</strong> devices passed for <strong>${currentRoute}</strong>.</span>
+        <span>${document.getElementById('force-dark').checked ? 'Dark mode forced.' : 'Page theme unchanged.'}</span>
+      `;
+      return results;
+    }
+
+    document.getElementById('route-controls').addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-route]');
+      if (!button) return;
+      currentRoute = button.dataset.route;
+      document.querySelectorAll('button[data-route]').forEach((item) => {
+        item.setAttribute('aria-pressed', String(item === button));
+      });
+      loadFrames();
+    });
+
+    document.getElementById('force-dark').addEventListener('change', runAllChecks);
+    document.getElementById('run-checks').addEventListener('click', runAllChecks);
+
+    renderDevices();
+    loadFrames();
+  </script>
+</body>
+</html>

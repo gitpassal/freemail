@@ -229,3 +229,535 @@ body.is-standalone [contenteditable="true"] {
     width: 100%;
   }
 }
+
+@media (max-width: 600px) {
+  html.is-standalone,
+  html.is-pwa-preview {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  html.is-standalone body,
+  html.is-pwa-preview body {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    padding-bottom: calc(26px + var(--safe-area-bottom));
+    overscroll-behavior-x: none;
+  }
+
+  html.is-standalone body *,
+  html.is-pwa-preview body * {
+    max-width: 100%;
+  }
+
+  html.is-standalone .topbar,
+  html.is-pwa-preview .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    min-height: 72px;
+    padding: calc(10px + var(--safe-area-top)) max(12px, var(--safe-area-right)) 10px max(12px, var(--safe-area-left));
+    gap: 8px;
+  }
+
+  html.is-standalone .topbar .topbar-inner,
+  html.is-pwa-preview .topbar .topbar-inner {
+    min-width: 0;
+    width: 100%;
+    gap: 8px;
+  }
+
+  html.is-standalone .brand,
+  html.is-pwa-preview .brand {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 8px;
+    font-size: 20px;
+  }
+
+  html.is-standalone .brand-text,
+  html.is-standalone .brand span:not(.brand-icon),
+  html.is-pwa-preview .brand-text,
+  html.is-pwa-preview .brand span:not(.brand-icon) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  html.is-standalone .brand-text,
+  html.is-pwa-preview .brand-text {
+    max-width: 150px;
+  }
+
+  html.is-standalone .brand-icon,
+  html.is-pwa-preview .brand-icon {
+    flex: 0 0 auto;
+  }
+
+  html.is-standalone #repo,
+  html.is-pwa-preview #repo {
+    display: none !important;
+  }
+
+  html.is-standalone .nav-actions,
+  html.is-pwa-preview .nav-actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    min-width: 0;
+    max-width: 212px;
+  }
+
+  html.is-standalone .nav-actions .btn,
+  html.is-standalone .theme-toggle-btn,
+  html.is-pwa-preview .nav-actions .btn,
+  html.is-pwa-preview .theme-toggle-btn {
+    flex: 0 0 40px;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0 !important;
+    border-radius: 13px;
+  }
+
+  html.is-standalone .nav-actions .btn-text,
+  html.is-standalone .nav-actions .btn > span:last-child:not(:only-child),
+  html.is-pwa-preview .nav-actions .btn-text,
+  html.is-pwa-preview .nav-actions .btn > span:last-child:not(:only-child) {
+    display: none !important;
+  }
+
+  html.is-standalone #role-badge,
+  html.is-pwa-preview #role-badge {
+    flex: 0 1 auto;
+    max-width: 116px;
+    padding: 6px 9px;
+    font-size: 13px;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  html.is-standalone .container,
+  html.is-standalone .admin-container,
+  html.is-standalone .mailbox-container,
+  html.is-pwa-preview .container,
+  html.is-pwa-preview .admin-container,
+  html.is-pwa-preview .mailbox-container {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: max(12px, var(--safe-area-left));
+    padding-right: max(12px, var(--safe-area-right));
+    padding-bottom: calc(34px + var(--safe-area-bottom));
+    overflow-x: hidden;
+  }
+
+  html.is-standalone .main,
+  html.is-standalone .card,
+  html.is-standalone .generate-card,
+  html.is-standalone .admin-main,
+  html.is-standalone .admin-left,
+  html.is-standalone .admin-right,
+  html.is-pwa-preview .main,
+  html.is-pwa-preview .card,
+  html.is-pwa-preview .generate-card,
+  html.is-pwa-preview .admin-main,
+  html.is-pwa-preview .admin-left,
+  html.is-pwa-preview .admin-right {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  html.is-standalone .generate-card,
+  html.is-pwa-preview .generate-card {
+    padding: 18px 14px;
+    border-radius: 18px;
+  }
+
+  html.is-standalone .generate-card h2,
+  html.is-pwa-preview .generate-card h2 {
+    font-size: clamp(24px, 7vw, 34px);
+    line-height: 1.16;
+    margin-bottom: 20px;
+  }
+
+  html.is-standalone .mailbox-layout,
+  html.is-pwa-preview .mailbox-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  html.is-standalone .mailbox-display-section,
+  html.is-standalone .mailbox-config-section,
+  html.is-pwa-preview .mailbox-display-section,
+  html.is-pwa-preview .mailbox-config-section {
+    width: 100%;
+    min-width: 0;
+  }
+
+  html.is-standalone .email-display,
+  html.is-pwa-preview .email-display {
+    width: 100%;
+    min-width: 0;
+    min-height: 72px;
+    padding: 10px;
+    overflow: hidden;
+  }
+
+  html.is-standalone .custom-overlay,
+  html.is-pwa-preview .custom-overlay {
+    position: static !important;
+    inset: auto !important;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "input" "suffix" "create";
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  html.is-standalone .custom-input,
+  html.is-standalone .custom-cf-toggle,
+  html.is-standalone .custom-overlay .btn,
+  html.is-pwa-preview .custom-input,
+  html.is-pwa-preview .custom-cf-toggle,
+  html.is-pwa-preview .custom-overlay .btn {
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+  }
+
+  html.is-standalone .custom-cf-toggle,
+  html.is-pwa-preview .custom-cf-toggle {
+    justify-content: flex-start;
+  }
+
+  html.is-standalone .mailbox-config-section .config-form,
+  html.is-pwa-preview .mailbox-config-section .config-form {
+    width: 100%;
+    min-width: 0;
+    padding: 14px;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  html.is-standalone .config-item,
+  html.is-pwa-preview .config-item {
+    width: 100%;
+    min-width: 0;
+  }
+
+  html.is-standalone .range-container,
+  html.is-pwa-preview .range-container {
+    width: 100%;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  html.is-standalone .range-display,
+  html.is-pwa-preview .range-display {
+    width: 100%;
+    min-width: 0;
+  }
+
+  html.is-standalone .generate-action,
+  html.is-pwa-preview .generate-action {
+    position: static !important;
+    bottom: auto !important;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    width: 100%;
+    margin-top: 14px;
+  }
+
+  html.is-standalone .generate-buttons,
+  html.is-pwa-preview .generate-buttons {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px !important;
+    width: 100%;
+    margin-bottom: 0 !important;
+  }
+
+  html.is-standalone .generate-action .btn,
+  html.is-standalone .btn-generate,
+  html.is-pwa-preview .generate-action .btn,
+  html.is-pwa-preview .btn-generate {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    height: 48px;
+    color: var(--text-inverse);
+    text-align: center;
+  }
+
+  html.is-standalone .btn-generate,
+  html.is-pwa-preview .btn-generate {
+    color: var(--text);
+  }
+
+  html.is-standalone .btn-primary,
+  html.is-pwa-preview .btn-primary {
+    color: #fff;
+  }
+
+  html.dark.is-standalone body.is-mobile .mailbox-config-section .config-form,
+  html.dark.is-pwa-preview body.is-mobile .mailbox-config-section .config-form {
+    background: rgba(15, 23, 42, 0.58);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  html.dark.is-standalone body.is-mobile .btn-generate,
+  html.dark.is-pwa-preview body.is-mobile .btn-generate,
+  html.dark.is-standalone body.is-mobile .btn-secondary,
+  html.dark.is-pwa-preview body.is-mobile .btn-secondary {
+    background: rgba(30, 41, 59, 0.92);
+    border-color: rgba(148, 163, 184, 0.28);
+    color: #f8fafc;
+  }
+
+  html.dark.is-standalone body.is-mobile .custom-cf-toggle,
+  html.dark.is-pwa-preview body.is-mobile .custom-cf-toggle,
+  html.dark.is-standalone body.is-mobile .custom-input,
+  html.dark.is-pwa-preview body.is-mobile .custom-input {
+    background: rgba(15, 23, 42, 0.72);
+    border-color: rgba(148, 163, 184, 0.25);
+    color: #f8fafc;
+  }
+
+  html.is-standalone .admin-page .topbar .brand,
+  html.is-pwa-preview .admin-page .topbar .brand {
+    max-width: calc(100vw - 150px);
+  }
+
+  html.is-standalone .admin-page .nav-actions,
+  html.is-pwa-preview .admin-page .nav-actions {
+    max-width: 92px;
+  }
+
+  html.is-standalone .admin-page .admin-container,
+  html.is-pwa-preview .admin-page .admin-container {
+    gap: 14px;
+    padding-top: 14px;
+  }
+
+  html.is-standalone .admin-page .stats-grid,
+  html.is-pwa-preview .admin-page .stats-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  html.is-standalone .admin-page .stat-card,
+  html.is-pwa-preview .admin-page .stat-card {
+    width: 100%;
+    min-width: 0;
+    padding: 14px 16px;
+    border-radius: 16px;
+  }
+
+  html.is-standalone .admin-page .admin-main,
+  html.is-pwa-preview .admin-page .admin-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  html.is-standalone .admin-page .card,
+  html.is-pwa-preview .admin-page .card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  html.is-standalone .admin-page .action-buttons,
+  html.is-pwa-preview .admin-page .action-buttons {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    width: 100%;
+  }
+
+  html.is-standalone .admin-page .action-btn,
+  html.is-pwa-preview .admin-page .action-btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 52px;
+    padding: 12px 14px;
+    justify-content: center;
+  }
+
+  html.is-standalone .admin-page .setting-row,
+  html.is-pwa-preview .admin-page .setting-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    margin-top: 14px;
+    padding: 14px;
+  }
+
+  html.is-standalone .admin-page .setting-copy,
+  html.is-pwa-preview .admin-page .setting-copy {
+    min-width: 0;
+  }
+
+  html.is-standalone .admin-page .setting-title,
+  html.is-pwa-preview .admin-page .setting-title {
+    line-height: 1.25;
+  }
+
+  html.is-standalone .admin-page .setting-desc,
+  html.is-pwa-preview .admin-page .setting-desc {
+    line-height: 1.38;
+  }
+
+  html.is-standalone .admin-page .table-wrapper,
+  html.is-pwa-preview .admin-page .table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  html.dark.is-standalone .admin-page .card,
+  html.dark.is-pwa-preview .admin-page .card,
+  html.dark.is-standalone .admin-page .stat-card,
+  html.dark.is-pwa-preview .admin-page .stat-card {
+    background: rgba(30, 41, 59, 0.86);
+    border-color: rgba(148, 163, 184, 0.18);
+  }
+
+  html.dark.is-standalone .admin-page .setting-row,
+  html.dark.is-pwa-preview .admin-page .setting-row {
+    background: rgba(15, 23, 42, 0.58);
+    border-color: rgba(148, 163, 184, 0.2);
+  }
+
+  html.dark.is-standalone .admin-page .setting-title,
+  html.dark.is-pwa-preview .admin-page .setting-title,
+  html.dark.is-standalone .admin-page .card h2,
+  html.dark.is-pwa-preview .admin-page .card h2,
+  html.dark.is-standalone .admin-page .stat-value,
+  html.dark.is-pwa-preview .admin-page .stat-value {
+    color: #f8fafc;
+  }
+
+  html.dark.is-standalone .admin-page .setting-desc,
+  html.dark.is-pwa-preview .admin-page .setting-desc,
+  html.dark.is-standalone .admin-page .stat-label,
+  html.dark.is-pwa-preview .admin-page .stat-label {
+    color: #cbd5e1;
+  }
+
+  html.is-standalone .page-mailboxes .container,
+  html.is-pwa-preview .page-mailboxes .container {
+    display: block;
+    padding-top: 14px;
+  }
+
+  html.is-standalone .page-mailboxes .card,
+  html.is-pwa-preview .page-mailboxes .card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  html.is-standalone .page-mailboxes .toolbar,
+  html.is-standalone .page-mailboxes .toolbar-row-1,
+  html.is-standalone .page-mailboxes .toolbar-row-2,
+  html.is-standalone .page-mailboxes .filter-actions,
+  html.is-standalone .page-mailboxes .batch-actions,
+  html.is-pwa-preview .page-mailboxes .toolbar,
+  html.is-pwa-preview .page-mailboxes .toolbar-row-1,
+  html.is-pwa-preview .page-mailboxes .toolbar-row-2,
+  html.is-pwa-preview .page-mailboxes .filter-actions,
+  html.is-pwa-preview .page-mailboxes .batch-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    min-width: 0;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  html.is-standalone .page-mailboxes .searchbar,
+  html.is-pwa-preview .page-mailboxes .searchbar {
+    width: 100%;
+    min-width: 0;
+  }
+
+  html.is-standalone .page-mailboxes #grid.grid,
+  html.is-standalone .page-mailboxes .grid,
+  html.is-pwa-preview .page-mailboxes #grid.grid,
+  html.is-pwa-preview .page-mailboxes .grid {
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  html.is-standalone .page-mailboxes .mailbox-card,
+  html.is-pwa-preview .page-mailboxes .mailbox-card {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  html.is-standalone .global-footer,
+  html.is-pwa-preview .global-footer {
+    position: static !important;
+    margin: 16px auto 0;
+    padding: 8px 18px calc(12px + var(--safe-area-bottom));
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 390px) {
+  html.is-standalone .nav-actions,
+  html.is-pwa-preview .nav-actions {
+    gap: 4px;
+    max-width: 184px;
+  }
+
+  html.is-standalone .nav-actions .btn,
+  html.is-standalone .theme-toggle-btn,
+  html.is-pwa-preview .nav-actions .btn,
+  html.is-pwa-preview .theme-toggle-btn {
+    flex-basis: 38px;
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    min-height: 38px;
+  }
+
+  html.is-standalone #role-badge,
+  html.is-pwa-preview #role-badge {
+    max-width: 104px;
+  }
+}
