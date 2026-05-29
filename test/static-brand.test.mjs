@@ -127,6 +127,17 @@ test('serves the PWA manifest without auth redirects', async () => {
   assert.match(await response.text(), /Cloudflare Alias/);
 });
 
+test('serves the PWA preview harness without auth redirects', async () => {
+  const assets = trackingAssets('<title>PWA Preview - Cloudflare Alias</title>');
+  const response = await router.request('https://example.com/pwa-preview.html', {}, {
+    ASSETS: assets
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(assets.paths[0], '/pwa-preview.html');
+  assert.match(await response.text(), /PWA Preview/);
+});
+
 test('injects branding into mailbox subpages', async () => {
   const assets = trackingAssets('<title>邮箱管理 - __APP_NAME__</title><a href="__APP_REPO_URL__">repo</a>');
   const response = await router.request('https://example.com/mailboxes.html', {
