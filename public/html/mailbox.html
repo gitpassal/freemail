@@ -50,8 +50,8 @@
         })
         .catch(() => {
           // 未登录：进入加载页做鉴权
-          if (window.AuthGuard) { window.AuthGuard.goLoading('/html/mailbox.html', '正在校验权限…'); }
-          else { location.replace('/templates/loading.html?redirect=%2Fhtml%2Fmailbox.html&status=' + encodeURIComponent('正在校验权限…')); }
+          if (window.AuthGuard) { window.AuthGuard.goLoading('/html/mailbox.html', 'loading.checkingAuth'); }
+          else { location.replace('/templates/loading.html?redirect=%2Fhtml%2Fmailbox.html&status=' + encodeURIComponent('loading.checkingAuth')); }
         });
     })();
   </script>

@@ -69,7 +69,7 @@
     'lang.toggleTitle': { zh: '切换语言', en: 'Switch language' },
 
     // —— 角色徽章 ——
-    'role.super': { zh: '超级管理员', en: 'Super admin' },
+    'role.super': { zh: '超级管理员', en: 'Admin' },
     'role.demo': { zh: '演示模式', en: 'Demo' },
     'role.advanced': { zh: '高级用户：{name}', en: 'Premium: {name}' },
     'role.user': { zh: '用户：{name}', en: 'User: {name}' },
@@ -175,6 +175,8 @@
     'footer.tagline': { zh: '简约而不简单', en: 'Simple, not simplistic' },
     'loading.title': { zh: '临时邮箱', en: 'Temp Mail' },
     'loading.wait': { zh: '请稍候...', en: 'Please wait…' },
+    'loading.checkingAuth': { zh: '正在校验权限…', en: 'Verifying access…' },
+    'loading.openingMailboxes': { zh: '正在打开邮箱总览页面…', en: 'Opening mailboxes…' },
 
     // —— 文档标题 ——
     'title.home': { zh: 'Cloudflare Alias', en: 'Cloudflare Alias' },

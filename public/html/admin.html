@@ -53,8 +53,8 @@
           })
           .catch(() => {
             // 未登录：进入加载页做鉴权
-            if (window.AuthGuard) { window.AuthGuard.goLoading('/html/admin.html', '正在校验权限…'); }
-            else { location.replace('/templates/loading.html?redirect=%2Fhtml%2Fadmin.html&status=' + encodeURIComponent('正在校验权限…')); }
+            if (window.AuthGuard) { window.AuthGuard.goLoading('/html/admin.html', 'loading.checkingAuth'); }
+            else { location.replace('/templates/loading.html?redirect=%2Fhtml%2Fadmin.html&status=' + encodeURIComponent('loading.checkingAuth')); }
           });
       })();
     </script>

@@ -62,7 +62,7 @@
           const s = (u.searchParams.get('status') || '').trim();
           if (s) {
             const el = document.querySelector('.status');
-            if (el) el.textContent = s;
+            if (el) el.textContent = (window.t ? window.t(s) : s);
           }
         } catch(_){ }
         (async function(){
