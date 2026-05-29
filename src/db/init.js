@@ -175,9 +175,10 @@ async function migrateMessagesFields(db) {
     // 添加 is_starred 字段（邮件级星标）
     if (!columnNames.includes('is_starred')) {
       await db.exec("ALTER TABLE messages ADD COLUMN is_starred INTEGER DEFAULT 0;");
-      await db.exec("CREATE INDEX IF NOT EXISTS idx_messages_is_starred ON messages(is_starred);");
       console.log('已添加 messages.is_starred 字段');
     }
+    // 确保索引存在（列已具备时幂等；覆盖全新 CI 安装由 d1-init.sql 建表的场景）
+    await db.exec("CREATE INDEX IF NOT EXISTS idx_messages_is_starred ON messages(is_starred);");
   } catch (error) {
     console.error('messages 字段迁移失败:', error);
     // 不抛出异常，允许继续运行

@@ -81,7 +81,8 @@ CREATE INDEX IF NOT EXISTS idx_messages_received_at          ON messages(receive
 CREATE INDEX IF NOT EXISTS idx_messages_r2_object_key        ON messages(r2_object_key);
 CREATE INDEX IF NOT EXISTS idx_messages_mailbox_received     ON messages(mailbox_id, received_at DESC);
 CREATE INDEX IF NOT EXISTS idx_messages_mailbox_received_read ON messages(mailbox_id, received_at DESC, is_read);
-CREATE INDEX IF NOT EXISTS idx_messages_is_starred           ON messages(is_starred);
+-- 注意：is_starred 列在已有生产库中由运行时迁移 (src/db/init.js migrateMessagesFields) 添加，
+-- 其索引也在迁移中创建；此处不建索引，避免对"尚未补列"的现有库执行 d1-init.sql 时报错。
 
 -- ────────────────────────────────────────
 -- 用户表
