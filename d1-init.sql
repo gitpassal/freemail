@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS messages (
   r2_object_key     TEXT    NOT NULL DEFAULT '',
   received_at       TEXT    DEFAULT CURRENT_TIMESTAMP,
   is_read           INTEGER DEFAULT 0,
+  is_starred        INTEGER DEFAULT 0,
   FOREIGN KEY(mailbox_id) REFERENCES mailboxes(id)
 );
 
@@ -80,6 +81,7 @@ CREATE INDEX IF NOT EXISTS idx_messages_received_at          ON messages(receive
 CREATE INDEX IF NOT EXISTS idx_messages_r2_object_key        ON messages(r2_object_key);
 CREATE INDEX IF NOT EXISTS idx_messages_mailbox_received     ON messages(mailbox_id, received_at DESC);
 CREATE INDEX IF NOT EXISTS idx_messages_mailbox_received_read ON messages(mailbox_id, received_at DESC, is_read);
+CREATE INDEX IF NOT EXISTS idx_messages_is_starred           ON messages(is_starred);
 
 -- ────────────────────────────────────────
 -- 用户表

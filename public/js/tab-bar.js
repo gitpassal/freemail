@@ -54,6 +54,8 @@
   function onTab(key) {
     if (key === 'settings') { openSheet(); return; }
     closeSheet();
+    // 切到其它标签时关闭聚合收件箱浮层
+    if (key !== 'inbox') { try { if (window.GmailInbox && window.GmailInbox.close) window.GmailInbox.close(); } catch (e) {} }
     if (key === 'generate') {
       clickEl('m-tab-generate');
       setActive('generate');
@@ -61,8 +63,12 @@
       clickEl('m-tab-history');
       setActive('mailboxes');
     } else if (key === 'inbox') {
-      // 复用"进入邮箱"按钮（其内置无邮箱时的提示守卫）
-      if (!clickEl('enter-mailbox')) { clickEl('m-tab-generate'); }
+      // iOS 聚合收件箱（Gmail 风格）；不可用时回退到原"进入邮箱"流程
+      if (window.GmailInbox && window.GmailInbox.open) {
+        window.GmailInbox.open();
+      } else if (!clickEl('enter-mailbox')) {
+        clickEl('m-tab-generate');
+      }
       setActive('inbox');
     }
   }

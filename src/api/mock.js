@@ -59,20 +59,67 @@ export function buildMockEmails(count = 5) {
   
   const emails = [];
   const now = Date.now();
-  
+
   for (let i = 0; i < count; i++) {
     emails.push({
       id: 1000 + i,
       sender: senders[i % senders.length],
+      to_addrs: 'demo@exa.cc',
       subject: subjects[i % subjects.length],
       received_at: new Date(now - i * 3600000).toISOString(),
       is_read: i > 2 ? 1 : 0,
+      is_starred: 0,
       preview: previews[i % previews.length],
-      verification_code: i === 1 ? '123456' : null
+      verification_code: i === 1 ? '123456' : null,
+      mailbox_address: 'demo@exa.cc'
     });
   }
-  
+
   return emails;
+}
+
+/**
+ * 生成模拟聚合收件箱（跨多个演示邮箱、时间倒序、分页），供 iOS 聚合收件箱预览。
+ * @param {number} page - 页码（从 1 开始）
+ * @param {number} limit - 每页数量
+ * @returns {{list: Array<object>, page: number, hasMore: boolean}}
+ */
+export function buildMockAggregateInbox(page = 1, limit = 20) {
+  if (!globalThis.__MOCK_INBOX__) {
+    const now = Date.now();
+    const pool = [
+      { sender: 'ChatGPT <noreply@openai.com>', subject: 'New personal finance tools in ChatGPT Pro', preview: 'Connect your accounts to see balances, track spending and get personalized guidance.', mailbox: 'demo001@exa.cc', starred: 0, read: 0 },
+      { sender: 'OpenAI <noreply@openai.com>', subject: 'Advanced Account Security is now enabled', preview: 'Advanced Account Security is now enabled on your account. If this was not you...', mailbox: 'demo001@exa.cc', starred: 0, read: 1 },
+      { sender: 'LINUX DO <system@linux.do>', subject: '您已被批准加入 LINUX DO！', preview: '新帐户已被批准。欢迎来到 LINUX DO！管理员已审核通过。', mailbox: 'demo002@exr.yp', starred: 1, read: 1 },
+      { sender: 'netcup GmbH <billing@netcup.de>', subject: 'Your invoice (R.-No. nc-5180050)', preview: 'Hello Xin Chen, Together with this email you will receive your invoice...', mailbox: 'demo002@exr.yp', starred: 0, read: 1 },
+      { sender: 'OpenAI <noreply@openai.com>', subject: 'ChatGPT - Your plan will not renew', preview: 'Your plan will not renew and will be canceled at the end of the billing period...', mailbox: 'demo001@exa.cc', starred: 0, read: 1 },
+      { sender: 'Anthropic <noreply@anthropic.com>', subject: 'Your account has been suspended', preview: 'Hello, An internal investigation of suspicious sign-in activity on your account...', mailbox: 'demo003@duio.ty', starred: 0, read: 1 },
+      { sender: 'Accounting <accounting@hetzner.com>', subject: 'Hetzner Online GmbH - Invoice 08400082921', preview: 'Dear XIN CHEN, Enclosed you will find your invoice for the past month...', mailbox: 'demo002@exr.yp', starred: 0, read: 1 },
+      { sender: 'GitHub <noreply@github.com>', subject: '[GitHub] A new SSH key was added to your account', preview: 'A new SSH key was added to your account. If you did not expect this...', mailbox: 'demo003@duio.ty', starred: 0, read: 1 },
+      { sender: 'Cloudflare <noreply@notify.cloudflare.com>', subject: 'Your domain was successfully added', preview: 'You have successfully added a new domain to your Cloudflare account...', mailbox: 'demo001@exa.cc', starred: 1, read: 1 },
+      { sender: 'Stripe <support@stripe.com>', subject: 'Your receipt from Acme Inc.', preview: 'Receipt #2847-1029. Thanks for your payment. Amount paid $20.00...', mailbox: 'demo002@exr.yp', starred: 0, read: 1 },
+      { sender: 'Google <no-reply@accounts.google.com>', subject: 'Security alert', preview: 'A new sign-in on Windows. We noticed a new sign-in to your Google Account...', mailbox: 'demo003@duio.ty', starred: 0, read: 1 },
+      { sender: 'Vercel <notifications@vercel.com>', subject: 'Your deployment is ready', preview: 'Your project mailfree was deployed to production successfully...', mailbox: 'demo001@exa.cc', starred: 0, read: 1 },
+      { sender: 'Apple <no_reply@email.apple.com>', subject: 'Your Apple ID was used to sign in', preview: 'Your Apple ID was used to sign in to iCloud on a new iPhone...', mailbox: 'demo003@duio.ty', starred: 0, read: 1 },
+      { sender: 'Notion <team@makenotion.com>', subject: 'Welcome to your new workspace', preview: 'Get started with Notion. Here are a few tips to help you set things up...', mailbox: 'demo002@exr.yp', starred: 0, read: 1 },
+    ];
+    globalThis.__MOCK_INBOX__ = pool.map((e, i) => ({
+      id: 1000 + i,
+      sender: e.sender,
+      to_addrs: e.mailbox,
+      subject: e.subject,
+      received_at: new Date(now - i * 5400000).toISOString(),
+      is_read: e.read,
+      is_starred: e.starred,
+      preview: e.preview,
+      verification_code: null,
+      mailbox_address: e.mailbox
+    }));
+  }
+  const all = globalThis.__MOCK_INBOX__;
+  const start = (Math.max(1, page) - 1) * limit;
+  const list = all.slice(start, start + limit);
+  return { list, page, hasMore: start + list.length < all.length };
 }
 
 /**
@@ -123,7 +170,11 @@ export function buildMockEmailDetail(emailId) {
     html_content: '<div style="padding:20px;"><h2>演示邮件</h2><p>您的验证码是：<strong>123456</strong></p><p>请在5分钟内使用。</p></div>',
     received_at: new Date().toISOString(),
     is_read: 1,
+    is_starred: 0,
     r2_bucket: null,
-    r2_object_key: null
+    r2_object_key: null,
+    attachments: [
+      { index: 0, filename: 'invoice.pdf', mimeType: 'application/pdf', disposition: 'attachment', size: 102400, inline: false, url: `/api/email/${Number(emailId)}/attachment/0` }
+    ]
   };
 }

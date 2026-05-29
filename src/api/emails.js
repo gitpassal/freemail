@@ -3,11 +3,11 @@
  * @module api/emails
  */
 
-import { getMailboxAccess, getMessageAccess, errorResponse } from './helpers.js';
-import { buildMockEmails, buildMockEmailDetail } from './mock.js';
+import { getMailboxAccess, getMessageAccess, getAuthContext, errorResponse } from './helpers.js';
+import { buildMockEmails, buildMockEmailDetail, buildMockAggregateInbox } from './mock.js';
 import { extractEmail } from '../utils/common.js';
 import { getMailboxIdByAddress } from '../db/index.js';
-import { parseEmailBody } from '../email/parser.js';
+import { parseEmailBody, parseEmailFull } from '../email/parser.js';
 
 // 邮箱登录模式只允许查看最近 24 小时内的邮件。
 function mailboxOnlyTimeFilter(enabled) {
@@ -35,10 +35,71 @@ async function loadEmailBodyFromR2(r2, objectKey) {
   }
 }
 
+// 完整加载：正文 + 附件（一次解析）。attachments 含二进制 content，仅下载端点使用。
+async function loadEmailFullFromR2(r2, objectKey) {
+  if (!r2 || !objectKey) return { content: '', html_content: '', attachments: [] };
+  try {
+    const obj = await r2.get(objectKey);
+    if (!obj) return { content: '', html_content: '', attachments: [] };
+    let raw = '';
+    if (typeof obj.text === 'function') raw = await obj.text();
+    else if (typeof obj.arrayBuffer === 'function') raw = await new Response(await obj.arrayBuffer()).text();
+    else raw = await new Response(obj.body).text();
+    const parsed = await parseEmailFull(raw || '');
+    return { content: parsed.text || '', html_content: parsed.html || '', attachments: parsed.attachments || [] };
+  } catch (_) {
+    return { content: '', html_content: '', attachments: [] };
+  }
+}
+
 export async function handleEmailsApi(request, db, url, path, options) {
   const isMock = !!options.mockOnly;
   const isMailboxOnly = !!options.mailboxOnly;
   const r2 = options.r2;
+
+  // 聚合收件箱：当前身份所有可见邮箱的全部邮件（仅 iOS Web App 使用；时间倒序、分页）
+  if (path === '/api/inbox' && request.method === 'GET') {
+    const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit') || '20', 10), 1), 50);
+    const page = Math.max(parseInt(url.searchParams.get('page') || '1', 10), 1);
+    const offset = (page - 1) * limit;
+    try {
+      if (isMock) return Response.json(buildMockAggregateInbox(page, limit));
+
+      const ctx = getAuthContext(request, options);
+      const COLS = `msg.id, msg.sender, msg.to_addrs, msg.subject, msg.received_at, msg.is_read, msg.preview, msg.verification_code, COALESCE(msg.is_starred, 0) AS is_starred, m.address AS mailbox_address`;
+      const COLS_NOSTAR = `msg.id, msg.sender, msg.to_addrs, msg.subject, msg.received_at, msg.is_read, msg.preview, msg.verification_code, 0 AS is_starred, m.address AS mailbox_address`;
+
+      let joins = '', where = '', binds = [];
+      if (ctx.strictAdmin) {
+        joins = 'JOIN mailboxes m ON m.id = msg.mailbox_id';
+        where = '1=1';
+      } else if (ctx.role === 'mailbox' && ctx.mailboxId) {
+        const tf = mailboxOnlyTimeFilter(isMailboxOnly);
+        joins = 'JOIN mailboxes m ON m.id = msg.mailbox_id';
+        where = 'msg.mailbox_id = ?' + tf.sql;
+        binds = [ctx.mailboxId, ...tf.params];
+      } else if (ctx.userId) {
+        joins = 'JOIN mailboxes m ON m.id = msg.mailbox_id JOIN user_mailboxes um ON um.mailbox_id = msg.mailbox_id AND um.user_id = ?';
+        where = '1=1';
+        binds = [ctx.userId];
+      } else {
+        return Response.json({ list: [], page, hasMore: false });
+      }
+
+      const buildSql = (cols) => `SELECT ${cols} FROM messages msg ${joins} WHERE ${where} ORDER BY msg.received_at DESC LIMIT ? OFFSET ?`;
+      let results;
+      try {
+        ({ results } = await db.prepare(buildSql(COLS)).bind(...binds, limit, offset).all());
+      } catch (_) {
+        ({ results } = await db.prepare(buildSql(COLS_NOSTAR)).bind(...binds, limit, offset).all());
+      }
+      const list = results || [];
+      return Response.json({ list, page, hasMore: list.length === limit });
+    } catch (e) {
+      console.error('聚合收件箱查询失败:', e);
+      return errorResponse('查询失败', 500);
+    }
+  }
 
   if (path === '/api/emails' && request.method === 'GET') {
     const mailbox = url.searchParams.get('mailbox');
@@ -171,6 +232,72 @@ export async function handleEmailsApi(request, db, url, path, options) {
     }
   }
 
+  // 附件下载：从 R2 原始 EML 解析并提取单个附件
+  if (request.method === 'GET' && path.startsWith('/api/email/') && path.includes('/attachment/')) {
+    if (isMock) return errorResponse('演示模式无附件', 404);
+    const parts = path.split('/');
+    const id = parts[3];
+    const idx = parseInt(parts[5], 10);
+    const access = await getMessageAccess(db, request, options, id);
+    if (!access.exists) return errorResponse('未找到邮件', 404);
+    if (!access.allowed) return errorResponse('Forbidden', 403);
+    if (!Number.isInteger(idx) || idx < 0) return errorResponse('无效附件序号', 400);
+
+    const row = await db.prepare('SELECT r2_object_key FROM messages WHERE id = ?').bind(id).first();
+    if (!row || !row.r2_object_key) return errorResponse('未找到对象', 404);
+    if (!r2) return errorResponse('R2 未绑定', 500);
+    try {
+      const { attachments } = await loadEmailFullFromR2(r2, row.r2_object_key);
+      const att = (attachments || [])[idx];
+      if (!att) return errorResponse('未找到附件', 404);
+      let body = att.content;
+      if (typeof body === 'string') body = new TextEncoder().encode(body);
+      const headers = new Headers({ 'Content-Type': att.mimeType || 'application/octet-stream' });
+      const safeName = String(att.filename || `attachment-${idx + 1}`).replace(/["\r\n]/g, '_');
+      headers.set('Content-Disposition', `attachment; filename="${safeName}"`);
+      return new Response(body, { headers });
+    } catch (_) {
+      return errorResponse('附件下载失败', 500);
+    }
+  }
+
+  // 星标切换
+  if (request.method === 'PATCH' && path.startsWith('/api/email/') && path.endsWith('/star')) {
+    if (isMock) return errorResponse('演示模式不可操作', 403);
+    const id = path.split('/')[3];
+    const access = await getMessageAccess(db, request, options, id);
+    if (!access.exists) return errorResponse('未找到邮件', 404);
+    if (!access.allowed) return errorResponse('Forbidden', 403);
+    let starred = 1;
+    try {
+      const body = await request.json();
+      if (typeof body?.starred !== 'undefined') starred = body.starred ? 1 : 0;
+    } catch (_) { }
+    try {
+      await db.prepare('UPDATE messages SET is_starred = ? WHERE id = ?').bind(starred, id).run();
+      return Response.json({ success: true, id: Number(id), is_starred: starred });
+    } catch (e) {
+      console.error('星标更新失败:', e);
+      return errorResponse('星标更新失败', 500);
+    }
+  }
+
+  // 标记未读
+  if (request.method === 'PATCH' && path.startsWith('/api/email/') && path.endsWith('/unread')) {
+    if (isMock) return errorResponse('演示模式不可操作', 403);
+    const id = path.split('/')[3];
+    const access = await getMessageAccess(db, request, options, id);
+    if (!access.exists) return errorResponse('未找到邮件', 404);
+    if (!access.allowed) return errorResponse('Forbidden', 403);
+    try {
+      await db.prepare('UPDATE messages SET is_read = 0 WHERE id = ?').bind(id).run();
+      return Response.json({ success: true, id: Number(id), is_read: 0 });
+    } catch (e) {
+      console.error('标记未读失败:', e);
+      return errorResponse('标记未读失败', 500);
+    }
+  }
+
   if (request.method === 'GET' && path.startsWith('/api/email/')) {
     const emailId = path.split('/')[3];
     if (isMock) return Response.json(buildMockEmailDetail(emailId));
@@ -181,15 +308,25 @@ export async function handleEmailsApi(request, db, url, path, options) {
 
     try {
       const filter = mailboxOnlyTimeFilter(isMailboxOnly);
-      const { results } = await db.prepare(`
-        SELECT id, sender, to_addrs, subject, verification_code, preview, r2_bucket, r2_object_key, received_at, is_read
-        FROM messages WHERE id = ?${filter.sql}
-      `).bind(emailId, ...filter.params).all();
+      let results;
+      try {
+        ({ results } = await db.prepare(`
+          SELECT id, sender, to_addrs, subject, verification_code, preview, r2_bucket, r2_object_key, received_at, is_read, COALESCE(is_starred, 0) AS is_starred,
+                 (SELECT address FROM mailboxes WHERE id = messages.mailbox_id) AS mailbox_address
+          FROM messages WHERE id = ?${filter.sql}
+        `).bind(emailId, ...filter.params).all());
+      } catch (_) {
+        ({ results } = await db.prepare(`
+          SELECT id, sender, to_addrs, subject, verification_code, preview, r2_bucket, r2_object_key, received_at, is_read, 0 AS is_starred,
+                 (SELECT address FROM mailboxes WHERE id = messages.mailbox_id) AS mailbox_address
+          FROM messages WHERE id = ?${filter.sql}
+        `).bind(emailId, ...filter.params).all());
+      }
       if (!results || results.length === 0) return errorResponse('未找到邮件', 404);
 
       await db.prepare('UPDATE messages SET is_read = 1 WHERE id = ?').bind(emailId).run();
       const row = results[0];
-      let { content, html_content } = await loadEmailBodyFromR2(r2, row.r2_object_key);
+      let { content, html_content, attachments } = await loadEmailFullFromR2(r2, row.r2_object_key);
 
       if (!content && !html_content) {
         try {
@@ -200,10 +337,22 @@ export async function handleEmailsApi(request, db, url, path, options) {
         } catch (_) { }
       }
 
+      // 仅返回附件元信息（不含二进制），下载走独立端点
+      const attMeta = (attachments || []).map(a => ({
+        index: a.index,
+        filename: a.filename,
+        mimeType: a.mimeType,
+        disposition: a.disposition,
+        inline: a.inline,
+        size: a.size,
+        url: `/api/email/${emailId}/attachment/${a.index}`
+      }));
+
       return Response.json({
         ...row,
         content,
         html_content,
+        attachments: attMeta,
         download: row.r2_object_key ? `/api/email/${emailId}/download` : ''
       });
     } catch (_) {
