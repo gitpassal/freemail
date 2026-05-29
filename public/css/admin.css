@@ -49,6 +49,9 @@
 .admin-page {
   background: var(--bg);
   position: relative;
+  /* 顶栏内层与 .admin-container 对齐（1400 宽 / 24 内边距） */
+  --content-max: 1400px;
+  --content-pad: 24px;
 }
 
 .admin-page::before {

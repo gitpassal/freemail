@@ -3,6 +3,8 @@
    增强网格布局和交互效果
    ============================================= */
 
+/* 顶栏内层与 .page-mailboxes .container 对齐（1200 宽 / 20 内边距） */
+.page-mailboxes { --content-pad: 20px; }
 .page-mailboxes .container{ max-width: 1200px; padding: 20px 20px 28px; grid-template-columns: 1fr; }
 .page-mailboxes .main{ grid-column: 1; }
 .page-mailboxes .card{ padding: 24px; }

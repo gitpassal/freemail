@@ -331,12 +331,21 @@ body{
   border-bottom: 1px solid var(--border-glass);
   display: flex;
   align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 14px 32px;
-  gap: 20px;
+  justify-content: center;
+  width: 100%;
+  padding: 14px 0;
   transition: var(--transition);
-  box-shadow: var(--shadow-glass), inset 0 -1px 0 var(--border-glass);
+}
+
+/* 顶栏内层：约束到与下方内容容器相同宽度并居中，使顶栏内容与内容列对齐 */
+.topbar-inner{
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: var(--content-max, 1200px);
+  margin: 0 auto;
+  padding: 0 var(--content-pad, 24px);
 }
 
 /* 顶栏顶部装饰条已移除（极简） */
@@ -418,11 +427,11 @@ body{
 
 /* ===== 主题切换按钮 ===== */
 .theme-toggle-btn {
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   padding: 0;
-  border-radius: 50%;
+  border-radius: var(--radius-control);
   background: var(--secondary);
   border: 1px solid transparent;
   display: flex;

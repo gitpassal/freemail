@@ -450,7 +450,10 @@
     btn.className = 'btn btn-ghost lang-toggle-btn';
     btn.setAttribute('aria-label', t('lang.toggleTitle'));
     btn.title = t('lang.toggleTitle');
-    btn.textContent = lang === 'en' ? '中' : 'EN';
+    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<use href="/icons/sprites.svg#icon-globe"/></svg>' +
+      '<span class="lang-label">' + (lang === 'en' ? '中' : 'EN') + '</span>';
     btn.onclick = function (e) {
       e.preventDefault(); e.stopPropagation();
       setLang(lang === 'en' ? 'zh' : 'en');

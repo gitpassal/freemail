@@ -6,25 +6,14 @@
 }
 
 /* ===== 语言切换按钮 ===== */
+/* 导航语言键：与 .btn 导航胶囊同高/同圆角/同灰底（图标+中/EN 文字） */
 .lang-toggle-btn {
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  padding: 0;
-  border-radius: 50%;
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--secondary, #e5e5ea);
-  border: 1px solid transparent;
-  color: var(--text-light, #333);
-  cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.18s ease;
+  gap: 6px;
+  padding-left: 14px;
+  padding-right: 14px;
 }
+.lang-toggle-btn svg { width: 18px; height: 18px; }
 .lang-toggle-btn:hover { background: var(--secondary-hover, #d8d8dd); }
 
 .lang-toggle-login {
@@ -47,6 +36,9 @@
   transition: background 0.18s ease;
 }
 .lang-toggle-login:hover { background: var(--secondary, #e5e5ea); }
+/* 登录页语言键：圆形、仅显示地球图标（与主题圆形键成对） */
+.lang-toggle-login .lang-label { display: none; }
+.lang-toggle-login svg { width: 20px; height: 20px; }
 
 html {
   min-height: 100%;
@@ -329,6 +321,9 @@ body.is-standalone [contenteditable="true"] {
     min-width: 0;
     width: 100%;
     gap: 8px;
+    max-width: none;
+    margin: 0;
+    padding: 0;
   }
 
   html.is-standalone .brand,
