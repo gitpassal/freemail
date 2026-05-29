@@ -83,7 +83,7 @@ export function escapeAttr(str) {
  * @param {HTMLElement} button - 按钮元素
  * @param {string} loadingText - 加载文本
  */
-export function setButtonLoading(button, loadingText = '处理中…') {
+export function setButtonLoading(button, loadingText = window.t('common.processing')) {
   if (!button) return;
   if (button.dataset.loading === '1') return;
   button.dataset.loading = '1';
@@ -165,16 +165,16 @@ export function applySessionUI(session, elements = {}) {
       badge.className = 'role-badge';
       if (session.strictAdmin) {
         badge.classList.add('role-super');
-        badge.textContent = '超级管理员';
+        badge.textContent = window.t('role.super');
       } else if (session.role === 'admin') {
         badge.classList.add('role-admin');
-        badge.textContent = `高级用户：${session.username || ''}`;
+        badge.textContent = window.t('role.advanced', { name: session.username || '' });
       } else if (session.role === 'user') {
         badge.classList.add('role-user');
-        badge.textContent = `用户：${session.username || ''}`;
+        badge.textContent = window.t('role.user', { name: session.username || '' });
       } else if (session.role === 'guest') {
         badge.classList.add('role-user');
-        badge.textContent = '演示模式';
+        badge.textContent = window.t('role.demo');
       }
     }
     

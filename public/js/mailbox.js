@@ -9,6 +9,34 @@ import { renderEmailDetail, sanitizeHtml, extractVerificationCode } from './modu
 // showToast 由 toast-utils.js 全局提供
 const showToast = window.showToast || ((msg, type) => console.log(`[${type}] ${msg}`));
 
+// 翻译辅助：i18n 引擎缺失时回退原文
+const t = (key, params, fallback) => (window.t ? window.t(key, params) : (fallback ?? key));
+
+// 注册本页新增的 i18n 键（mb2.* 前缀）
+if (window.i18n && window.i18n.addKeys) {
+  window.i18n.addKeys({
+    'mb2.loginFirst': { zh: '请先登录', en: 'Please sign in first' },
+    'mb2.mailboxOnly': { zh: '只有邮箱用户可以访问此页面', en: 'Only mailbox users can access this page' },
+    'mb2.authFailed': { zh: '认证失败', en: 'Authentication failed' },
+    'mb2.mailboxLabel': { zh: '邮箱：{addr}', en: 'Mailbox: {addr}' },
+    'mb2.loadMailFailed': { zh: '加载邮件失败', en: 'Failed to load message' },
+    'mb2.confirmDeleteMail': { zh: '确定删除这封邮件？', en: 'Delete this message?' },
+    'mb2.fillAll': { zh: '请填写完整', en: 'Please fill in all fields' },
+    'mb2.passwordMismatch': { zh: '两次密码不一致', en: 'Passwords do not match' },
+    'mb2.passwordTooShort': { zh: '密码至少6位', en: 'Password must be at least 6 characters' },
+    'mb2.changePwdConfirm': { zh: '修改密码后需要重新登录，确定要修改吗？', en: 'You will need to sign in again after changing your password. Continue?' },
+    'mb2.changePwdFailed': { zh: '修改失败', en: 'Change failed' },
+    'mb2.deleteMailFailed': { zh: '删除失败', en: 'Delete failed' },
+    'mb2.pwdChangedRelogin': { zh: '密码修改成功，即将重新登录...', en: 'Password changed, signing you out…' },
+    'mb2.pwdChangedLoginHint': { zh: '密码已修改，请使用新密码登录', en: 'Password changed, please sign in with the new password' },
+    'mb2.networkRetry': { zh: '网络错误，请重试', en: 'Network error, please retry' },
+    'mb2.refreshed': { zh: '刷新成功', en: 'Refreshed' },
+    'mb2.unknownSender': { zh: '未知发件人', en: 'Unknown sender' },
+    'mb2.clickToCopy': { zh: '点击复制', en: 'Click to copy' },
+    'mb2.clickToCopyCode': { zh: '点击复制验证码', en: 'Click to copy code' }
+  });
+}
+
 // 状态
 let currentUser = null, currentMailbox = null, emails = [], currentPage = 1;
 const pageSize = 20;
@@ -72,7 +100,7 @@ async function api(path, options = {}) {
     return mockApi(path, options);
   }
   const r = await fetch(path, { ...options, headers: { 'Cache-Control': 'no-cache', ...options.headers }});
-  if (r.status === 401) { redirectToLogin('请先登录'); throw new Error('unauthorized'); }
+  if (r.status === 401) { redirectToLogin(t('mb2.loginFirst')); throw new Error('unauthorized'); }
   return r;
 }
 
@@ -86,20 +114,20 @@ async function initAuth() {
   try {
     const r = await fetch('/api/session');
     const data = await r.json();
-    if (!data.authenticated) { redirectToLogin('请先登录'); return; }
-    if (data.role !== 'mailbox') { redirectToLogin('只有邮箱用户可以访问此页面'); return; }
-    
+    if (!data.authenticated) { redirectToLogin(t('mb2.loginFirst')); return; }
+    if (data.role !== 'mailbox') { redirectToLogin(t('mb2.mailboxOnly')); return; }
+
     currentUser = data;
     currentMailbox = data.mailboxAddress;
-    
-    if (els.roleBadge) els.roleBadge.textContent = `邮箱：${currentMailbox}`;
+
+    if (els.roleBadge) els.roleBadge.textContent = t('mb2.mailboxLabel', { addr: currentMailbox });
     if (els.currentMailbox) els.currentMailbox.textContent = currentMailbox;
     
     await loadEmails();
     startAutoRefresh();
   } catch(e) {
     console.error('认证失败:', e);
-    redirectToLogin('认证失败');
+    redirectToLogin(t('mb2.authFailed'));
   }
 }
 
@@ -117,7 +145,7 @@ async function loadEmails() {
     updateCounts();
   } catch(e) {
     console.error('加载邮件失败:', e);
-    showToast('加载失败', 'error');
+    showToast(t('toast.loadFailed'), 'error');
   } finally {
     if (els.listLoading) els.listLoading.style.display = 'none';
   }
@@ -148,7 +176,7 @@ function renderEmails() {
     
     // 分页
     if (els.listPager) els.listPager.style.display = total > pageSize ? 'flex' : 'none';
-    if (els.pageInfo) els.pageInfo.textContent = `${currentPage} / ${totalPages}`;
+    if (els.pageInfo) els.pageInfo.textContent = t('page.info', { page: currentPage, total: totalPages });
     if (els.prevPageBtn) els.prevPageBtn.disabled = currentPage <= 1;
     if (els.nextPageBtn) els.nextPageBtn.disabled = currentPage >= totalPages;
   }
@@ -166,15 +194,15 @@ async function showEmail(id) {
     const r = await api(`/api/email/${id}`);
     const email = await r.json();
     
-    if (els.modalSubject) els.modalSubject.textContent = email.subject || '(无主题)';
+    if (els.modalSubject) els.modalSubject.textContent = email.subject || t('mail.noSubject');
     if (els.modalContent) els.modalContent.innerHTML = renderEmailDetail(email);
-    
+
     // 绑定验证码复制
     els.modalContent?.querySelectorAll('.code-value').forEach(el => {
       el.onclick = async () => {
         const code = el.dataset.code || el.textContent;
-        try { await navigator.clipboard.writeText(code); showToast('已复制', 'success'); }
-        catch(_) { showToast('复制失败', 'error'); }
+        try { await navigator.clipboard.writeText(code); showToast(t('toast.copied'), 'success'); }
+        catch(_) { showToast(t('toast.copyFailed'), 'error'); }
       };
     });
     
@@ -185,7 +213,7 @@ async function showEmail(id) {
       try { await api(`/api/email/${id}/read`, { method: 'POST' }); loadEmails(); } catch(_) {}
     }
   } catch(e) {
-    showToast('加载邮件失败', 'error');
+    showToast(t('mb2.loadMailFailed'), 'error');
   }
 }
 
@@ -251,13 +279,13 @@ function showAlert(message) {
 
 // 删除邮件
 async function deleteEmail(id) {
-  if (!await showConfirm('确定删除这封邮件？')) return;
+  if (!await showConfirm(t('mb2.confirmDeleteMail'))) return;
   try {
     await api(`/api/email/${id}`, { method: 'DELETE' });
-    showToast('已删除', 'success');
+    showToast(t('toast.deleted'), 'success');
     els.emailModal?.classList.remove('show');
     loadEmails();
-  } catch(e) { showToast('删除失败', 'error'); }
+  } catch(e) { showToast(t('mb2.deleteMailFailed'), 'error'); }
 }
 
 // 修改密码
@@ -266,12 +294,12 @@ async function changePassword() {
   const newPass = els.newPasswordInput?.value;
   const confirmPass = els.confirmPasswordInput?.value;
   
-  if (!current || !newPass) { await showAlert('请填写完整'); return; }
-  if (newPass !== confirmPass) { await showAlert('两次密码不一致'); return; }
-  if (newPass.length < 6) { await showAlert('密码至少6位'); return; }
-  
+  if (!current || !newPass) { await showAlert(t('mb2.fillAll')); return; }
+  if (newPass !== confirmPass) { await showAlert(t('mb2.passwordMismatch')); return; }
+  if (newPass.length < 6) { await showAlert(t('mb2.passwordTooShort')); return; }
+
   // 二级确认
-  const confirmed = await showConfirm('修改密码后需要重新登录，确定要修改吗？');
+  const confirmed = await showConfirm(t('mb2.changePwdConfirm'));
   if (!confirmed) return;
   
   try {
@@ -289,21 +317,21 @@ async function changePassword() {
       els.confirmPasswordInput.value = '';
       
       // 密码修改成功，强制退出登录
-      showToast('密码修改成功，即将重新登录...', 'success');
+      showToast(t('mb2.pwdChangedRelogin'), 'success');
       stopAutoRefresh();
-      
+
       // 清除会话
       try { await fetch('/api/logout', { method: 'POST' }); } catch(_) {}
-      
+
       // 延迟跳转让用户看到提示
       setTimeout(() => {
-        sessionStorage.setItem('mf:login-message', '密码已修改，请使用新密码登录');
+        sessionStorage.setItem('mf:login-message', t('mb2.pwdChangedLoginHint'));
         location.replace('/html/login.html');
       }, 1500);
     } else {
       // 显示具体的错误信息（使用模态框，需要手动关闭）
       const errorText = await r.text();
-      const errorMsg = errorText || '修改失败';
+      const errorMsg = errorText || t('mb2.changePwdFailed');
       console.error('修改密码失败:', r.status, errorMsg);
       
       // 显示错误提示框，等待用户确认
@@ -317,14 +345,14 @@ async function changePassword() {
     }
   } catch(e) {
     console.error('修改密码请求失败:', e);
-    await showAlert('网络错误，请重试');
+    await showAlert(t('mb2.networkRetry'));
   }
 }
 
 // 事件绑定
 els.copyMailboxBtn?.addEventListener('click', async () => {
-  try { await navigator.clipboard.writeText(currentMailbox); showToast('已复制', 'success'); }
-  catch(_) { showToast('复制失败', 'error'); }
+  try { await navigator.clipboard.writeText(currentMailbox); showToast(t('toast.copied'), 'success'); }
+  catch(_) { showToast(t('toast.copyFailed'), 'error'); }
 });
 
 els.refreshEmailsBtn?.addEventListener('click', async () => {
@@ -333,7 +361,7 @@ els.refreshEmailsBtn?.addEventListener('click', async () => {
   els.refreshEmailsBtn.disabled = true;
   try {
     await loadEmails();
-    showToast('刷新成功', 'success');
+    showToast(t('mb2.refreshed'), 'success');
   } finally {
     if (icon) icon.classList.remove('spinning');
     els.refreshEmailsBtn.disabled = false;

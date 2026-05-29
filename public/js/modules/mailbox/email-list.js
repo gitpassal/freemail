@@ -5,6 +5,9 @@
 
 import { escapeHtml, escapeAttr } from '../app/ui-helpers.js';
 
+// 翻译辅助：i18n 引擎缺失时回退键名
+const t = (key, params) => (typeof window !== 'undefined' && window.t ? window.t(key, params) : key);
+
 /**
  * 格式化时间戳
  * @param {string} ts - 时间戳
@@ -50,8 +53,8 @@ export function truncateText(text, maxLength = 100) {
  */
 export function renderEmailItem(email) {
   const id = email.id;
-  const sender = escapeHtml(email.sender || '未知发件人');
-  const subject = escapeHtml(email.subject || '(无主题)');
+  const sender = escapeHtml(email.sender || t('mb2.unknownSender'));
+  const subject = escapeHtml(email.subject || t('mail.noSubject'));
   const preview = escapeHtml(truncateText(email.preview || email.content || '', 80));
   const receivedAt = formatTime(email.received_at);
   const isRead = email.is_read ? 'read' : 'unread';
@@ -65,7 +68,7 @@ export function renderEmailItem(email) {
       </div>
       <div class="email-subject">${subject}</div>
       <div class="email-preview">${preview}</div>
-      ${verificationCode ? `<div class="email-code" title="点击复制验证码">🔑 ${escapeHtml(verificationCode)}</div>` : ''}
+      ${verificationCode ? `<div class="email-code" title="${escapeAttr(t('mb2.clickToCopyCode'))}">🔑 ${escapeHtml(verificationCode)}</div>` : ''}
     </div>
   `;
 }

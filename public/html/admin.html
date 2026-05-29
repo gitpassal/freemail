@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="precheck-hide">
+<html lang="zh-CN" class="precheck-hide" data-i18n-doctitle="title.admin">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#f2f2f7" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="__APP_NAME__" />
+    <meta name="apple-mobile-web-app-title" content="CF Alias" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="format-detection" content="telephone=no" />
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
@@ -19,8 +19,8 @@
     </noscript>
     <style>.precheck-hide body{ visibility: hidden !important; }</style>
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="shortcut icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <link rel="stylesheet" href="/css/app.css" />
@@ -34,6 +34,7 @@
     <link rel="stylesheet" href="/css/tokens.css" />
     <!-- 暗黑模式样式 -->
     <!-- 主题切换支持 -->
+    <script src="/js/i18n.js"></script>
     <script src="/js/pwa.js" defer></script>
     <script src="/js/theme-toggle.js"></script>
     <script src="/js/auth-guard.js" defer></script>
@@ -67,32 +68,30 @@
     <div class="topbar">
       <div class="brand">
         <span class="brand-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <use href="/icons/sprites.svg#icon-rocket"/>
-          </svg>
+          <img src="/icons/cloud.png" alt="" class="brand-icon-img" width="24" height="24" />
         </span>
-        <span class="brand-text">__APP_NAME__ - 用户管理</span>
+        <span class="brand-text">__APP_NAME__<span data-i18n="adm.brandSuffix"> - 用户管理</span></span>
       </div>
       <div class="nav-actions">
-        <button id="back" class="btn btn-ghost" title="返回邮箱" aria-label="返回邮箱页面">
+        <button id="back" class="btn btn-ghost" title="返回邮箱" aria-label="返回邮箱页面" data-i18n-title="nav.backTitle" data-i18n-aria="nav.backTitle">
           <span>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <use href="/icons/sprites.svg#icon-mail"/>
             </svg>
           </span>
-          <span>返回邮箱</span>
+          <span data-i18n="nav.back">返回邮箱</span>
         </button>
-        <button id="logout" class="btn btn-secondary" title="退出登录" aria-label="退出登录">
+        <button id="logout" class="btn btn-secondary" title="退出登录" aria-label="退出登录" data-i18n-title="nav.signout" data-i18n-aria="nav.signout">
           <span>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <use href="/icons/sprites.svg#icon-logout"/>
             </svg>
           </span>
-          <span>退出登录</span>
+          <span data-i18n="nav.signout">退出登录</span>
         </button>
       </div>
     </div>
-    <div id="demo-banner" class="demo-banner" style="display:none">当前为演示管理页：所有改动仅在浏览器会话中模拟</div>
+    <div id="demo-banner" class="demo-banner" style="display:none" data-i18n="adm.demoBanner">当前为演示管理页：所有改动仅在浏览器会话中模拟</div>
     <div class="admin-container">
       <!-- 统计卡片区域 -->
       <div class="stats-grid">
@@ -107,7 +106,7 @@
           </div>
           <div class="stat-info">
             <span class="stat-value" id="stat-total-users">0</span>
-            <span class="stat-label">总用户数</span>
+            <span class="stat-label" data-i18n="adm.statTotalUsers">总用户数</span>
           </div>
         </div>
         <div class="stat-card">
@@ -120,7 +119,7 @@
           </div>
           <div class="stat-info">
             <span class="stat-value" id="stat-admin-count">0</span>
-            <span class="stat-label">管理员</span>
+            <span class="stat-label" data-i18n="adm.statAdmins">管理员</span>
           </div>
         </div>
         <div class="stat-card">
@@ -132,7 +131,7 @@
           </div>
           <div class="stat-info">
             <span class="stat-value" id="stat-mailbox-count">0</span>
-            <span class="stat-label">邮箱总数</span>
+            <span class="stat-label" data-i18n="adm.statMailboxes">邮箱总数</span>
           </div>
         </div>
         <div class="stat-card">
@@ -143,7 +142,7 @@
           </div>
           <div class="stat-info">
             <span class="stat-value" id="stat-active-users">0</span>
-            <span class="stat-label">可发件用户</span>
+            <span class="stat-label" data-i18n="adm.statActiveUsers">可发件用户</span>
           </div>
         </div>
       </div>
@@ -160,27 +159,27 @@
                     <use href="/icons/sprites.svg#icon-settings"/>
                   </svg>
                 </span>
-                <span>管理操作</span>
+                <span data-i18n="adm.actionsTitle">管理操作</span>
               </h2>
             </div>
             <div class="action-buttons">
-              <button id="u-open" class="action-btn action-btn-primary" aria-label="创建新用户">
+              <button id="u-open" class="action-btn action-btn-primary" aria-label="创建新用户" data-i18n-aria="adm.createUserAria">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <use href="/icons/sprites.svg#icon-plus"/>
                 </svg>
-                <span>创建用户</span>
+                <span data-i18n="adm.createUser">创建用户</span>
               </button>
-              <button id="a-open" class="action-btn action-btn-secondary" aria-label="分配邮箱">
+              <button id="a-open" class="action-btn action-btn-secondary" aria-label="分配邮箱" data-i18n-aria="adm.assignMailbox">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <use href="/icons/sprites.svg#icon-inbox"/>
                 </svg>
-                <span>分配邮箱</span>
+                <span data-i18n="adm.assignMailbox">分配邮箱</span>
               </button>
-              <button id="unassign-open" class="action-btn action-btn-outline" aria-label="取消分配邮箱">
+              <button id="unassign-open" class="action-btn action-btn-outline" aria-label="取消分配邮箱" data-i18n-aria="adm.unassignMailbox">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <use href="/icons/sprites.svg#icon-inbox-empty"/>
                 </svg>
-                <span>取消分配</span>
+                <span data-i18n="adm.unassign">取消分配</span>
               </button>
             </div>
           </div>
@@ -194,13 +193,13 @@
                     <use href="/icons/sprites.svg#icon-settings"/>
                   </svg>
                 </span>
-                <span>System Settings</span>
+                <span data-i18n="adm.sysSettings">System Settings</span>
               </h2>
             </div>
             <div class="setting-row">
               <div class="setting-copy">
-                <div class="setting-title">Auto-create unknown mailboxes</div>
-                <div class="setting-desc">Allow new recipient addresses to be created when mail arrives.</div>
+                <div class="setting-title" data-i18n="adm.autoCreate">Auto-create unknown mailboxes</div>
+                <div class="setting-desc" data-i18n="adm.autoCreateDesc">Allow new recipient addresses to be created when mail arrives.</div>
               </div>
               <label class="toggle-label setting-toggle">
                 <input id="setting-auto-create-unknown" type="checkbox" class="toggle-input" />
@@ -218,10 +217,10 @@
                     <use href="/icons/sprites.svg#icon-users"/>
                   </svg>
                 </span>
-                <span>用户列表</span>
+                <span data-i18n="adm.userListTitle">用户列表</span>
                 <span id="users-count" class="badge-count">0 人</span>
               </h2>
-              <button id="users-refresh" class="btn btn-ghost btn-icon" title="刷新用户列表" aria-label="刷新">
+              <button id="users-refresh" class="btn btn-ghost btn-icon" title="刷新用户列表" aria-label="刷新" data-i18n-title="adm.refreshUsers" data-i18n-aria="common.refresh">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <use href="/icons/sprites.svg#icon-refresh"/>
                 </svg>
@@ -229,19 +228,19 @@
             </div>
             <div id="users-loading" class="loading-indicator loading-indicator-sm">
               <div class="spinner"></div>
-              <span>加载中…</span>
+              <span data-i18n="common.loading">加载中…</span>
             </div>
             <div class="table-wrapper">
               <table class="table">
                 <thead>
                   <tr>
                     <th class="col-id">ID</th>
-                    <th class="col-username">用户名</th>
-                    <th class="col-role">角色</th>
-                    <th class="col-mailbox">邮箱</th>
-                    <th class="col-can">发件</th>
-                    <th class="col-created">创建时间</th>
-                    <th class="col-actions">操作</th>
+                    <th class="col-username" data-i18n="adm.thUsername">用户名</th>
+                    <th class="col-role" data-i18n="adm.thRole">角色</th>
+                    <th class="col-mailbox" data-i18n="adm.thMailbox">邮箱</th>
+                    <th class="col-can" data-i18n="adm.thCanSend">发件</th>
+                    <th class="col-created" data-i18n="adm.thCreated">创建时间</th>
+                    <th class="col-actions" data-i18n="adm.thActions">操作</th>
                   </tr>
                 </thead>
                 <tbody id="users-tbody"></tbody>
@@ -272,16 +271,16 @@
                     <use href="/icons/sprites.svg#icon-mail"/>
                   </svg>
                 </span>
-                <span>用户的邮箱</span>
+                <span data-i18n="adm.userMailboxesTitle">用户的邮箱</span>
                 <span id="mailboxes-count" class="badge-count">0 个</span>
               </h2>
               <div class="selected-user" id="selected-user-info">
-                <span class="selected-user-name">选择用户查看</span>
+                <span class="selected-user-name" data-i18n="adm.selectUserToView">选择用户查看</span>
               </div>
             </div>
             <div id="user-mailboxes-loading" class="loading-indicator" style="margin: 4px 0 8px 0; display:none">
               <div class="spinner"></div>
-              <span>加载中…</span>
+              <span data-i18n="common.loading">加载中…</span>
             </div>
             <div id="user-mailboxes" class="mailbox-panel">
               <div class="mailbox-list" id="mailbox-list"></div>
@@ -290,7 +289,7 @@
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
-                <p>点击左侧用户查看其邮箱</p>
+                <p data-i18n="adm.emptyMailboxHint">点击左侧用户查看其邮箱</p>
               </div>
             </div>
             <div class="pagination-container" id="mailboxes-pagination" style="display:none">
@@ -323,10 +322,10 @@
                 <use href="/icons/sprites.svg#icon-edit"/>
               </svg>
             </span>
-            <span>编辑用户</span>
+            <span data-i18n="adm.editUserTitle">编辑用户</span>
             <span id="edit-user-display" class="user-chip"></span>
           </div>
-          <button id="edit-close" class="close-btn" aria-label="关闭">
+          <button id="edit-close" class="close-btn" aria-label="关闭" data-i18n-aria="common.close">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <use href="/icons/sprites.svg#icon-x"/>
             </svg>
@@ -340,9 +339,9 @@
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
-                新密码
+                <span data-i18n="adm.newPassword">新密码</span>
               </label>
-              <input id="edit-pass" class="input" type="password" placeholder="留空则不修改" />
+              <input id="edit-pass" class="input" type="password" placeholder="留空则不修改" data-i18n-ph="adm.leaveBlankPh" />
             </div>
             <div class="form-group">
               <label class="form-label">
@@ -350,9 +349,9 @@
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                   <circle cx="12" cy="7" r="4"/>
                 </svg>
-                新用户名
+                <span data-i18n="adm.newUsername">新用户名</span>
               </label>
-              <input id="edit-new-name" class="input" placeholder="留空则不修改" />
+              <input id="edit-new-name" class="input" placeholder="留空则不修改" data-i18n-ph="adm.leaveBlankPh" />
             </div>
             <div class="form-group">
               <label class="form-label">
@@ -360,7 +359,7 @@
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
-                邮箱上限
+                <span data-i18n="adm.mailboxLimit">邮箱上限</span>
               </label>
               <input id="edit-limit" class="input" type="number" min="0" placeholder="0" />
             </div>
@@ -375,7 +374,7 @@
                   <path d="M2 17l10 5 10-5"/>
                   <path d="M2 12l10 5 10-5"/>
                 </svg>
-                高级用户
+                <span data-i18n="adm.premiumUser">高级用户</span>
               </span>
             </label>
             <label class="toggle-label">
@@ -386,7 +385,7 @@
                   <line x1="22" y1="2" x2="11" y2="13"/>
                   <polygon points="22 2 15 22 11 13 2 9 22 2"/>
                 </svg>
-                允许发件
+                <span data-i18n="adm.allowSend">允许发件</span>
               </span>
             </label>
           </div>
@@ -397,15 +396,15 @@
               <polyline points="3 6 5 6 21 6"/>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
             </svg>
-            删除
+            <span data-i18n="common.delete">删除</span>
           </button>
           <div class="modal-actions">
-            <button id="edit-cancel" class="btn btn-secondary">取消</button>
+            <button id="edit-cancel" class="btn btn-secondary" data-i18n="common.cancel">取消</button>
             <button id="edit-save" class="btn btn-primary">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
-              保存
+              <span data-i18n="common.save">保存</span>
             </button>
           </div>
         </div>
@@ -424,9 +423,9 @@
                 <line x1="12" y1="17" x2="12.01" y2="17"/>
               </svg>
             </span>
-            <span>确认操作</span>
+            <span data-i18n="common.confirmAction">确认操作</span>
           </div>
-          <button id="admin-confirm-close" class="close-btn" aria-label="关闭">
+          <button id="admin-confirm-close" class="close-btn" aria-label="关闭" data-i18n-aria="common.close">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <use href="/icons/sprites.svg#icon-x"/>
             </svg>
@@ -435,8 +434,8 @@
         <div class="modal-body confirm-body">
           <div id="admin-confirm-message" class="confirm-message"></div>
           <div class="confirm-actions">
-            <button id="admin-confirm-cancel" class="btn btn-secondary">取消</button>
-            <button id="admin-confirm-ok" class="btn btn-danger">确认</button>
+            <button id="admin-confirm-cancel" class="btn btn-secondary" data-i18n="common.cancel">取消</button>
+            <button id="admin-confirm-ok" class="btn btn-danger" data-i18n="common.confirm">确认</button>
           </div>
         </div>
       </div>
@@ -452,9 +451,9 @@
                 <use href="/icons/sprites.svg#icon-user-plus"/>
               </svg>
             </span>
-            <span>创建用户</span>
+            <span data-i18n="adm.createUser">创建用户</span>
           </div>
-          <button id="u-close" class="close-btn" aria-label="关闭">
+          <button id="u-close" class="close-btn" aria-label="关闭" data-i18n-aria="common.close">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <use href="/icons/sprites.svg#icon-x"/>
             </svg>
@@ -468,9 +467,9 @@
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                   <circle cx="12" cy="7" r="4"/>
                 </svg>
-                用户名
+                <span data-i18n="adm.username">用户名</span>
               </label>
-              <input id="u-name" class="input" placeholder="输入用户名" />
+              <input id="u-name" class="input" placeholder="输入用户名" data-i18n-ph="adm.usernamePh" />
             </div>
             <div class="form-group">
               <label class="form-label">
@@ -478,9 +477,9 @@
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
-                密码
+                <span data-i18n="adm.password">密码</span>
               </label>
-              <input id="u-pass" class="input" type="password" placeholder="输入密码" />
+              <input id="u-pass" class="input" type="password" placeholder="输入密码" data-i18n-ph="adm.passwordPh" />
             </div>
             <div class="form-group">
               <label class="form-label">
@@ -489,22 +488,22 @@
                   <path d="M2 17l10 5 10-5"/>
                   <path d="M2 12l10 5 10-5"/>
                 </svg>
-                角色
+                <span data-i18n="adm.role">角色</span>
               </label>
               <select id="u-role" class="select">
-                <option value="user">普通用户</option>
-                <option value="admin">管理员</option>
+                <option value="user" data-i18n="adm.roleUser">普通用户</option>
+                <option value="admin" data-i18n="adm.roleAdmin">管理员</option>
               </select>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button id="u-cancel" class="btn btn-secondary">取消</button>
+          <button id="u-cancel" class="btn btn-secondary" data-i18n="common.cancel">取消</button>
           <button id="u-create" class="btn btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <use href="/icons/sprites.svg#icon-plus"/>
             </svg>
-            创建
+            <span data-i18n="common.create">创建</span>
           </button>
         </div>
       </div>
@@ -520,9 +519,9 @@
                 <use href="/icons/sprites.svg#icon-inbox"/>
               </svg>
             </span>
-            <span>分配邮箱</span>
+            <span data-i18n="adm.assignMailbox">分配邮箱</span>
           </div>
-          <button id="a-close" class="close-btn" aria-label="关闭">
+          <button id="a-close" class="close-btn" aria-label="关闭" data-i18n-aria="common.close">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <use href="/icons/sprites.svg#icon-x"/>
             </svg>
@@ -536,9 +535,9 @@
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                   <circle cx="12" cy="7" r="4"/>
                 </svg>
-                用户名
+                <span data-i18n="adm.username">用户名</span>
               </label>
-              <input id="a-name" class="input" placeholder="输入用户名" />
+              <input id="a-name" class="input" placeholder="输入用户名" data-i18n-ph="adm.usernamePh" />
             </div>
             <div class="form-group">
               <label class="form-label">
@@ -546,7 +545,7 @@
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
-                邮箱地址
+                <span data-i18n="adm.emailAddress">邮箱地址</span>
               </label>
               <textarea id="a-mail" class="input" placeholder="foo@example.com&#10;bar@example.com&#10;baz@example.com" rows="4"></textarea>
               <div class="help-text">
@@ -555,18 +554,18 @@
                   <line x1="12" y1="16" x2="12" y2="12"/>
                   <line x1="12" y1="8" x2="12.01" y2="8"/>
                 </svg>
-                每行一个邮箱地址，支持批量分配
+                <span data-i18n="adm.assignHint">每行一个邮箱地址，支持批量分配</span>
               </div>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button id="a-cancel" class="btn btn-secondary">取消</button>
+          <button id="a-cancel" class="btn btn-secondary" data-i18n="common.cancel">取消</button>
           <button id="a-assign" class="btn btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <use href="/icons/sprites.svg#icon-plus"/>
             </svg>
-            分配
+            <span data-i18n="adm.assign">分配</span>
           </button>
         </div>
       </div>
@@ -582,9 +581,9 @@
                 <use href="/icons/sprites.svg#icon-inbox-empty"/>
               </svg>
             </span>
-            <span>取消分配邮箱</span>
+            <span data-i18n="adm.unassignMailbox">取消分配邮箱</span>
           </div>
-          <button id="unassign-close" class="close-btn" aria-label="关闭">
+          <button id="unassign-close" class="close-btn" aria-label="关闭" data-i18n-aria="common.close">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <use href="/icons/sprites.svg#icon-x"/>
             </svg>
@@ -598,9 +597,9 @@
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                   <circle cx="12" cy="7" r="4"/>
                 </svg>
-                用户名
+                <span data-i18n="adm.username">用户名</span>
               </label>
-              <input id="unassign-name" class="input" placeholder="输入用户名" />
+              <input id="unassign-name" class="input" placeholder="输入用户名" data-i18n-ph="adm.usernamePh" />
             </div>
             <div class="form-group">
               <label class="form-label">
@@ -608,7 +607,7 @@
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
-                邮箱地址
+                <span data-i18n="adm.emailAddress">邮箱地址</span>
               </label>
               <textarea id="unassign-mail" class="input" placeholder="foo@example.com&#10;bar@example.com&#10;baz@example.com" rows="4"></textarea>
               <div class="help-text">
@@ -617,18 +616,18 @@
                   <line x1="12" y1="16" x2="12" y2="12"/>
                   <line x1="12" y1="8" x2="12.01" y2="8"/>
                 </svg>
-                每行一个邮箱地址，支持批量取消分配
+                <span data-i18n="adm.unassignHint">每行一个邮箱地址，支持批量取消分配</span>
               </div>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button id="unassign-cancel" class="btn btn-secondary">取消</button>
+          <button id="unassign-cancel" class="btn btn-secondary" data-i18n="common.cancel">取消</button>
           <button id="unassign-submit" class="btn btn-danger">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <use href="/icons/sprites.svg#icon-x"/>
             </svg>
-            取消分配
+            <span data-i18n="adm.unassign">取消分配</span>
           </button>
         </div>
       </div>

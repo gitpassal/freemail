@@ -47,10 +47,10 @@ export function formatRelativeTime(ts) {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
     
-    if (minutes < 1) return '刚刚';
-    if (minutes < 60) return `${minutes}分钟前`;
-    if (hours < 24) return `${hours}小时前`;
-    if (days < 7) return `${days}天前`;
+    if (minutes < 1) return window.t('time.justNow');
+    if (minutes < 60) return window.t('time.minutesAgo', { n: minutes });
+    if (hours < 24) return window.t('time.hoursAgo', { n: hours });
+    if (days < 7) return window.t('time.daysAgo', { n: days });
     
     return formatTime(ts, { year: 'numeric', month: 'numeric', day: 'numeric' });
   } catch (_) {

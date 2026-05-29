@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-i18n-doctitle="title.loading">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -8,16 +8,17 @@
     <meta name="theme-color" content="#f2f2f7" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Cloudflare Alias" />
+    <meta name="apple-mobile-web-app-title" content="CF Alias" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="format-detection" content="telephone=no" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="shortcut icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="stylesheet" href="/css/pwa.css" />
     <link rel="stylesheet" href="/css/tokens.css" />
     <!-- 主题切换支持 -->
+    <script src="/js/i18n.js"></script>
     <script src="/js/pwa.js" defer></script>
     <script src="/js/theme-toggle.js"></script>
     <style>
@@ -31,6 +32,7 @@
       footer{ position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; color: var(--text-muted); font-size: 12px; pointer-events: none; }
       .loading-container { text-align: center; padding: 2rem 2.5rem; background: var(--card); border-radius: var(--radius-card); border: 1px solid var(--separator); box-shadow: var(--shadow-md); position: relative; z-index: 1; }
       .logo { margin-bottom: 1rem; color: var(--accent); }
+      .logo img, .logo-img { width: 48px; height: 48px; display: block; margin: 0 auto; object-fit: contain; }
       .title { font-size: 1.25rem; margin-bottom: 1rem; font-weight: 600; color: var(--text); }
       .spinner { width: 36px; height: 36px; border: 3px solid var(--separator); border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 1rem; }
       .status { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem; font-weight: 500; }
@@ -43,13 +45,11 @@
   <body>
     <div class="loading-container">
       <div class="logo">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <use href="/icons/sprites.svg#icon-mail"/>
-        </svg>
+        <img src="/icons/cloud.png" alt="" class="logo-img" width="48" height="48" />
       </div>
-      <h1 class="title">临时邮箱</h1>
+      <h1 class="title" data-i18n="loading.title">临时邮箱</h1>
       <div class="spinner"></div>
-      <div class="status">请稍候...</div>
+      <div class="status" data-i18n="loading.wait">请稍候...</div>
       <div class="progress"><div class="progress-bar"></div></div>
     </div>
     <div id="footer-slot"></div>

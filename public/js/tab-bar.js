@@ -32,11 +32,13 @@
     catch (e) { return el.style.display !== 'none'; }
   }
 
+  function tr(k) { try { return window.t ? window.t(k) : k; } catch (e) { return k; } }
+
   var TABS = [
-    { key: 'inbox', label: '收件箱', icon: 'inbox' },
-    { key: 'generate', label: '生成', icon: 'sparkles' },
-    { key: 'mailboxes', label: '邮箱', icon: 'list' },
-    { key: 'settings', label: '设置', icon: 'settings' }
+    { key: 'inbox', labelKey: 'tab.inbox', icon: 'inbox' },
+    { key: 'generate', labelKey: 'tab.generate', icon: 'sparkles' },
+    { key: 'mailboxes', labelKey: 'tab.mailboxes', icon: 'list' },
+    { key: 'settings', labelKey: 'tab.settings', icon: 'settings' }
   ];
 
   var bar = null, sheet = null, overlay = null;
@@ -76,8 +78,8 @@
       btn.className = 'tabbar-item';
       btn.setAttribute('data-tab', t.key);
       btn.setAttribute('role', 'tab');
-      btn.setAttribute('aria-label', t.label);
-      btn.innerHTML = icon(t.icon) + '<span class="tabbar-label">' + t.label + '</span>';
+      btn.setAttribute('aria-label', tr(t.labelKey));
+      btn.innerHTML = icon(t.icon) + '<span class="tabbar-label">' + tr(t.labelKey) + '</span>';
       btn.addEventListener('click', function () { onTab(t.key); });
       bar.appendChild(btn);
     });
@@ -104,29 +106,35 @@
     for (var i = 0; i < rows.length; i++) { rows[i].remove(); }
 
     sheet.appendChild(makeRow({
-      icon: 'moon', label: '切换主题',
+      icon: 'moon', label: tr('settings.theme'),
       onClick: function () { clickEl('theme-toggle'); }
+    }));
+    sheet.appendChild(makeRow({
+      icon: 'globe', label: tr('settings.language'),
+      onClick: function () {
+        try { var cur = window.i18n.getLang(); window.i18n.setLang(cur === 'en' ? 'zh' : 'en'); } catch (e) {}
+      }
     }));
     if (isShown('admin')) {
       sheet.appendChild(makeRow({
-        icon: 'wrench', label: '用户管理',
+        icon: 'wrench', label: tr('settings.users'),
         onClick: function () { clickEl('admin'); }
       }));
     }
     if (isShown('all-mailboxes')) {
       sheet.appendChild(makeRow({
-        icon: 'package', label: '所有邮箱',
+        icon: 'package', label: tr('settings.allMailboxes'),
         onClick: function () { clickEl('all-mailboxes'); }
       }));
     }
     if (document.getElementById('repo')) {
       sheet.appendChild(makeRow({
-        icon: 'github', label: 'GitHub 仓库',
+        icon: 'github', label: tr('settings.github'),
         onClick: function () { clickEl('repo'); }
       }));
     }
     sheet.appendChild(makeRow({
-      icon: 'logout', label: '退出登录', danger: true,
+      icon: 'logout', label: tr('settings.signout'), danger: true,
       onClick: function () { clickEl('logout'); }
     }));
   }
@@ -139,14 +147,14 @@
     sheet = document.createElement('div');
     sheet.className = 'settings-sheet';
     sheet.setAttribute('role', 'dialog');
-    sheet.setAttribute('aria-label', '设置');
+    sheet.setAttribute('aria-label', tr('settings.title'));
     sheet.setAttribute('aria-modal', 'true');
 
     var handle = document.createElement('div');
     handle.className = 'settings-sheet-handle';
     var title = document.createElement('div');
     title.className = 'settings-sheet-title';
-    title.textContent = '设置';
+    title.textContent = tr('settings.title');
     sheet.appendChild(handle);
     sheet.appendChild(title);
 

@@ -57,7 +57,7 @@ export function renderMailboxListItem(mailbox, options = {}) {
   
   return `
     <div class="mailbox-list-item ${isPinned ? 'pinned' : ''}" data-address="${escapedAddress}">
-      <div class="item-pin ${isPinned ? 'active' : ''}" data-action="pin" title="${isPinned ? '取消置顶' : '置顶'}">
+      <div class="item-pin ${isPinned ? 'active' : ''}" data-action="pin" title="${isPinned ? window.t('mbx2.unpin') : window.t('mbx2.pin')}">
         ${isPinned ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><use href="/icons/sprites.svg#icon-pin"/></svg>' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-pin"/></svg>'}
       </div>
 
@@ -66,20 +66,20 @@ export function renderMailboxListItem(mailbox, options = {}) {
         <div class="item-meta">
           <span class="item-time">${createdAt}</span>
           <span class="item-indicators">
-            ${isFavorite ? '<span class="indicator favorite" title="已收藏"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><use href="/icons/sprites.svg#icon-star"/></svg></span>' : ''}
-            ${forwardTo ? `<span class="indicator forward" title="转发至: ${escapeAttr(forwardTo)}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-forward"/></svg></span>` : ''}
-            ${canLogin ? '<span class="indicator login" title="可登录"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-key"/></svg></span>' : '<span class="indicator login-disabled" title="禁止登录"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-lock"/></svg></span>'}
+            ${isFavorite ? `<span class="indicator favorite" title="${window.t('mbx.favorited')}"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><use href="/icons/sprites.svg#icon-star"/></svg></span>` : ''}
+            ${forwardTo ? `<span class="indicator forward" title="${window.t('mbx2.forwardToTitle', { addr: escapeAttr(forwardTo) })}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-forward"/></svg></span>` : ''}
+            ${canLogin ? `<span class="indicator login" title="${window.t('mbx2.canLogin')}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-key"/></svg></span>` : `<span class="indicator login-disabled" title="${window.t('mbx.loginDenied')}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-lock"/></svg></span>`}
           </span>
         </div>
       </div>
 
       <div class="item-actions">
-        <button class="btn btn-sm" data-action="copy" title="复制"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-copy"/></svg></button>
-        <button class="btn btn-sm" data-action="jump" title="查看"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-mail"/></svg></button>
-        <button class="btn btn-sm ${isFavorite ? 'active' : ''}" data-action="favorite" title="${isFavorite ? '取消收藏' : '收藏'}"><svg width="14" height="14" viewBox="0 0 24 24" fill="${isFavorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-star-${isFavorite ? '' : 'empty'}"/></svg></button>
-        <button class="btn btn-sm" data-action="forward" title="转发设置"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-forward"/></svg></button>
-        <button class="btn btn-sm" data-action="toggle-login" title="${canLogin ? '禁止登录' : '允许登录'}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-key"/></svg></button>
-        <button class="btn btn-sm danger" data-action="delete" title="删除"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-trash"/></svg></button>
+        <button class="btn btn-sm" data-action="copy" title="${window.t('common.copy')}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-copy"/></svg></button>
+        <button class="btn btn-sm" data-action="jump" title="${window.t('mbx2.view')}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-mail"/></svg></button>
+        <button class="btn btn-sm ${isFavorite ? 'active' : ''}" data-action="favorite" title="${isFavorite ? window.t('app.unfavorite') : window.t('mbx2.favorite')}"><svg width="14" height="14" viewBox="0 0 24 24" fill="${isFavorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-star-${isFavorite ? '' : 'empty'}"/></svg></button>
+        <button class="btn btn-sm" data-action="forward" title="${window.t('app.forwardSettings')}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-forward"/></svg></button>
+        <button class="btn btn-sm" data-action="toggle-login" title="${canLogin ? window.t('mbx.loginDenied') : window.t('mbx.loginAllowed')}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-key"/></svg></button>
+        <button class="btn btn-sm danger" data-action="delete" title="${window.t('common.delete')}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-trash"/></svg></button>
       </div>
     </div>
   `;
@@ -95,7 +95,7 @@ export function renderListView(mailboxes, container, options = {}) {
   if (!container) return;
   
   if (!mailboxes || mailboxes.length === 0) {
-    container.innerHTML = '<div class="empty-state">暂无邮箱</div>';
+    container.innerHTML = `<div class="empty-state">${window.t('mbx2.noMailboxes')}</div>`;
     return;
   }
   
@@ -110,10 +110,10 @@ export function renderTableHeader() {
   return `
     <div class="table-header">
       <div class="col-pin">📌</div>
-      <div class="col-address">邮箱地址</div>
-      <div class="col-status">状态</div>
-      <div class="col-time">创建时间</div>
-      <div class="col-actions">操作</div>
+      <div class="col-address">${window.t('mbx.emailAddress')}</div>
+      <div class="col-status">${window.t('mbx2.colStatus')}</div>
+      <div class="col-time">${window.t('mbx2.colCreated')}</div>
+      <div class="col-actions">${window.t('mbx2.colActions')}</div>
     </div>
   `;
 }
@@ -149,9 +149,9 @@ export function renderTableRow(mailbox) {
       <div class="col-status">${statusIcons || '-'}</div>
       <div class="col-time">${createdAt}</div>
       <div class="col-actions">
-        <button class="btn btn-sm" data-action="copy" title="复制">📋</button>
-        <button class="btn btn-sm" data-action="jump" title="查看">📧</button>
-        <button class="btn btn-sm" data-action="more" title="更多">⋯</button>
+        <button class="btn btn-sm" data-action="copy" title="${window.t('common.copy')}">📋</button>
+        <button class="btn btn-sm" data-action="jump" title="${window.t('mbx2.view')}">📧</button>
+        <button class="btn btn-sm" data-action="more" title="${window.t('mbx2.more')}">⋯</button>
       </div>
     </div>
   `;

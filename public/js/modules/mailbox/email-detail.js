@@ -6,6 +6,9 @@
 import { escapeHtml, escapeAttr } from '../app/ui-helpers.js';
 import { formatTime } from './email-list.js';
 
+// 翻译辅助：i18n 引擎缺失时回退键名
+const t = (key, params) => (typeof window !== 'undefined' && window.t ? window.t(key, params) : key);
+
 /**
  * 渲染邮件详情
  * @param {object} email - 邮件数据
@@ -13,12 +16,12 @@ import { formatTime } from './email-list.js';
  */
 export function renderEmailDetail(email) {
   if (!email) {
-    return '<div class="empty-detail">请选择一封邮件</div>';
+    return `<div class="empty-detail">${escapeHtml(t('mail.selectOne'))}</div>`;
   }
-  
-  const sender = escapeHtml(email.sender || '未知发件人');
+
+  const sender = escapeHtml(email.sender || t('mb2.unknownSender'));
   const to = escapeHtml(email.to_addrs || '');
-  const subject = escapeHtml(email.subject || '(无主题)');
+  const subject = escapeHtml(email.subject || t('mail.noSubject'));
   const receivedAt = formatTime(email.received_at);
   const verificationCode = email.verification_code || '';
   
@@ -32,14 +35,14 @@ export function renderEmailDetail(email) {
   }
   
   let metaHtml = `<div class="email-meta-inline">`;
-  metaHtml += `<span>发件人：${sender}</span>`;
-  if (to) metaHtml += `<span>收件人：${to}</span>`;
+  metaHtml += `<span>${t('mail.from')}：${sender}</span>`;
+  if (to) metaHtml += `<span>${t('mail.to')}：${to}</span>`;
   metaHtml += `<span>${receivedAt}</span>`;
   metaHtml += `</div>`;
 
   let codeHtml = '';
   if (verificationCode) {
-    codeHtml = `<div class="code-highlight" onclick="navigator.clipboard.writeText('${escapeAttr(verificationCode)}')" title="点击复制" style="cursor:pointer">${escapeHtml(verificationCode)}</div>`;
+    codeHtml = `<div class="code-highlight" onclick="navigator.clipboard.writeText('${escapeAttr(verificationCode)}')" title="${escapeAttr(t('mb2.clickToCopy'))}" style="cursor:pointer">${escapeHtml(verificationCode)}</div>`;
   }
 
   return `
@@ -154,36 +157,36 @@ export function sanitizeHtml(html) {
 export function renderEmailModal(email) {
   if (!email) return '';
   
-  const subject = escapeHtml(email.subject || '(无主题)');
-  const sender = escapeHtml(email.sender || '未知发件人');
+  const subject = escapeHtml(email.subject || t('mail.noSubject'));
+  const sender = escapeHtml(email.sender || t('mb2.unknownSender'));
   const to = escapeHtml(email.to_addrs || '');
   const receivedAt = formatTime(email.received_at);
   const verificationCode = email.verification_code || '';
-  
+
   let content = '';
   if (email.html_content) {
     content = sanitizeHtml(email.html_content);
   } else {
     content = `<pre style="white-space: pre-wrap; word-break: break-word;">${escapeHtml(email.content || '')}</pre>`;
   }
-  
+
   return `
     <div class="modal-header">
       <h3 class="modal-title">${subject}</h3>
       <button class="modal-close" data-action="close">&times;</button>
     </div>
     <div class="email-meta-inline">
-      <span>发件人：${sender}</span>
-      ${to ? `<span>收件人：${to}</span>` : ''}
+      <span>${t('mail.from')}：${sender}</span>
+      ${to ? `<span>${t('mail.to')}：${to}</span>` : ''}
       <span>${receivedAt}</span>
-      ${verificationCode ? `<span class="code-highlight" data-code="${escapeAttr(verificationCode)}" title="点击复制" style="cursor:pointer">验证码：${escapeHtml(verificationCode)}</span>` : ''}
+      ${verificationCode ? `<span class="code-highlight" data-code="${escapeAttr(verificationCode)}" title="${escapeAttr(t('mb2.clickToCopy'))}" style="cursor:pointer">${t('mail.code')}：${escapeHtml(verificationCode)}</span>` : ''}
     </div>
     <div class="modal-body">
       ${content}
     </div>
     <div class="modal-footer">
-      <button class="btn btn-danger" data-action="delete" data-email-id="${email.id}">删除邮件</button>
-      <button class="btn btn-secondary" data-action="close">关闭</button>
+      <button class="btn btn-danger" data-action="delete" data-email-id="${email.id}">${t('mail.deleteMail')}</button>
+      <button class="btn btn-secondary" data-action="close">${t('common.close')}</button>
     </div>
   `;
 }

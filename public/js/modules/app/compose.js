@@ -21,10 +21,10 @@ export function initCompose(elements, api, showToast) {
   compose.onclick = () => {
     const mailbox = getCurrentMailbox();
     if (!mailbox) {
-      showToast('请先选择或生成一个邮箱', 'warn');
+      showToast(window.t('app2.composeSelectOrGen'), 'warn');
       return;
     }
-    
+
     // 清空表单
     if (composeTo) composeTo.value = '';
     if (composeSubject) composeSubject.value = '';
@@ -48,7 +48,7 @@ export function initCompose(elements, api, showToast) {
     composeSend.onclick = async () => {
       const mailbox = getCurrentMailbox();
       if (!mailbox) {
-        showToast('请先选择发件邮箱', 'warn');
+        showToast(window.t('app2.composeSelectSender'), 'warn');
         return;
       }
       
@@ -58,25 +58,25 @@ export function initCompose(elements, api, showToast) {
       const fromName = (composeFromName?.value || '').trim();
       
       if (!to) {
-        showToast('请输入收件人地址', 'warn');
+        showToast(window.t('app2.composeNeedTo'), 'warn');
         return;
       }
-      
+
       if (!subject && !html) {
-        showToast('主题和内容不能都为空', 'warn');
+        showToast(window.t('app2.composeNeedContent'), 'warn');
         return;
       }
-      
+
       // 设置加载状态
       const originalText = composeSend.textContent;
       composeSend.disabled = true;
-      composeSend.innerHTML = '<span class="spinner"></span> 发送中...';
+      composeSend.innerHTML = `<span class="spinner"></span> ${window.t('compose.sending')}`;
       
       try {
         const body = {
           from: mailbox,
           to,
-          subject: subject || '(无主题)',
+          subject: subject || window.t('mail.noSubject'),
           html: html || ''
         };
         if (fromName) body.fromName = fromName;
@@ -89,13 +89,13 @@ export function initCompose(elements, api, showToast) {
         
         if (!r.ok) {
           const text = await r.text();
-          throw new Error(text || '发送失败');
+          throw new Error(text || window.t('toast.sendFailed'));
         }
-        
-        showToast('邮件发送成功！', 'success');
+
+        showToast(window.t('app2.mailSent'), 'success');
         closeModal();
       } catch (e) {
-        showToast(e.message || '发送失败，请稍后重试', 'error');
+        showToast(e.message || window.t('app2.sendRetry'), 'error');
       } finally {
         composeSend.disabled = false;
         composeSend.textContent = originalText;
@@ -116,18 +116,18 @@ export function showSentEmailDetail(email, elements) {
   const e = email;
   modalSubject.innerHTML = `
     <span class="modal-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-send"/></svg></span>
-    <span>${escapeHtml(e.subject || '(无主题)')}</span>
+    <span>${escapeHtml(e.subject || window.t('mail.noSubject'))}</span>
   `;
-  
+
   const recipients = (e.recipients || e.to_addrs || '').toString();
   const status = e.status || 'unknown';
-  
+
   let statusBadge = '';
   const statusMap = {
-    'queued': { class: 'status-queued', text: '排队中' },
-    'delivered': { class: 'status-delivered', text: '已送达' },
-    'failed': { class: 'status-failed', text: '发送失败' },
-    'processing': { class: 'status-processing', text: '处理中' }
+    'queued': { class: 'status-queued', text: window.t('app2.statusQueued') },
+    'delivered': { class: 'status-delivered', text: window.t('app2.statusDelivered') },
+    'failed': { class: 'status-failed', text: window.t('app2.statusFailed') },
+    'processing': { class: 'status-processing', text: window.t('app2.statusProcessing') }
   };
   const statusInfo = statusMap[status] || { class: '', text: status };
   statusBadge = `<span class="status-badge ${statusInfo.class}">${statusInfo.text}</span>`;
@@ -139,7 +139,7 @@ export function showSentEmailDetail(email, elements) {
   }
 
   let metaHtml = `<div class="email-meta-inline">`;
-  if (recipients) metaHtml += `<span>收件人：${escapeHtml(recipients)}</span>`;
+  if (recipients) metaHtml += `<span>${window.t('mail.to')}：${escapeHtml(recipients)}</span>`;
   metaHtml += `<span>${statusBadge}</span>`;
   if (timeStr) metaHtml += `<span>${timeStr}</span>`;
   metaHtml += `</div>`;

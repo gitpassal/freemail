@@ -76,36 +76,36 @@ export function renderMailboxCard(mailbox, options = {}) {
   return `
     <div class="mailbox-card ${isPinned ? 'pinned' : ''}" data-address="${escapedAddress}">
       <div class="card-header">
-        <div class="pin-status" title="${isPinned ? '已置顶' : '未置顶'}">
+        <div class="pin-status" title="${isPinned ? window.t('mbx2.pinned') : window.t('mbx2.notPinned')}">
           ${isPinned ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><use href="/icons/sprites.svg#icon-pin"/></svg>' : ''}
         </div>
-        <div class="favorite-status ${isFavorite ? 'active' : ''}" title="${isFavorite ? '已收藏' : '未收藏'}">
+        <div class="favorite-status ${isFavorite ? 'active' : ''}" title="${isFavorite ? window.t('mbx.favorited') : window.t('mbx.notFavorited')}">
           ${isFavorite ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><use href="/icons/sprites.svg#icon-star"/></svg>' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-star-empty"/></svg>'}
         </div>
       </div>
-      
+
       <div class="card-body">
         <div class="mailbox-address" title="${escapedAddress}">${displayAddress}</div>
         <div class="mailbox-meta">
           <span class="created-time">${createdAt}</span>
-          ${forwardTo ? `<span class="forward-indicator" title="转发至: ${escapeAttr(forwardTo)}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-forward"/></svg></span>` : ''}
-          ${canLogin ? '<span class="login-indicator" title="可登录"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-key"/></svg></span>' : '<span class="login-indicator disabled" title="禁止登录"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-lock"/></svg></span>'}
+          ${forwardTo ? `<span class="forward-indicator" title="${window.t('mbx2.forwardToTitle', { addr: escapeAttr(forwardTo) })}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-forward"/></svg></span>` : ''}
+          ${canLogin ? `<span class="login-indicator" title="${window.t('mbx2.canLogin')}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-key"/></svg></span>` : `<span class="login-indicator disabled" title="${window.t('mbx.loginDenied')}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-lock"/></svg></span>`}
         </div>
       </div>
 
       <div class="card-actions">
-        <button class="btn btn-sm btn-copy" data-action="copy" title="复制地址"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-copy"/></svg></button>
-        <button class="btn btn-sm btn-jump" data-action="jump" title="查看邮件"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-mail"/></svg></button>
-        <button class="btn btn-sm btn-pin ${isPinned ? 'active' : ''}" data-action="pin" title="${isPinned ? '取消置顶' : '置顶'}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-pin"/></svg></button>
-        <button class="btn btn-sm btn-favorite ${isFavorite ? 'active' : ''}" data-action="favorite" title="${isFavorite ? '取消收藏' : '收藏'}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-star-${isFavorite ? '' : 'empty'}"/></svg></button>
-        <button class="btn btn-sm btn-more" data-action="more" title="更多操作"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-more-horizontal"/></svg></button>
+        <button class="btn btn-sm btn-copy" data-action="copy" title="${window.t('mbx2.copyAddress')}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-copy"/></svg></button>
+        <button class="btn btn-sm btn-jump" data-action="jump" title="${window.t('mbx2.viewMail')}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-mail"/></svg></button>
+        <button class="btn btn-sm btn-pin ${isPinned ? 'active' : ''}" data-action="pin" title="${isPinned ? window.t('mbx2.unpin') : window.t('mbx2.pin')}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-pin"/></svg></button>
+        <button class="btn btn-sm btn-favorite ${isFavorite ? 'active' : ''}" data-action="favorite" title="${isFavorite ? window.t('app.unfavorite') : window.t('mbx2.favorite')}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-star-${isFavorite ? '' : 'empty'}"/></svg></button>
+        <button class="btn btn-sm btn-more" data-action="more" title="${window.t('mbx2.moreActions')}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-more-horizontal"/></svg></button>
       </div>
 
       <div class="card-dropdown" style="display: none;">
-        <button class="dropdown-item" data-action="forward"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-forward"/></svg> 设置转发</button>
-        <button class="dropdown-item" data-action="toggle-login"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-key"/></svg> ${canLogin ? '禁止登录' : '允许登录'}</button>
-        <button class="dropdown-item" data-action="change-password"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-lock"/></svg> ${passwordIsDefault ? '设置密码' : '修改密码'}</button>
-        <button class="dropdown-item danger" data-action="delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-trash"/></svg> 删除邮箱</button>
+        <button class="dropdown-item" data-action="forward"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-forward"/></svg> ${window.t('mbx2.setForward')}</button>
+        <button class="dropdown-item" data-action="toggle-login"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-key"/></svg> ${canLogin ? window.t('mbx.loginDenied') : window.t('mbx.loginAllowed')}</button>
+        <button class="dropdown-item" data-action="change-password"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-lock"/></svg> ${passwordIsDefault ? window.t('mbx2.setPassword') : window.t('mb.changePassword')}</button>
+        <button class="dropdown-item danger" data-action="delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="/icons/sprites.svg#icon-trash"/></svg> ${window.t('mbx2.deleteMailbox')}</button>
       </div>
     </div>
   `;
@@ -121,7 +121,7 @@ export function renderGridView(mailboxes, container, options = {}) {
   if (!container) return;
   
   if (!mailboxes || mailboxes.length === 0) {
-    container.innerHTML = '<div class="empty-state">暂无邮箱</div>';
+    container.innerHTML = `<div class="empty-state">${window.t('mbx2.noMailboxes')}</div>`;
     return;
   }
   

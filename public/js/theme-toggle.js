@@ -94,16 +94,16 @@
     if (icon) {
       icon.setAttribute('href', '/icons/sprites.svg#icon-' + (theme === 'dark' ? 'sun' : 'moon'));
     }
-    btn.setAttribute('aria-label', theme === 'dark' ? '切换到明亮模式' : '切换到暗黑模式');
-    btn.title = theme === 'dark' ? '切换到明亮模式' : '切换到暗黑模式';
+    btn.setAttribute('aria-label', theme === 'dark' ? window.t('theme.toLight') : window.t('theme.toDark'));
+    btn.title = theme === 'dark' ? window.t('theme.toLight') : window.t('theme.toDark');
   }
 
   function createThemeToggleButton() {
     const btn = document.createElement('button');
     btn.id = 'theme-toggle';
     btn.className = 'btn btn-ghost theme-toggle-btn';
-    btn.setAttribute('aria-label', '切换主题');
-    btn.title = currentTheme === 'dark' ? '切换到明亮模式' : '切换到暗黑模式';
+    btn.setAttribute('aria-label', window.t('theme.toggle'));
+    btn.title = currentTheme === 'dark' ? window.t('theme.toLight') : window.t('theme.toDark');
     btn.innerHTML = `
       <span class="btn-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

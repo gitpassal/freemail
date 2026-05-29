@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-i18n-doctitle="title.home">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#f2f2f7" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Cloudflare Alias" />
+    <meta name="apple-mobile-web-app-title" content="CF Alias" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="format-detection" content="telephone=no" />
     <!-- 运行时注入域名列表（从 env.MAIL_DOMAIN 解析），用于前端域名选择 -->
@@ -18,8 +18,8 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="shortcut icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <link rel="stylesheet" href="/css/app.css" />
@@ -36,6 +36,7 @@
     <link rel="stylesheet" href="/css/tab-bar.css" />
     <!-- 暗黑模式样式 -->
     <!-- 主题切换支持 -->
+    <script src="/js/i18n.js"></script>
     <script src="/js/pwa.js" defer></script>
     <script src="/js/theme-toggle.js"></script>
     <!-- iOS 底部 Tab Bar（纯 UI，仅 standalone/preview 主应用页） -->

@@ -48,7 +48,7 @@
         switchWrap.className = 'view-switch';
         switchWrap.id = 'mobile-main-switch';
         switchWrap.style.margin = '6px 0 10px 0';
-        switchWrap.innerHTML = '<button id="m-tab-generate" class="seg-btn" aria-pressed="true">生成邮箱</button><button id="m-tab-history" class="seg-btn" aria-pressed="false">历史邮箱</button>';
+        switchWrap.innerHTML = '<button id="m-tab-generate" class="seg-btn" aria-pressed="true">' + window.t('app.genMailbox') + '</button><button id="m-tab-history" class="seg-btn" aria-pressed="false">' + window.t('app.history') + '</button>';
         mainEl.prepend(switchWrap);
 
 
@@ -91,13 +91,13 @@
               existingEnter.className = 'btn btn-primary';
               existingEnter.style.width = '100%';
               existingEnter.style.marginTop = '0';
-              existingEnter.innerHTML = '<span class="btn-icon">📬</span><span>进入邮箱</span>';
+              existingEnter.innerHTML = '<span class="btn-icon">📬</span><span>' + window.t('app.enterMailbox') + '</span>';
               actions.appendChild(existingEnter);
               existingEnter.onclick = function(){
                 try{
                   // 无邮箱时提示，而不是进入
                   if (!window.currentMailbox){
-                    try{ window.showToast && window.showToast('请先生成或选择一个邮箱', 'warn'); }catch(_){ }
+                    try{ window.showToast && window.showToast(window.t('toast.needMailbox'), 'warn'); }catch(_){ }
                     return;
                   }
                   showMailboxView();
@@ -154,7 +154,7 @@
                     var iconBtn = document.createElement('button');
                     iconBtn.id = 'm-refresh-icon';
                     iconBtn.className = 'btn btn-ghost btn-sm';
-                    iconBtn.title = '刷新';
+                    iconBtn.title = window.t('common.refresh');
                     iconBtn.style.justifySelf = 'end';
                     iconBtn.style.width = '34px';
                     iconBtn.style.height = '34px';

@@ -145,12 +145,12 @@ async function loadUsers() {
     // 更新统计卡片
     updateStats(users);
 
-    if (els.usersCount) els.usersCount.textContent = `${totalUsers} 人`;
+    if (els.usersCount) els.usersCount.textContent = window.t('count.users', { n: totalUsers });
 
     bindUserEvents();
   } catch (e) {
     console.error('加载用户失败:', e);
-    showToast(e.message || '加载失败', 'error');
+    showToast(e.message || window.t('toast.loadFailed'), 'error');
   } finally {
     if (els.usersLoading) els.usersLoading.style.display = 'none';
   }
@@ -181,7 +181,7 @@ function updatePagination() {
   const end = Math.min(currentPage * pageSize, totalUsers);
 
   if (els.pageInfo) els.pageInfo.textContent = `${currentPage} / ${totalPages}`;
-  if (els.paginationText) els.paginationText.textContent = `显示 ${start}-${end} 条，共 ${totalUsers} 条`;
+  if (els.paginationText) els.paginationText.textContent = window.t('page.range', { start, end, total: totalUsers });
   if (els.prevPage) els.prevPage.disabled = currentPage <= 1;
   if (els.nextPage) els.nextPage.disabled = currentPage >= totalPages;
 }
@@ -194,7 +194,7 @@ async function loadSettings() {
     els.autoCreateUnknown.checked = !!settings.auto_create_unknown_mailboxes;
   } catch (e) {
     console.error('加载系统设置失败:', e);
-    showToast(e.message || '加载系统设置失败', 'error');
+    showToast(e.message || window.t('adm2.loadSettingsFailed'), 'error');
   }
 }
 
@@ -207,10 +207,10 @@ async function saveAutoCreateUnknownSetting() {
       auto_create_unknown_mailboxes: !!els.autoCreateUnknown.checked
     });
     els.autoCreateUnknown.checked = !!settings.auto_create_unknown_mailboxes;
-    showToast('设置已保存', 'success');
+    showToast(window.t('toast.saved'), 'success');
   } catch (e) {
     els.autoCreateUnknown.checked = !els.autoCreateUnknown.checked;
-    showToast('设置保存失败', 'error');
+    showToast(window.t('adm2.saveSettingsFailed'), 'error');
   } finally {
     els.autoCreateUnknown.disabled = false;
   }
@@ -250,13 +250,13 @@ async function openEditModal(userId) {
     const data = await getUsers({ page: 1, size: 100 });
     const users = Array.isArray(data) ? data : (data.list || []);
     const user = users.find(u => u.id == userId);
-    if (!user) { showToast('用户不存在', 'error'); return; }
-    
+    if (!user) { showToast(window.t('adm2.userNotFound'), 'error'); return; }
+
     currentViewingUser = user;
     fillEditForm(els, user);
     els.editModal?.classList.add('show');
   } catch(e) {
-    showToast('加载用户信息失败', 'error');
+    showToast(window.t('adm2.loadUserFailed'), 'error');
   }
 }
 
@@ -273,11 +273,11 @@ async function saveEdit() {
   
   try {
     await updateUser(currentViewingUser.id, formData);
-    showToast('保存成功', 'success');
+    showToast(window.t('toast.saved'), 'success');
     els.editModal?.classList.remove('show');
     loadUsers();
   } catch(e) {
-    showToast('保存失败', 'error');
+    showToast(window.t('adm2.saveFailed'), 'error');
   }
 }
 
@@ -287,17 +287,17 @@ async function openMailboxesPanel(userId) {
     const data = await getUsers({ page: 1, size: 100 });
     const users = Array.isArray(data) ? data : (data.list || []);
     const user = users.find(u => u.id == userId);
-    if (!user) { showToast('用户不存在', 'error'); return; }
-    
+    if (!user) { showToast(window.t('adm2.userNotFound'), 'error'); return; }
+
     currentViewingUser = user;
     mailboxPage = 1;
     await loadUserMailboxes();
-    
+
     // 显示邮箱面板
     if (els.userMailboxes) els.userMailboxes.style.display = 'block';
     if (els.aName) els.aName.value = user.username;
   } catch(e) {
-    showToast('加载失败', 'error');
+    showToast(window.t('toast.loadFailed'), 'error');
   }
 }
 
@@ -311,7 +311,7 @@ async function loadUserMailboxes() {
     const list = Array.isArray(data) ? data : (data.list || []);
     totalMailboxes = data.total || list.length;
 
-    if (els.mailboxesCount) els.mailboxesCount.textContent = `${totalMailboxes} 个`;
+    if (els.mailboxesCount) els.mailboxesCount.textContent = window.t('adm2.mailboxCount', { n: totalMailboxes });
 
     // 渲染邮箱列表
     const container = document.getElementById('mailbox-list');
@@ -322,7 +322,7 @@ async function loadUserMailboxes() {
         container.innerHTML = list.map(m => `
           <div class="mailbox-item" data-address="${m.address}" data-href="/?mailbox=${encodeURIComponent(m.address)}">
             <span class="address">${m.address}</span>
-            <button class="btn danger" data-action="unassign">取消分配</button>
+            <button class="btn danger" data-action="unassign">${window.t('adm.unassign')}</button>
           </div>
         `).join('');
         if (emptyState) emptyState.classList.add('hidden');
@@ -334,14 +334,14 @@ async function loadUserMailboxes() {
             const address = btn.closest('[data-address]')?.dataset.address;
             if (!address) return;
 
-            const confirmed = await showConfirm(`确定取消分配邮箱 ${address}？`);
+            const confirmed = await showConfirm(window.t('adm2.confirmUnassign', { address }));
             if (!confirmed) return;
 
             try {
               await unassignMailbox(currentViewingUser.username, address);
-              showToast('已取消分配', 'success');
+              showToast(window.t('adm2.unassigned'), 'success');
               loadUserMailboxes();
-            } catch(e) { showToast('取消分配失败', 'error'); }
+            } catch(e) { showToast(window.t('adm2.unassignFailed'), 'error'); }
           };
         });
       } else {
@@ -362,7 +362,7 @@ async function loadUserMailboxes() {
       selectedUserInfo.innerHTML = `<span class="selected-user-name">${currentViewingUser.username}</span>`;
     }
   } catch(e) {
-    showToast(e.message || '加载邮箱失败', 'error');
+    showToast(e.message || window.t('adm2.loadMailboxesFailed'), 'error');
   } finally {
     if (els.userMailboxesLoading) els.userMailboxesLoading.style.display = 'none';
   }
@@ -375,19 +375,19 @@ async function handleCreateUser() {
   const role = els.uRole?.value || 'user';
   
   if (!username || !password) {
-    showToast('用户名和密码不能为空', 'error');
+    showToast(window.t('adm2.usernamePasswordRequired'), 'error');
     return;
   }
-  
+
   try {
     await createUser({ username, password, role });
-    showToast('用户创建成功', 'success');
+    showToast(window.t('toast.created'), 'success');
     els.uModal?.classList.remove('show');
     els.uName.value = '';
     els.uPass.value = '';
     loadUsers();
   } catch(e) {
-    showToast('创建失败', 'error');
+    showToast(window.t('adm2.createFailed'), 'error');
   }
 }
 
@@ -397,22 +397,22 @@ async function handleAssignMailbox() {
   const addressText = els.aMail?.value.trim();
   
   if (!username) {
-    showToast('请输入用户名', 'error');
+    showToast(window.t('adm2.enterUsername'), 'error');
     return;
   }
-  
+
   if (!addressText) {
-    showToast('请输入邮箱地址', 'error');
+    showToast(window.t('adm2.enterEmail'), 'error');
     return;
   }
-  
+
   // 支持批量分配（每行一个地址）
   const addresses = addressText.split('\n').map(a => a.trim()).filter(a => a);
   if (addresses.length === 0) {
-    showToast('请输入有效的邮箱地址', 'error');
+    showToast(window.t('adm2.enterValidEmail'), 'error');
     return;
   }
-  
+
   try {
     let successCount = 0;
     let failCount = 0;
@@ -424,25 +424,25 @@ async function handleAssignMailbox() {
         failCount++;
       }
     }
-    
+
     if (successCount > 0 && failCount === 0) {
-      showToast(`成功分配 ${successCount} 个邮箱`, 'success');
+      showToast(window.t('adm2.assignedN', { n: successCount }), 'success');
     } else if (successCount > 0 && failCount > 0) {
-      showToast(`成功 ${successCount} 个，失败 ${failCount} 个`, 'warning');
+      showToast(window.t('adm2.batchResult', { a: successCount, b: failCount }), 'warning');
     } else {
-      showToast('分配失败', 'error');
+      showToast(window.t('adm2.assignFailed'), 'error');
     }
-    
+
     els.aModal?.classList.remove('show');
     els.aMail.value = '';
     els.aName.value = '';
-    
+
     // 如果当前有查看的用户且用户名匹配，刷新邮箱列表
     if (currentViewingUser && currentViewingUser.username === username) {
       loadUserMailboxes();
     }
   } catch(e) {
-    showToast('分配失败', 'error');
+    showToast(window.t('adm2.assignFailed'), 'error');
   }
 }
 
@@ -452,22 +452,22 @@ async function handleUnassignMailbox() {
   const addressText = els.unassignMail?.value.trim();
   
   if (!username) {
-    showToast('请输入用户名', 'error');
+    showToast(window.t('adm2.enterUsername'), 'error');
     return;
   }
-  
+
   if (!addressText) {
-    showToast('请输入邮箱地址', 'error');
+    showToast(window.t('adm2.enterEmail'), 'error');
     return;
   }
-  
+
   // 支持批量取消分配（每行一个地址）
   const addresses = addressText.split('\n').map(a => a.trim()).filter(a => a);
   if (addresses.length === 0) {
-    showToast('请输入有效的邮箱地址', 'error');
+    showToast(window.t('adm2.enterValidEmail'), 'error');
     return;
   }
-  
+
   try {
     let successCount = 0;
     let failCount = 0;
@@ -479,25 +479,25 @@ async function handleUnassignMailbox() {
         failCount++;
       }
     }
-    
+
     if (successCount > 0 && failCount === 0) {
-      showToast(`成功取消分配 ${successCount} 个邮箱`, 'success');
+      showToast(window.t('adm2.unassignedN', { n: successCount }), 'success');
     } else if (successCount > 0 && failCount > 0) {
-      showToast(`成功 ${successCount} 个，失败 ${failCount} 个`, 'warning');
+      showToast(window.t('adm2.batchResult', { a: successCount, b: failCount }), 'warning');
     } else {
-      showToast('取消分配失败', 'error');
+      showToast(window.t('adm2.unassignFailed'), 'error');
     }
-    
+
     els.unassignModal?.classList.remove('show');
     els.unassignMail.value = '';
     els.unassignName.value = '';
-    
+
     // 如果当前有查看的用户且用户名匹配，刷新邮箱列表
     if (currentViewingUser && currentViewingUser.username === username) {
       loadUserMailboxes();
     }
   } catch(e) {
-    showToast('取消分配失败', 'error');
+    showToast(window.t('adm2.unassignFailed'), 'error');
   }
 }
 
@@ -534,15 +534,15 @@ els.editSave?.addEventListener('click', saveEdit);
 els.editDelete?.addEventListener('click', async () => {
   if (!currentViewingUser) return;
   
-  const confirmed = await showConfirm(`确定删除用户 "${currentViewingUser.username}" 吗？此操作不可恢复。`);
+  const confirmed = await showConfirm(window.t('adm2.confirmDeleteUser', { name: currentViewingUser.username }));
   if (!confirmed) return;
-  
+
   try {
     await deleteUser(currentViewingUser.id);
-    showToast('用户已删除', 'success');
+    showToast(window.t('toast.deleted'), 'success');
     els.editModal?.classList.remove('show');
     loadUsers();
-  } catch(e) { showToast('删除失败', 'error'); }
+  } catch(e) { showToast(window.t('adm2.deleteFailed'), 'error'); }
 });
 
 // 邮箱分页

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="precheck-hide">
+<html lang="zh-CN" class="precheck-hide" data-i18n-doctitle="title.mailbox">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#f2f2f7" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="__APP_NAME__" />
+  <meta name="apple-mobile-web-app-title" content="CF Alias" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="format-detection" content="telephone=no" />
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
@@ -16,8 +16,8 @@
   <meta http-equiv="Expires" content="0" />
   <style>.precheck-hide body{ visibility: hidden !important; }</style>
   <link rel="manifest" href="/manifest.webmanifest" />
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.png" type="image/png" />
+  <link rel="shortcut icon" href="/favicon.png" type="image/png" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
   <link rel="stylesheet" href="/css/app.css" />
@@ -31,6 +31,7 @@
   <link rel="stylesheet" href="/css/tokens.css" />
   <!-- 暗黑模式样式 -->
   <!-- 主题切换支持 -->
+  <script src="/js/i18n.js"></script>
   <script src="/js/pwa.js" defer></script>
   <script src="/js/theme-toggle.js"></script>
   <script src="/js/auth-guard.js" defer></script>
@@ -65,15 +66,13 @@
   <div class="topbar-inner">
     <div class="brand">
       <span class="brand-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <use href="/icons/sprites.svg#icon-mail"/>
-        </svg>
+        <img src="/icons/cloud.png" alt="" class="brand-icon-img" width="24" height="24" />
       </span>
       <span class="brand-text">__APP_NAME__</span>
     </div>
-    <div id="role-badge" class="role-badge" title="邮箱用户">邮箱用户</div>
+    <div id="role-badge" class="role-badge" title="邮箱用户" data-i18n-title="mb.roleMailbox" data-i18n="mb.roleMailbox">邮箱用户</div>
     <div class="nav-actions">
-      <a id="repo" class="btn btn-ghost" href="__APP_REPO_URL__" target="_blank" rel="noopener noreferrer" title="GitHub 开源仓库">
+      <a id="repo" class="btn btn-ghost" href="__APP_REPO_URL__" target="_blank" rel="noopener noreferrer" title="GitHub 开源仓库" data-i18n-title="nav.githubTitle">
         <span class="btn-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <use href="/icons/sprites.svg#icon-github"/>
@@ -81,13 +80,13 @@
         </span>
         <span class="btn-text">GitHub</span>
       </a>
-      <button id="logout" class="btn btn-secondary" title="退出登录">
+      <button id="logout" class="btn btn-secondary" title="退出登录" data-i18n-title="nav.signout">
         <span class="btn-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <use href="/icons/sprites.svg#icon-logout"/>
           </svg>
         </span>
-        <span class="btn-text">退出登录</span>
+        <span class="btn-text" data-i18n="nav.signout">退出登录</span>
       </button>
     </div>
   </div>
@@ -105,7 +104,7 @@
             <use href="/icons/sprites.svg#icon-inbox"/>
           </svg>
         </span>
-        我的邮箱
+        <span data-i18n="mb.myMailbox">我的邮箱</span>
       </h2>
       <div class="mailbox-info">
         <div class="mailbox-display">
@@ -115,48 +114,48 @@
             </svg>
           </span>
           <span id="current-mailbox" class="mailbox-address">加载中...</span>
-          <button id="copy-mailbox" class="btn btn-secondary btn-sm" title="复制邮箱地址" aria-label="复制邮箱地址">
+          <button id="copy-mailbox" class="btn btn-secondary btn-sm" title="复制邮箱地址" aria-label="复制邮箱地址" data-i18n-title="app.copyMailboxAria" data-i18n-aria="app.copyMailboxAria">
             <span class="btn-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <use href="/icons/sprites.svg#icon-copy"/>
               </svg>
             </span>
-            <span>复制</span>
+            <span data-i18n="common.copy">复制</span>
           </button>
         <!-- 修改密码 -->
-          <button id="change-password" class="btn btn-ghost btn-sm" title="修改密码" aria-label="修改密码">
+          <button id="change-password" class="btn btn-ghost btn-sm" title="修改密码" aria-label="修改密码" data-i18n-title="mb.changePassword" data-i18n-aria="mb.changePassword">
             <span class="btn-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <use href="/icons/sprites.svg#icon-lock"/>
               </svg>
             </span>
-            <span>修改密码</span>
+            <span data-i18n="mb.changePassword">修改密码</span>
           </button>
         </div>
         <div class="mailbox-toolbar">
           <div class="toolbar-left">
-            <span class="chip chip-unread">未读 <span id="unread-count">0</span></span>
-            <span class="chip chip-total">全部 <span id="total-count">0</span></span>
+            <span class="chip chip-unread"><span data-i18n="mb.unread">未读</span> <span id="unread-count">0</span></span>
+            <span class="chip chip-total"><span data-i18n="mb.total">全部</span> <span id="total-count">0</span></span>
           </div>
           <div class="toolbar-right">
-            <label class="toggle" title="开启后按间隔自动刷新">
+            <label class="toggle" title="开启后按间隔自动刷新" data-i18n-title="mb.autoRefreshHint">
               <input id="auto-refresh" type="checkbox" />
-              <span>自动刷新</span>
+              <span data-i18n="mb.autoRefresh">自动刷新</span>
             </label>
-            <select id="refresh-interval" class="select select-sm" title="刷新间隔" aria-label="刷新间隔">
-              <option value="10">10秒</option>
-              <option value="30" selected>30秒</option>
-              <option value="60">60秒</option>
+            <select id="refresh-interval" class="select select-sm" title="刷新间隔" aria-label="刷新间隔" data-i18n-title="mb.refreshInterval" data-i18n-aria="mb.refreshInterval">
+              <option value="10" data-i18n="mb.interval10">10秒</option>
+              <option value="30" selected data-i18n="mb.interval30">30秒</option>
+              <option value="60" data-i18n="mb.interval60">60秒</option>
             </select>
-            <input id="search-box" class="input input-sm" placeholder="搜索发件人/主题" aria-label="搜索发件人或主题" />
-            <button id="clear-filter" class="btn btn-ghost btn-sm" title="清空筛选">清空</button>
-            <button id="refresh-emails" class="btn btn-ghost" title="立即刷新" aria-label="刷新邮件列表">
+            <input id="search-box" class="input input-sm" placeholder="搜索发件人/主题" aria-label="搜索发件人或主题" data-i18n-ph="mb.searchPh" data-i18n-aria="mb.searchAria" />
+            <button id="clear-filter" class="btn btn-ghost btn-sm" title="清空筛选" data-i18n-title="mb.clearFilter" data-i18n="common.clear">清空</button>
+            <button id="refresh-emails" class="btn btn-ghost" title="立即刷新" aria-label="刷新邮件列表" data-i18n-title="mb.refreshNow" data-i18n-aria="mb.refreshListAria">
               <span class="btn-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <use href="/icons/sprites.svg#icon-refresh"/>
                 </svg>
               </span>
-              <span>刷新</span>
+              <span data-i18n="common.refresh">刷新</span>
             </button>
           </div>
         </div>
@@ -172,12 +171,12 @@
               <use href="/icons/sprites.svg#icon-mail"/>
             </svg>
           </span>
-          <span>收件箱</span>
-          <span class="retention-hint">仅保留24小时</span>
+          <span data-i18n="tab.inbox">收件箱</span>
+          <span class="retention-hint" data-i18n="mb.retentionHint">仅保留24小时</span>
         </h2>
         <div id="list-loading" class="loading-indicator no-pointer" role="status" aria-live="polite">
           <div class="spinner"></div>
-          <span>加载中…</span>
+          <span data-i18n="common.loading">加载中…</span>
         </div>
       </div>
       <div class="list-viewport">
@@ -187,13 +186,13 @@
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5">
               <use href="/icons/sprites.svg#icon-inbox-empty"/>
             </svg>
-            <span>暂无邮件</span>
+            <span data-i18n="mail.empty">暂无邮件</span>
           </div>
         </div>
         <div id="list-pager" class="pager" style="display:none">
-          <button id="prev-page" class="btn btn-ghost btn-sm">上一页</button>
+          <button id="prev-page" class="btn btn-ghost btn-sm" data-i18n="common.prev">上一页</button>
           <span id="page-info" class="muted page-info-center"></span>
-          <button id="next-page" class="btn btn-ghost btn-sm">下一页</button>
+          <button id="next-page" class="btn btn-ghost btn-sm" data-i18n="common.next">下一页</button>
         </div>
       </div>
     </div>
@@ -212,9 +211,9 @@
             <use href="/icons/sprites.svg#icon-mail"/>
           </svg>
         </span>
-        <span>邮件详情</span>
+        <span data-i18n="mail.detail">邮件详情</span>
       </div>
-      <button id="modal-close" class="close" aria-label="关闭">
+      <button id="modal-close" class="close" aria-label="关闭" data-i18n-aria="common.close">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <use href="/icons/sprites.svg#icon-x"/>
         </svg>
@@ -253,9 +252,9 @@
             <use href="/icons/sprites.svg#icon-alert"/>
           </svg>
         </span>
-        <span>确认操作</span>
+        <span data-i18n="common.confirmAction">确认操作</span>
       </div>
-      <button id="confirm-close" class="close" aria-label="关闭">
+      <button id="confirm-close" class="close" aria-label="关闭" data-i18n-aria="common.close">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <use href="/icons/sprites.svg#icon-x"/>
         </svg>
@@ -264,8 +263,8 @@
     <div class="modal-body confirm-body">
       <div id="confirm-message" class="confirm-message"></div>
       <div class="confirm-actions">
-        <button id="confirm-cancel" class="btn btn-secondary">取消</button>
-        <button id="confirm-ok" class="btn btn-danger">确定</button>
+        <button id="confirm-cancel" class="btn btn-secondary" data-i18n="common.cancel">取消</button>
+        <button id="confirm-ok" class="btn btn-danger" data-i18n="common.confirm">确定</button>
       </div>
     </div>
   </div>
@@ -281,9 +280,9 @@
             <use href="/icons/sprites.svg#icon-lock"/>
           </svg>
         </span>
-        <span>修改密码</span>
+        <span data-i18n="mb.changePassword">修改密码</span>
       </div>
-      <button id="password-close" class="close" aria-label="关闭">
+      <button id="password-close" class="close" aria-label="关闭" data-i18n-aria="common.close">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <use href="/icons/sprites.svg#icon-x"/>
         </svg>
@@ -296,24 +295,24 @@
             <use href="/icons/sprites.svg#icon-alert"/>
           </svg>
         </span>
-        <span>修改密码后需要重新登录</span>
+        <span data-i18n="mb.changePwdHint">修改密码后需要重新登录</span>
       </div>
       <form id="password-form">
         <div class="form-group">
-          <label for="current-password">当前密码</label>
-          <input type="password" id="current-password" class="input" placeholder="请输入当前密码" required />
+          <label for="current-password" data-i18n="mb.currentPassword">当前密码</label>
+          <input type="password" id="current-password" class="input" placeholder="请输入当前密码" required data-i18n-ph="mb.currentPasswordPh" />
         </div>
         <div class="form-group">
-          <label for="new-password">新密码</label>
-          <input type="password" id="new-password" class="input" placeholder="请输入新密码（至少6位）" minlength="6" required />
+          <label for="new-password" data-i18n="mb.newPassword">新密码</label>
+          <input type="password" id="new-password" class="input" placeholder="请输入新密码（至少6位）" minlength="6" required data-i18n-ph="mb.newPasswordPh" />
         </div>
         <div class="form-group">
-          <label for="confirm-password">确认新密码</label>
-          <input type="password" id="confirm-password" class="input" placeholder="请再次输入新密码" minlength="6" required />
+          <label for="confirm-password" data-i18n="mb.confirmPassword">确认新密码</label>
+          <input type="password" id="confirm-password" class="input" placeholder="请再次输入新密码" minlength="6" required data-i18n-ph="mb.confirmPasswordPh" />
         </div>
         <div class="form-actions">
-          <button type="button" id="password-cancel" class="btn btn-secondary">取消</button>
-          <button type="submit" id="password-submit" class="btn btn-primary">修改密码</button>
+          <button type="button" id="password-cancel" class="btn btn-secondary" data-i18n="common.cancel">取消</button>
+          <button type="submit" id="password-submit" class="btn btn-primary" data-i18n="mb.changePassword">修改密码</button>
         </div>
       </form>
     </div>

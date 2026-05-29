@@ -365,6 +365,13 @@ body{
   color: var(--accent);
 }
 
+.brand-icon-img{
+  width: 24px;
+  height: 24px;
+  display: block;
+  object-fit: contain;
+}
+
 /* 增强角色徽章 */
 .role-badge{ 
   margin-left: 12px; 

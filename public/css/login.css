@@ -187,10 +187,16 @@ body::after {
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
-  animation: logoFloat 4s ease-in-out infinite;
-  filter: drop-shadow(0 8px 16px rgba(99, 102, 241, 0.25));
+  filter: none;
   position: relative;
   z-index: 1;
+}
+
+.logo-img{
+  width: 56px;
+  height: 56px;
+  display: block;
+  object-fit: contain;
 }
 
 .logo svg {

@@ -36,8 +36,8 @@ export function renderMailboxItem(mailbox, isActive = false) {
         <span class="time">${time}</span>
       </div>
       <div class="mailbox-actions">
-        <button class="btn btn-ghost btn-sm pin" onclick="togglePin(event,'${address}')" title="${m.is_pinned ? '取消置顶' : '置顶'}" aria-label="${m.is_pinned ? '取消置顶' : '置顶'}">${pinIcon}</button>
-        <button class="btn btn-ghost btn-sm del" onclick="deleteMailbox(event,'${address}')" title="删除" aria-label="删除邮箱">${IconHelper.trash(16, 16)}</button>
+        <button class="btn btn-ghost btn-sm pin" onclick="togglePin(event,'${address}')" title="${m.is_pinned ? window.t('app2.unpinTop') : window.t('app2.pinTop')}" aria-label="${m.is_pinned ? window.t('app2.unpinTop') : window.t('app2.pinTop')}">${pinIcon}</button>
+        <button class="btn btn-ghost btn-sm del" onclick="deleteMailbox(event,'${address}')" title="${window.t('common.delete')}" aria-label="${window.t('app2.deleteMailbox')}">${IconHelper.trash(16, 16)}</button>
       </div>
     </div>`;
 }
@@ -51,7 +51,7 @@ export function renderMailboxList(mailboxes, container) {
   if (!container) return;
   
   if (!mailboxes || mailboxes.length === 0) {
-    container.innerHTML = '<div class="empty-state" style="text-align:center;color:#64748b;padding:20px">暂无邮箱</div>';
+    container.innerHTML = `<div class="empty-state" style="text-align:center;color:#64748b;padding:20px">${window.t('app2.noMailboxes')}</div>`;
     return;
   }
   

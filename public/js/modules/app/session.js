@@ -64,16 +64,16 @@ export function applySessionUI(session) {
       badge.className = 'role-badge';
       if (session.strictAdmin) {
         badge.classList.add('role-super');
-        badge.textContent = '超级管理员';
+        badge.textContent = window.t('role.super');
       } else if (session.role === 'admin') {
         badge.classList.add('role-admin');
-        badge.textContent = `高级用户：${session.username || ''}`;
+        badge.textContent = window.t('role.advanced', { name: session.username || '' });
       } else if (session.role === 'user') {
         badge.classList.add('role-user');
-        badge.textContent = `用户：${session.username || ''}`;
+        badge.textContent = window.t('role.user', { name: session.username || '' });
       } else if (session.role === 'guest') {
         badge.classList.add('role-user');
-        badge.textContent = '演示模式';
+        badge.textContent = window.t('role.demo');
       }
     }
     
@@ -131,7 +131,7 @@ export async function validateSession() {
 export function showGuestBanner() {
   const bar = document.createElement('div');
   bar.className = 'demo-banner';
-  bar.innerHTML = '👀 当前为 <strong>观看模式</strong>（模拟数据，仅演示）。要接收真实邮件，请自建部署或联系部署。';
+  bar.innerHTML = window.t('app2.demoBanner');
   document.body.prepend(bar);
 }
 

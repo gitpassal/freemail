@@ -118,15 +118,15 @@ export function collectEditFormData(elements) {
 export function validateEditForm(data, isNew = false) {
   if (isNew) {
     if (!data.username || !data.username.trim()) {
-      return { valid: false, error: '用户名不能为空' };
+      return { valid: false, error: window.t('adm2.usernameRequired') };
     }
     if (!data.password || !data.password.trim()) {
-      return { valid: false, error: '密码不能为空' };
+      return { valid: false, error: window.t('adm2.passwordRequired') };
     }
   }
-  
+
   if (data.mailboxLimit !== undefined && (isNaN(data.mailboxLimit) || data.mailboxLimit < 0)) {
-    return { valid: false, error: '邮箱上限必须是非负整数' };
+    return { valid: false, error: window.t('adm2.mailboxLimitInvalid') };
   }
   
   return { valid: true, error: '' };
@@ -139,22 +139,22 @@ export function validateEditForm(data, isNew = false) {
 export function createUserModalContent() {
   return `
     <div class="form-group">
-      <label for="new-username">用户名</label>
-      <input type="text" id="new-username" placeholder="请输入用户名" autocomplete="off">
+      <label for="new-username">${window.t('adm.username')}</label>
+      <input type="text" id="new-username" placeholder="${window.t('adm2.enterUsernamePh')}" autocomplete="off">
     </div>
     <div class="form-group">
-      <label for="new-password">密码</label>
-      <input type="password" id="new-password" placeholder="请输入密码" autocomplete="new-password">
+      <label for="new-password">${window.t('adm.password')}</label>
+      <input type="password" id="new-password" placeholder="${window.t('adm2.enterPasswordPh')}" autocomplete="new-password">
     </div>
     <div class="form-group">
-      <label for="new-role">角色</label>
+      <label for="new-role">${window.t('adm.role')}</label>
       <select id="new-role">
-        <option value="user">普通用户</option>
-        <option value="admin">管理员</option>
+        <option value="user">${window.t('adm.roleUser')}</option>
+        <option value="admin">${window.t('adm.roleAdmin')}</option>
       </select>
     </div>
     <div class="form-group">
-      <label for="new-limit">邮箱上限</label>
+      <label for="new-limit">${window.t('adm.mailboxLimit')}</label>
       <input type="number" id="new-limit" value="10" min="0" max="9999">
     </div>
   `;

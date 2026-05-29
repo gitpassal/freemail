@@ -26,10 +26,10 @@ export async function generateMailbox(elements, lenRange, domainSelect, api, sho
   const { gen, email, emailActions, listCard } = elements;
   
   try {
-    setButtonLoading(gen, '生成中…');
+    setButtonLoading(gen, window.t('app2.generating'));
     const len = Number(lenRange?.value || getStoredLength());
     const domainIndex = getSelectedDomainIndex(domainSelect);
-    
+
     const r = await api(`/api/generate?length=${len}&domainIndex=${domainIndex}`);
     if (!r.ok) throw new Error(await r.text());
     
@@ -49,14 +49,14 @@ export async function generateMailbox(elements, lenRange, domainSelect, api, sho
       }
     } catch(_) {}
     
-    showToast('邮箱生成成功！', 'success');
+    showToast(window.t('app2.mailboxCreated'), 'success');
     startAutoRefresh(autoRefreshCallback);
     await refresh();
-    
+
     resetMbPage();
     await loadMailboxes({ forceFresh: true });
   } catch(e) {
-    showToast(e.message || '生成失败', 'error');
+    showToast(e.message || window.t('app2.generateFailed'), 'error');
   } finally {
     restoreButton(gen);
   }
@@ -77,7 +77,7 @@ export async function generateNameMailbox(elements, lenRange, domainSelect, api,
   const { genName } = elements;
   
   try {
-    setButtonLoading(genName, '生成中…');
+    setButtonLoading(genName, window.t('app2.generating'));
     const len = Number(lenRange?.value || getStoredLength());
     const domainIndex = getSelectedDomainIndex(domainSelect);
     const localName = generateRandomId(len);
@@ -105,14 +105,14 @@ export async function generateNameMailbox(elements, lenRange, domainSelect, api,
       }
     } catch(_) {}
     
-    showToast('随机人名邮箱生成成功！', 'success');
+    showToast(window.t('app2.nameMailboxCreated'), 'success');
     startAutoRefresh(autoRefreshCallback);
     await refresh();
-    
+
     resetMbPage();
     await loadMailboxes({ forceFresh: true });
   } catch(e) {
-    showToast(e.message || '生成失败', 'error');
+    showToast(e.message || window.t('app2.generateFailed'), 'error');
   } finally {
     restoreButton(genName);
   }
@@ -133,11 +133,11 @@ export async function createCustomMailbox(elements, domainSelect, api, showToast
     const local = (customLocalOverlay?.value || '').trim();
     const cfSuffix = !!customCfSuffixOverlay?.checked;
     if (cfSuffix && !/^(?=[A-Za-z0-9]*[A-Za-z])[A-Za-z0-9]{1,58}$/.test(local)) {
-      showToast('前缀不合法，仅限字母数字且至少包含一个字母', 'warn');
+      showToast(window.t('app2.invalidPrefix'), 'warn');
       return;
     }
     if (!cfSuffix && !/^[A-Za-z0-9._-]{1,64}$/.test(local)) {
-      showToast('用户名不合法，仅限字母/数字/._-', 'warn');
+      showToast(window.t('app2.invalidUsername'), 'warn');
       return;
     }
     const domainIndex = getSelectedDomainIndex(domainSelect);
@@ -156,10 +156,10 @@ export async function createCustomMailbox(elements, domainSelect, api, showToast
     if (customOverlay) customOverlay.style.display = 'none';
     if (elements.email) elements.email.classList.remove('custom-open');
     
-    showToast('已创建邮箱：' + data.email, 'success');
+    showToast(window.t('app2.mailboxCreatedAddr', { addr: data.email }), 'success');
     await loadMailboxes({ forceFresh: true });
   } catch(e) {
-    showToast(e.message || '创建失败', 'error');
+    showToast(e.message || window.t('app2.createFailed'), 'error');
   }
 }
 
@@ -230,11 +230,11 @@ export async function toggleMailboxPin(event, address, api, showToast, loadMailb
   try {
     const r = await api(`/api/mailboxes/pin?address=${encodeURIComponent(address)}`, { method: 'POST' });
     if (r.ok) {
-      showToast('操作成功', 'success');
+      showToast(window.t('app2.opSuccess'), 'success');
       await loadMailboxes({ forceFresh: true });
     }
   } catch(e) {
-    showToast(e.message || '操作失败', 'error');
+    showToast(e.message || window.t('toast.opFailed'), 'error');
   }
 }
 
@@ -250,16 +250,16 @@ export async function toggleMailboxPin(event, address, api, showToast, loadMailb
  */
 export async function deleteMailboxAddress(event, address, elements, api, showToast, showConfirm, loadMailboxes) {
   event.stopPropagation();
-  const confirmed = await showConfirm(`确定删除邮箱 ${address}？所有邮件将被清空。`);
+  const confirmed = await showConfirm(window.t('app2.confirmDeleteMailbox', { addr: address }));
   if (!confirmed) return;
-  
+
   try {
     const r = await api(`/api/mailboxes?address=${encodeURIComponent(address)}`, { method: 'DELETE' });
     if (r.ok) {
-      showToast('邮箱已删除', 'success');
+      showToast(window.t('app2.mailboxDeleted'), 'success');
       if (getCurrentMailbox() === address) {
         clearCurrentMailbox();
-        if (elements.email) elements.email.textContent = '点击生成邮箱';
+        if (elements.email) elements.email.textContent = window.t('app2.placeholderGen');
         elements.email?.classList.remove('has-email');
         if (elements.emailActions) elements.emailActions.style.display = 'none';
         if (elements.list) elements.list.innerHTML = '';
@@ -268,7 +268,7 @@ export async function deleteMailboxAddress(event, address, elements, api, showTo
       await loadMailboxes({ forceFresh: true });
     }
   } catch(e) {
-    showToast(e.message || '删除失败', 'error');
+    showToast(e.message || window.t('app2.deleteFailed'), 'error');
   }
 }
 
@@ -279,14 +279,14 @@ export async function deleteMailboxAddress(event, address, elements, api, showTo
 export async function copyMailboxAddress(showToast) {
   const mailbox = getCurrentMailbox();
   if (!mailbox) {
-    showToast('请先生成或选择一个邮箱', 'warn');
+    showToast(window.t('toast.needMailbox'), 'warn');
     return;
   }
   try {
     await navigator.clipboard.writeText(mailbox);
-    showToast(`已复制：${mailbox}`, 'success');
+    showToast(window.t('toast.copiedAddr', { addr: mailbox }), 'success');
   } catch(_) {
-    showToast('复制失败', 'error');
+    showToast(window.t('toast.copyFailed'), 'error');
   }
 }
 
@@ -300,20 +300,20 @@ export async function copyMailboxAddress(showToast) {
 export async function clearAllEmails(api, showToast, showConfirm, refresh) {
   const mailbox = getCurrentMailbox();
   if (!mailbox) {
-    showToast('请先选择一个邮箱', 'warn');
+    showToast(window.t('app2.selectMailboxFirst'), 'warn');
     return;
   }
-  const confirmed = await showConfirm(`确定清空 ${mailbox} 的所有邮件？`);
+  const confirmed = await showConfirm(window.t('app2.confirmClearMails', { addr: mailbox }));
   if (!confirmed) return;
-  
+
   try {
     const r = await api(`/api/emails?mailbox=${encodeURIComponent(mailbox)}`, { method: 'DELETE' });
     if (r.ok) {
-      showToast('邮件已清空', 'success');
+      showToast(window.t('app2.mailsCleared'), 'success');
       await refresh();
     }
   } catch(e) {
-    showToast(e.message || '清空失败', 'error');
+    showToast(e.message || window.t('app2.clearFailed'), 'error');
   }
 }
 

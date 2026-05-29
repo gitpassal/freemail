@@ -141,7 +141,7 @@ export function renderEmailItem(email, isMobile = false) {
     preview = rawContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     const codeMatch = (e.verification_code || '').toString().trim() || extractCode(rawContent);
     if (codeMatch) {
-      preview = `验证码: ${codeMatch} | ${preview}`;
+      preview = `${window.t('app2.previewCode', { code: codeMatch })} | ${preview}`;
     }
     preview = preview.slice(0, 40);
   }
@@ -156,14 +156,14 @@ export function renderEmailItem(email, isMobile = false) {
   const toAddrsArr = rawToAddrs.split(',').map(s => s.trim()).filter(Boolean);
   if (toAddrsArr.length) {
     recipientsDisplay = toAddrsArr.slice(0, 2).join(', ');
-    if (toAddrsArr.length > 2) recipientsDisplay += ` 等${toAddrsArr.length}人`;
+    if (toAddrsArr.length > 2) recipientsDisplay += ` ${window.t('mail.andMore', { n: toAddrsArr.length })}`;
   } else {
     recipientsDisplay = rawToAddrs;
   }
   
-  const subjectText = escapeHtml(e.subject || '(无主题)');
+  const subjectText = escapeHtml(e.subject || window.t('mail.noSubject'));
   const previewText = escapeHtml(preview);
-  const metaLabel = isSentView ? '收件人' : '发件人';
+  const metaLabel = isSentView ? window.t('mail.to') : window.t('mail.from');
   const metaText = isSentView ? escapeHtml(recipientsDisplay) : senderText;
   const timeDisplay = isMobile ? formatTsMobile(e.received_at || e.created_at) : formatTs(e.received_at || e.created_at);
   // 收件箱视图时显示收件人地址（别名地址）
@@ -173,21 +173,21 @@ export function renderEmailItem(email, isMobile = false) {
     <div class="email-item clickable" onclick="${isSentView ? `showSentEmail(${e.id})` : `showEmail(${e.id})`}">
       <div class="email-meta">
         <span class="meta-from"><span class="meta-label">${metaLabel}</span><span class="meta-from-text">${metaText}</span></span>
-        ${!isSentView && toAddrDisplay ? `<span class="meta-to"><span class="meta-label">收件人</span><span class="meta-to-text">${toAddrDisplay}</span></span>` : ''}
+        ${!isSentView && toAddrDisplay ? `<span class="meta-to"><span class="meta-label">${window.t('mail.to')}</span><span class="meta-to-text">${toAddrDisplay}</span></span>` : ''}
         <span class="email-time"><span class="time-icon">🕐</span>${timeDisplay}</span>
       </div>
       <div class="email-content">
         <div class="email-main">
-          <div class="email-line"><span class="label-chip">主题</span><span class="value-text subject">${subjectText}</span></div>
-          <div class="email-line"><span class="label-chip">内容</span>${hasContent ? `<span class="email-preview value-text">${previewText}</span>` : '<span class="email-preview value-text" style="color:#94a3b8">(暂无预览)</span>'}</div>
+          <div class="email-line"><span class="label-chip">${window.t('mail.subject')}</span><span class="value-text subject">${subjectText}</span></div>
+          <div class="email-line"><span class="label-chip">${window.t('app2.mailContent')}</span>${hasContent ? `<span class="email-preview value-text">${previewText}</span>` : `<span class="email-preview value-text" style="color:#94a3b8">${window.t('app2.noPreview')}</span>`}</div>
         </div>
         <div class="email-actions">
           ${isSentView ? `
             <span class="status-badge ${statusClass(e.status)}">${e.status || 'unknown'}</span>
-            <button class="btn btn-danger btn-sm" onclick="deleteSent(${e.id});event.stopPropagation()" title="删除记录"><span class="btn-icon">🗑️</span></button>
+            <button class="btn btn-danger btn-sm" onclick="deleteSent(${e.id});event.stopPropagation()" title="${window.t('app2.deleteRecord')}"><span class="btn-icon">🗑️</span></button>
           ` : `
-            <button class="btn btn-secondary btn-sm" data-code="${listCode || ''}" onclick="copyFromList(event, ${e.id});event.stopPropagation()" title="复制内容或验证码"><span class="btn-icon">📋</span></button>
-            <button class="btn btn-danger btn-sm" onclick="deleteEmail(${e.id});event.stopPropagation()" title="删除邮件"><span class="btn-icon">🗑️</span></button>
+            <button class="btn btn-secondary btn-sm" data-code="${listCode || ''}" onclick="copyFromList(event, ${e.id});event.stopPropagation()" title="${window.t('app2.copyContentOrCode')}"><span class="btn-icon">📋</span></button>
+            <button class="btn btn-danger btn-sm" onclick="deleteEmail(${e.id});event.stopPropagation()" title="${window.t('mail.deleteMail')}"><span class="btn-icon">🗑️</span></button>
           `}
         </div>
       </div>

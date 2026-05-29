@@ -1,6 +1,6 @@
 {
   "name": "Cloudflare Alias",
-  "short_name": "Alias",
+  "short_name": "CF Alias",
   "description": "Cloudflare Alias mailbox app",
   "start_url": "/",
   "scope": "/",

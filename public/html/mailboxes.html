@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-i18n-doctitle="title.mailboxes">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -8,11 +8,11 @@
   <meta name="theme-color" content="#f2f2f7" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="__APP_NAME__" />
+  <meta name="apple-mobile-web-app-title" content="CF Alias" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="format-detection" content="telephone=no" />
   <link rel="manifest" href="/manifest.webmanifest" />
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.png" type="image/png" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
   <link rel="stylesheet" href="/css/app.css" />
@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="/css/tokens.css" />
   <!-- 暗黑模式样式 -->
   <!-- 主题切换支持 -->
+  <script src="/js/i18n.js"></script>
   <script src="/js/pwa.js" defer></script>
   <script src="/js/theme-toggle.js"></script>
 </head>
@@ -42,23 +43,21 @@
     <div class="topbar-inner">
       <div class="brand">
         <span class="brand-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <use href="/icons/sprites.svg#icon-mail"/>
-          </svg>
+          <img src="/icons/cloud.png" alt="" class="brand-icon-img" width="24" height="24" />
         </span>
-        <span class="brand-text">__APP_NAME__ - 邮箱总览</span>
+        <span class="brand-text">__APP_NAME__<span data-i18n="mbx.brandSuffix"> - 邮箱总览</span></span>
       </div>
       <div class="nav-actions">
         <div class="spacer"></div>
-        <a class="btn btn-ghost" href="/" title="返回首页">
+        <a class="btn btn-ghost" href="/" title="返回首页" data-i18n-title="nav.home">
           <span class="btn-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <use href="/icons/sprites.svg#icon-home"/>
             </svg>
           </span>
-          <span class="btn-text">首页</span>
+          <span class="btn-text" data-i18n="nav.home">首页</span>
         </a>
-        <a id="repo" class="btn btn-ghost" href="__APP_REPO_URL__" target="_blank" rel="noopener noreferrer" title="GitHub 开源仓库">
+        <a id="repo" class="btn btn-ghost" href="__APP_REPO_URL__" target="_blank" rel="noopener noreferrer" title="GitHub 开源仓库" data-i18n-title="nav.githubTitle">
           <span class="btn-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <use href="/icons/sprites.svg#icon-github"/>
@@ -66,13 +65,13 @@
           </span>
           <span class="btn-text">GitHub</span>
         </a>
-        <button id="logout" class="btn btn-secondary" title="退出登录">
+        <button id="logout" class="btn btn-secondary" title="退出登录" data-i18n-title="nav.signout">
           <span class="btn-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <use href="/icons/sprites.svg#icon-logout"/>
             </svg>
           </span>
-          <span class="btn-text">退出登录</span>
+          <span class="btn-text" data-i18n="nav.signout">退出登录</span>
         </button>
       </div>
     </div>
@@ -87,40 +86,40 @@
               <use href="/icons/sprites.svg#icon-package"/>
             </svg>
           </span>
-          所有邮箱
+          <span data-i18n="mbx.allMailboxes">所有邮箱</span>
         </h2>
         <div class="toolbar">
           <!-- 第一行：搜索 + 筛选 -->
           <div class="toolbar-row-1">
             <div class="searchbar">
-              <input id="q" class="search-input" placeholder="搜索邮箱地址" aria-label="搜索邮箱地址" />
-              <button id="search" class="btn btn-primary btn-sm" aria-label="搜索">
+              <input id="q" class="search-input" placeholder="搜索邮箱地址" aria-label="搜索邮箱地址" data-i18n-ph="mbx.searchMailboxPh" data-i18n-aria="mbx.searchMailboxPh" />
+              <button id="search" class="btn btn-primary btn-sm" aria-label="搜索" data-i18n-aria="common.search">
                 <span class="btn-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <use href="/icons/sprites.svg#icon-search"/>
                   </svg>
                 </span>
-                <span>搜索</span>
+                <span data-i18n="common.search">搜索</span>
               </button>
             </div>
             <div class="filter-actions">
-              <select id="domain-filter" class="filter-select" title="按域名筛选">
-                <option value="">全部域名</option>
+              <select id="domain-filter" class="filter-select" title="按域名筛选" data-i18n-title="mbx.filterByDomain">
+                <option value="" data-i18n="mbx.allDomains">全部域名</option>
               </select>
-              <select id="login-filter" class="filter-select" title="按登录权限筛选">
-                <option value="">登录状态</option>
-                <option value="allowed">允许登录</option>
-                <option value="denied">禁止登录</option>
+              <select id="login-filter" class="filter-select" title="按登录权限筛选" data-i18n-title="mbx.filterByLogin">
+                <option value="" data-i18n="mbx.loginStatus">登录状态</option>
+                <option value="allowed" data-i18n="mbx.loginAllowed">允许登录</option>
+                <option value="denied" data-i18n="mbx.loginDenied">禁止登录</option>
               </select>
-              <select id="favorite-filter" class="filter-select" title="按收藏筛选">
-                <option value="">收藏状态</option>
-                <option value="favorite">已收藏</option>
-                <option value="not-favorite">未收藏</option>
+              <select id="favorite-filter" class="filter-select" title="按收藏筛选" data-i18n-title="mbx.filterByFavorite">
+                <option value="" data-i18n="mbx.favoriteStatus">收藏状态</option>
+                <option value="favorite" data-i18n="mbx.favorited">已收藏</option>
+                <option value="not-favorite" data-i18n="mbx.notFavorited">未收藏</option>
               </select>
-              <select id="forward-filter" class="filter-select" title="按转发筛选">
-                <option value="">转发状态</option>
-                <option value="has-forward">已设置</option>
-                <option value="no-forward">未设置</option>
+              <select id="forward-filter" class="filter-select" title="按转发筛选" data-i18n-title="mbx.filterByForward">
+                <option value="" data-i18n="mbx.forwardStatus">转发状态</option>
+                <option value="has-forward" data-i18n="mbx.forwardSet">已设置</option>
+                <option value="no-forward" data-i18n="mbx.forwardNotSet">未设置</option>
               </select>
             </div>
           </div>
@@ -128,60 +127,60 @@
           <div class="toolbar-row-2">
             <div class="toolbar-spacer"></div>
             <div class="batch-actions">
-              <button id="batch-allow" class="btn btn-ghost btn-sm" title="批量放行邮箱登录" aria-label="批量放行">
+              <button id="batch-allow" class="btn btn-ghost btn-sm" title="批量放行邮箱登录" aria-label="批量放行" data-i18n-title="mbx.batchAllowTitle" data-i18n-aria="mbx.batchAllow">
                 <span class="btn-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <use href="/icons/sprites.svg#icon-check"/>
                   </svg>
                 </span>
-                <span>批量放行</span>
+                <span data-i18n="mbx.batchAllow">批量放行</span>
               </button>
-              <button id="batch-deny" class="btn btn-ghost btn-sm" title="批量禁止邮箱登录" aria-label="批量禁止">
+              <button id="batch-deny" class="btn btn-ghost btn-sm" title="批量禁止邮箱登录" aria-label="批量禁止" data-i18n-title="mbx.batchDenyTitle" data-i18n-aria="mbx.batchDeny">
                 <span class="btn-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <use href="/icons/sprites.svg#icon-x-circle"/>
                   </svg>
                 </span>
-                <span>批量禁止</span>
+                <span data-i18n="mbx.batchDeny">批量禁止</span>
               </button>
-              <button id="batch-favorite" class="btn btn-ghost btn-sm" title="批量收藏" aria-label="批量收藏">
+              <button id="batch-favorite" class="btn btn-ghost btn-sm" title="批量收藏" aria-label="批量收藏" data-i18n-title="mbx.batchFavorite" data-i18n-aria="mbx.batchFavorite">
                 <span class="btn-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
                     <use href="/icons/sprites.svg#icon-star"/>
                   </svg>
                 </span>
-                <span>批量收藏</span>
+                <span data-i18n="mbx.batchFavorite">批量收藏</span>
               </button>
-              <button id="batch-unfavorite" class="btn btn-ghost btn-sm" title="批量取消收藏" aria-label="批量取消收藏">
+              <button id="batch-unfavorite" class="btn btn-ghost btn-sm" title="批量取消收藏" aria-label="批量取消收藏" data-i18n-title="mbx.batchUnfavoriteTitle" data-i18n-aria="mbx.batchUnfavoriteTitle">
                 <span class="btn-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <use href="/icons/sprites.svg#icon-star-empty"/>
                   </svg>
                 </span>
-                <span>批量取消</span>
+                <span data-i18n="mbx.batchUnfavorite">批量取消</span>
               </button>
-              <button id="batch-forward" class="btn btn-ghost btn-sm" title="批量设置转发" aria-label="批量设置转发">
+              <button id="batch-forward" class="btn btn-ghost btn-sm" title="批量设置转发" aria-label="批量设置转发" data-i18n-title="mbx.batchForwardTitle" data-i18n-aria="mbx.batchForwardTitle">
                 <span class="btn-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <use href="/icons/sprites.svg#icon-forward"/>
                   </svg>
                 </span>
-                <span>批量转发</span>
+                <span data-i18n="mbx.batchForward">批量转发</span>
               </button>
-              <button id="batch-clear-forward" class="btn btn-ghost btn-sm" title="批量清除转发" aria-label="批量清除转发">
+              <button id="batch-clear-forward" class="btn btn-ghost btn-sm" title="批量清除转发" aria-label="批量清除转发" data-i18n-title="mbx.batchClearForwardTitle" data-i18n-aria="mbx.batchClearForwardTitle">
                 <span class="btn-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <use href="/icons/sprites.svg#icon-x-circle"/>
                   </svg>
                 </span>
-                <span>清除转发</span>
+                <span data-i18n="mbx.batchClearForward">清除转发</span>
               </button>
             </div>
             <div class="view-toggle">
-              <button id="view-grid" class="btn btn-ghost btn-sm active" title="卡片网格视图" aria-label="网格视图">
+              <button id="view-grid" class="btn btn-ghost btn-sm active" title="卡片网格视图" aria-label="网格视图" data-i18n-title="mbx.gridViewTitle" data-i18n-aria="mbx.gridView">
                 <span class="view-icon grid-icon"></span>
               </button>
-              <button id="view-list" class="btn btn-ghost btn-sm" title="列表行视图" aria-label="列表视图">
+              <button id="view-list" class="btn btn-ghost btn-sm" title="列表行视图" aria-label="列表视图" data-i18n-title="mbx.listViewTitle" data-i18n-aria="mbx.listView">
                 <span class="view-icon list-icon"></span>
               </button>
             </div>
@@ -197,12 +196,12 @@
               <use href="/icons/sprites.svg#icon-inbox-empty"/>
             </svg>
           </div>
-          <div class="empty-title">暂无数据</div>
+          <div class="empty-title" data-i18n="common.noData">暂无数据</div>
         </div>
         <div class="pager">
-          <button id="prev" class="btn btn-ghost btn-sm">上一页</button>
+          <button id="prev" class="btn btn-ghost btn-sm" data-i18n="common.prev">上一页</button>
           <span id="page" class="muted page-indicator"></span>
-          <button id="next" class="btn btn-ghost btn-sm">下一页</button>
+          <button id="next" class="btn btn-ghost btn-sm" data-i18n="common.next">下一页</button>
         </div>
       </div>
     </div>
@@ -215,19 +214,19 @@
       <div class="modal-header">
         <div>
           <span class="modal-icon">🔐</span>
-          <span>重置邮箱密码</span>
+          <span data-i18n="mbx.resetPasswordTitle">重置邮箱密码</span>
         </div>
-        <button id="reset-close" class="close">✕</button>
+        <button id="reset-close" class="close" data-i18n-aria="common.close">✕</button>
       </div>
       <div class="modal-body">
-        <p class="modal-desc">将把该邮箱的密码重置为“默认”（即邮箱地址本身）。</p>
+        <p class="modal-desc" data-i18n="mbx.resetPasswordDesc">将把该邮箱的密码重置为“默认”（即邮箱地址本身）。</p>
         <div class="modal-info-box">
-          <div class="modal-info-label">邮箱地址</div>
+          <div class="modal-info-label" data-i18n="mbx.emailAddress">邮箱地址</div>
           <div id="reset-email" class="modal-email-value"></div>
         </div>
         <div class="modal-footer">
-          <button id="reset-cancel" class="btn btn-secondary">取消</button>
-          <button id="reset-confirm" class="btn btn-danger">确定重置</button>
+          <button id="reset-cancel" class="btn btn-secondary" data-i18n="common.cancel">取消</button>
+          <button id="reset-confirm" class="btn btn-danger" data-i18n="mbx.confirmReset">确定重置</button>
         </div>
       </div>
     </div>
@@ -241,17 +240,17 @@
           <span class="modal-icon" id="login-confirm-icon">🔒</span>
           <span id="login-confirm-title">确认操作</span>
         </div>
-        <button id="login-confirm-close" class="close">✕</button>
+        <button id="login-confirm-close" class="close" data-i18n-aria="common.close">✕</button>
       </div>
       <div class="modal-body">
         <p id="login-confirm-message" class="modal-desc"></p>
         <div class="modal-info-box">
-          <div class="modal-info-label">邮箱地址</div>
+          <div class="modal-info-label" data-i18n="mbx.emailAddress">邮箱地址</div>
           <div id="login-confirm-email" class="modal-email-value"></div>
         </div>
         <div class="modal-footer">
-          <button id="login-confirm-cancel" class="btn btn-secondary">取消</button>
-          <button id="login-confirm-ok" class="btn btn-primary">确定</button>
+          <button id="login-confirm-cancel" class="btn btn-secondary" data-i18n="common.cancel">取消</button>
+          <button id="login-confirm-ok" class="btn btn-primary" data-i18n="common.confirm">确定</button>
         </div>
       </div>
     </div>
@@ -263,28 +262,28 @@
       <div class="modal-header">
         <div>
           <span class="modal-icon">🔑</span>
-          <span>修改邮箱密码</span>
+          <span data-i18n="mbx.changePasswordTitle">修改邮箱密码</span>
         </div>
-        <button id="change-password-close" class="close">✕</button>
+        <button id="change-password-close" class="close" data-i18n-aria="common.close">✕</button>
       </div>
       <div class="modal-body">
-        <p class="modal-desc">为该邮箱设置新的自定义密码。</p>
+        <p class="modal-desc" data-i18n="mbx.changePasswordDesc">为该邮箱设置新的自定义密码。</p>
         <div class="modal-info-box">
-          <div class="modal-info-label">邮箱地址</div>
+          <div class="modal-info-label" data-i18n="mbx.emailAddress">邮箱地址</div>
           <div id="change-password-email" class="modal-email-value"></div>
         </div>
         <form id="change-password-form">
           <div class="form-field">
-            <label class="form-label">新密码</label>
-            <input type="password" id="new-password" class="form-input" placeholder="请输入新密码（至少6位）" minlength="6" required />
+            <label class="form-label" data-i18n="mbx.newPassword">新密码</label>
+            <input type="password" id="new-password" class="form-input" placeholder="请输入新密码（至少6位）" minlength="6" required data-i18n-ph="mbx.newPasswordPh" />
           </div>
           <div class="form-field">
-            <label class="form-label">确认新密码</label>
-            <input type="password" id="confirm-password" class="form-input" placeholder="请再次输入新密码" minlength="6" required />
+            <label class="form-label" data-i18n="mbx.confirmNewPassword">确认新密码</label>
+            <input type="password" id="confirm-password" class="form-input" placeholder="请再次输入新密码" minlength="6" required data-i18n-ph="mbx.confirmNewPasswordPh" />
           </div>
           <div class="modal-footer">
-            <button type="button" id="change-password-cancel" class="btn btn-secondary">取消</button>
-            <button type="submit" id="change-password-submit" class="btn btn-primary">修改密码</button>
+            <button type="button" id="change-password-cancel" class="btn btn-secondary" data-i18n="common.cancel">取消</button>
+            <button type="submit" id="change-password-submit" class="btn btn-primary" data-i18n="mbx.changePasswordSubmit">修改密码</button>
           </div>
         </form>
       </div>
@@ -299,35 +298,36 @@
           <span class="modal-icon" id="batch-modal-icon">📝</span>
           <span id="batch-modal-title">批量操作邮箱登录权限</span>
         </div>
-        <button id="batch-modal-close" class="close">✕</button>
+        <button id="batch-modal-close" class="close" data-i18n-aria="common.close">✕</button>
       </div>
       <div class="modal-body">
         <p id="batch-modal-message" class="modal-desc"></p>
         <div class="form-field">
-          <label class="form-label">
+          <label class="form-label" data-i18n="mbx.emailListLabel">
             邮箱地址列表（一行一个）
           </label>
-          <textarea id="batch-emails-input" class="form-textarea" 
-                    placeholder="请输入邮箱地址，一行一个&#10;例如：&#10;user1@example.com&#10;user2@example.com&#10;user3@example.com" 
+          <textarea id="batch-emails-input" class="form-textarea"
+                    placeholder="请输入邮箱地址，一行一个&#10;例如：&#10;user1@example.com&#10;user2@example.com&#10;user3@example.com"
                     rows="10"
-                    class="form-textarea-mono"></textarea>
+                    class="form-textarea-mono"
+                    data-i18n-ph="mbx.emailListPh"></textarea>
           <div class="form-hint">
             <span id="batch-count-info">输入邮箱后将显示数量统计</span>
           </div>
         </div>
         <!-- 转发目标输入框（仅批量转发时显示） -->
         <div id="batch-forward-input-wrapper" class="form-field" style="display:none;">
-          <label class="form-label">
+          <label class="form-label" data-i18n="mbx.forwardTarget">
             转发目标邮箱
           </label>
           <input id="batch-forward-target" type="email" class="form-input"
-                 placeholder="所有选中邮箱将转发到此地址" />
+                 placeholder="所有选中邮箱将转发到此地址" data-i18n-ph="mbx.forwardTargetPh" />
         </div>
         <div class="modal-footer">
-          <button id="batch-modal-cancel" class="btn btn-secondary">取消</button>
+          <button id="batch-modal-cancel" class="btn btn-secondary" data-i18n="common.cancel">取消</button>
           <button id="batch-modal-confirm" class="btn btn-primary" disabled>
-            <span class="batch-btn-text">确定操作</span>
-            <span class="batch-btn-loading" style="display:none;">处理中...</span>
+            <span class="batch-btn-text" data-i18n="mbx.confirmAction">确定操作</span>
+            <span class="batch-btn-loading" style="display:none;" data-i18n="common.processing">处理中...</span>
           </button>
         </div>
       </div>
@@ -342,29 +342,29 @@
           <span class="modal-icon" id="password-modal-icon">🔑</span>
           <span id="password-modal-title">密码操作</span>
         </div>
-        <button id="password-modal-close" class="close">✕</button>
+        <button id="password-modal-close" class="close" data-i18n-aria="common.close">✕</button>
       </div>
       <div class="modal-body">
         <p id="password-modal-message" class="modal-desc"></p>
         <!-- 设置密码输入框 -->
         <div id="password-input-wrapper" class="form-field" style="display:none;">
-          <label class="form-label">
+          <label class="form-label" data-i18n="mbx.newPassword">
             新密码
           </label>
           <input id="password-new-input" type="password" class="form-input"
-                 placeholder="请输入新密码" />
+                 placeholder="请输入新密码" data-i18n-ph="mbx.newPasswordSimplePh" />
           <div class="form-hint">
             <label class="show-password-label">
               <input type="checkbox" id="password-show-toggle" />
-              显示密码
+              <span data-i18n="mbx.showPassword">显示密码</span>
             </label>
           </div>
         </div>
         <div class="modal-footer">
-          <button id="password-modal-cancel" class="btn btn-secondary">取消</button>
+          <button id="password-modal-cancel" class="btn btn-secondary" data-i18n="common.cancel">取消</button>
           <button id="password-modal-confirm" class="btn btn-primary">
-            <span class="password-btn-text">确定</span>
-            <span class="password-btn-loading" style="display:none;">处理中...</span>
+            <span class="password-btn-text" data-i18n="common.confirm">确定</span>
+            <span class="password-btn-loading" style="display:none;" data-i18n="common.processing">处理中...</span>
           </button>
         </div>
       </div>
@@ -378,37 +378,37 @@
       <div class="subpage-header">
         <div class="subpage-title">
           <span class="subpage-icon">👤</span>
-          <span>分配邮箱给用户</span>
+          <span data-i18n="mbx.assignTitle">分配邮箱给用户</span>
         </div>
-        <button id="assign-subpage-close" class="subpage-close" title="关闭">✕</button>
+        <button id="assign-subpage-close" class="subpage-close" title="关闭" data-i18n-title="common.close" data-i18n-aria="common.close">✕</button>
       </div>
       
       <div class="subpage-body">
         <!-- 邮箱信息 -->
         <div class="assign-mailbox-info">
-          <div class="info-label">邮箱地址</div>
+          <div class="info-label" data-i18n="mbx.emailAddress">邮箱地址</div>
           <div id="assign-subpage-email" class="info-value"></div>
         </div>
-        
+
         <!-- 用户列表 -->
         <div class="assign-users-section">
           <div class="section-header">
-            <h3>选择要分配的用户</h3>
+            <h3 data-i18n="mbx.selectUsers">选择要分配的用户</h3>
             <div class="selection-actions">
-              <button id="select-all-users" class="btn btn-ghost btn-sm">全选</button>
-              <button id="clear-all-users" class="btn btn-ghost btn-sm">清空</button>
+              <button id="select-all-users" class="btn btn-ghost btn-sm" data-i18n="common.selectAll">全选</button>
+              <button id="clear-all-users" class="btn btn-ghost btn-sm" data-i18n="common.clear">清空</button>
             </div>
           </div>
-          
+
           <!-- 搜索用户 -->
           <div class="user-search">
-            <input id="user-search-input" type="text" placeholder="搜索用户名或显示名称..." class="search-input">
+            <input id="user-search-input" type="text" placeholder="搜索用户名或显示名称..." class="search-input" data-i18n-ph="mbx.searchUserPh">
           </div>
-          
+
           <!-- 加载状态 -->
           <div id="users-loading" class="loading-state" style="display: none;">
             <div class="loading-spinner"></div>
-            <div>正在加载用户列表...</div>
+            <div data-i18n="mbx.loadingUsers">正在加载用户列表...</div>
           </div>
           
           <!-- 用户列表 -->
@@ -419,14 +419,14 @@
           <!-- 空状态 -->
           <div id="users-empty" class="empty-state" style="display: none;">
             <div class="empty-icon">👥</div>
-            <div class="empty-title">暂无可分配用户</div>
+            <div class="empty-title" data-i18n="mbx.noAssignableUsers">暂无可分配用户</div>
           </div>
         </div>
-        
+
         <!-- 已选用户 -->
         <div id="selected-users-section" class="selected-users-section" style="display: none;">
           <div class="section-header">
-            <h3>已选择用户 (<span id="selected-count">0</span>)</h3>
+            <h3><span data-i18n="mbx.selectedUsers">已选择用户</span> (<span id="selected-count">0</span>)</h3>
           </div>
           <div id="selected-users-list" class="selected-users-list">
             <!-- 已选用户将由JavaScript动态生成 -->
@@ -436,10 +436,10 @@
       
       <div class="subpage-footer">
         <div class="footer-actions">
-          <button id="assign-subpage-cancel" class="btn btn-secondary">取消</button>
+          <button id="assign-subpage-cancel" class="btn btn-secondary" data-i18n="common.cancel">取消</button>
           <button id="assign-subpage-confirm" class="btn btn-primary" disabled>
-            <span class="btn-text">确定分配</span>
-            <span class="btn-loading" style="display: none;">分配中...</span>
+            <span class="btn-text" data-i18n="mbx.confirmAssign">确定分配</span>
+            <span class="btn-loading" style="display: none;" data-i18n="mbx.assigning">分配中...</span>
           </button>
         </div>
       </div>
