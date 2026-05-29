@@ -209,7 +209,7 @@
   font-weight: 500;
   flex: 1;
   word-break: break-all;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--card-2);
   padding: 6px 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-light);
@@ -275,7 +275,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--primary), #8b5cf6, #ec4899);
+  background: linear-gradient(90deg, var(--primary), var(--accent), var(--accent));
 }
 
 .email-content-text{

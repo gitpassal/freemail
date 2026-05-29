@@ -13,11 +13,11 @@
   --card-glass-hover: rgba(255, 255, 255, 0.85);
   --muted: #64748b;
   --muted2: #94a3b8;
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
+  --primary: var(--accent);
+  --primary-hover: var(--accent-press);
   --primary-light: rgba(99, 102, 241, 0.12);
   --primary-glass: rgba(99, 102, 241, 0.06);
-  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  --primary-gradient: linear-gradient(135deg, var(--accent) 0%, var(--accent) 50%, var(--accent) 100%);
   --danger: #ef4444;
   --danger-hover: #dc2626;
   --success: #10b981;
@@ -674,7 +674,7 @@ body {
 
 :root.dark {
   /* 页面背景 - 与首页一致 */
-  --surface: linear-gradient(135deg, #0f172a 0%, #1e1b4b 25%, #1e293b 50%, #18181b 75%, #1c1917 100%);
+  --surface: linear-gradient(135deg, var(--card-2) 0%, var(--card) 25%, var(--card) 50%, #18181b 75%, #1c1917 100%);
   --surface-mesh:
     radial-gradient(at 40% 20%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
     radial-gradient(at 80% 0%, rgba(236, 72, 153, 0.1) 0px, transparent 50%),
@@ -682,17 +682,17 @@ body {
     radial-gradient(at 80% 50%, rgba(245, 158, 11, 0.08) 0px, transparent 50%),
     radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.12) 0px, transparent 50%);
   --mailbox-bg: var(--surface);
-  --card: rgba(30, 41, 59, 0.85);
-  --card-glass: rgba(30, 41, 59, 0.6);
+  --card: var(--card);
+  --card-glass: var(--card);
   --text: #f8fafc;
   --text-light: #e2e8f0;
   --text-muted: #94a3b8;
-  --border: #334155;
+  --border: var(--separator);
   --border-glass: rgba(255, 255, 255, 0.1);
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -2px rgba(0, 0, 0, 0.25);
   --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(99, 102, 241, 0.1);
-  --primary: #6366f1;
+  --primary: var(--accent);
   --primary-light: rgba(99, 102, 241, 0.2);
 }
 
@@ -744,7 +744,7 @@ body {
 
 /* 顶部栏 */
 :root.dark .topbar {
-  background: rgba(30, 41, 59, 0.85);
+  background: var(--card);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -761,14 +761,14 @@ body {
 
 /* 邮箱地址显示 */
 :root.dark .mailbox-address {
-  background: rgba(15, 23, 42, 0.6);
-  border: 2px dashed #475569;
+  background: var(--card-2);
+  border: 2px dashed var(--separator-strong);
   color: #a5b4fc;
 }
 
 :root.dark .mailbox-address.has-email {
   border-style: solid;
-  border-color: #6366f1;
+  border-color: var(--accent);
   background: rgba(99, 102, 241, 0.15);
   color: #a5b4fc;
 }
@@ -776,7 +776,7 @@ body {
 /* 按钮 */
 :root.dark .btn-copy,
 :root.dark .btn-compose {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #e2e8f0;
 }
@@ -784,12 +784,12 @@ body {
 :root.dark .btn-copy:hover,
 :root.dark .btn-compose:hover {
   background: rgba(99, 102, 241, 0.15);
-  border-color: #6366f1;
+  border-color: var(--accent);
   color: #a5b4fc;
 }
 
 :root.dark .btn-primary {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent) 100%);
   color: white;
   border: none;
 }
@@ -812,34 +812,34 @@ body {
 }
 
 :root.dark .btn-secondary {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #e2e8f0;
 }
 
 :root.dark .btn-secondary:hover {
   background: rgba(99, 102, 241, 0.15);
-  border-color: #6366f1;
+  border-color: var(--accent);
   color: #a5b4fc;
 }
 
 /* 邮件列表 */
 :root.dark .email-list {
-  background: rgba(30, 41, 59, 0.7);
+  background: var(--card);
 }
 
 :root.dark .email-item {
-  background: rgba(30, 41, 59, 0.6);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 :root.dark .email-item:hover {
-  background: rgba(30, 41, 59, 0.85);
-  border-color: #6366f1;
+  background: var(--card);
+  border-color: var(--accent);
 }
 
 :root.dark .email-item.unread {
-  border-left: 3px solid #6366f1;
+  border-left: 3px solid var(--accent);
 }
 
 :root.dark .email-sender {
@@ -864,17 +864,17 @@ body {
 }
 
 :root.dark .empty-icon {
-  color: #475569;
+  color: var(--separator-strong);
 }
 
 /* 加载状态 */
 :root.dark .loading {
-  color: #6366f1;
+  color: var(--accent);
 }
 
 /* 搜索框 */
 :root.dark .search-input {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--card-2);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #f8fafc;
 }
@@ -889,13 +889,13 @@ body {
 }
 
 :root.dark .modal-content {
-  background: rgba(30, 41, 59, 0.95);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* 邮件详情 */
 :root.dark .email-header {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -904,12 +904,12 @@ body {
 }
 
 :root.dark .email-body {
-  background: rgba(30, 41, 59, 0.9);
+  background: var(--card);
   color: #f8fafc;
 }
 
 :root.dark .email-body a {
-  color: #818cf8;
+  color: var(--accent);
 }
 
 /* 验证码高亮 */
@@ -921,7 +921,7 @@ body {
 
 /* 收件箱/发件箱切换 */
 :root.dark .tab-switch {
-  background: rgba(30, 41, 59, 0.6);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -936,7 +936,7 @@ body {
 
 /* 刷新按钮 */
 :root.dark .refresh-btn {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8;
 }
@@ -960,7 +960,7 @@ body {
 
 /* 卡片 */
 :root.dark .card {
-  background: rgba(30, 41, 59, 0.85);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 

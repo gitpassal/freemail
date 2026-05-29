@@ -56,7 +56,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7);
+  background: linear-gradient(90deg, var(--accent), var(--accent), var(--accent));
   border-radius: 18px 18px 0 0;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -294,7 +294,7 @@
   box-shadow: 
     0 6px 20px rgba(99, 102, 241, 0.25),
     0 3px 8px rgba(0, 0, 0, 0.1);
-  color: #4338ca;
+  color: var(--accent-press);
 }
 
 .mailbox-card .actions .btn-icon:hover::before {
@@ -916,13 +916,9 @@
 }
 
 .view-toggle .btn.active {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: white;
-  transform: scale(1.02);
-  box-shadow: 
-    0 4px 14px rgba(99, 102, 241, 0.4),
-    0 2px 6px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  background: var(--accent);
+  color: #ffffff;
+  box-shadow: none;
 }
 
 .view-toggle .btn.active::before {
@@ -930,10 +926,8 @@
 }
 
 .view-toggle .btn:not(.active):hover {
-  color: #4338ca;
-  background: rgba(99, 102, 241, 0.1);
-  transform: translateY(-1px);
-  box-shadow: 0 3px 12px rgba(99, 102, 241, 0.15);
+  color: var(--accent);
+  background: var(--accent-tint);
 }
 
 .view-toggle .btn:not(.active):hover::before {
@@ -976,7 +970,7 @@
 
 /* 悬停状态下图标颜色 */
 .view-toggle .btn:not(.active):hover .view-icon {
-  color: #4338ca;
+  color: var(--accent-press);
 }
 
 
@@ -1000,7 +994,7 @@
 
 :root.dark {
   /* 页面背景 - 与首页一致 */
-  --surface: linear-gradient(135deg, #0f172a 0%, #1e1b4b 25%, #1e293b 50%, #18181b 75%, #1c1917 100%);
+  --surface: linear-gradient(135deg, var(--card-2) 0%, var(--card) 25%, var(--card) 50%, #18181b 75%, #1c1917 100%);
   --surface-mesh:
     radial-gradient(at 40% 20%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
     radial-gradient(at 80% 0%, rgba(236, 72, 153, 0.1) 0px, transparent 50%),
@@ -1008,17 +1002,17 @@
     radial-gradient(at 80% 50%, rgba(245, 158, 11, 0.08) 0px, transparent 50%),
     radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.12) 0px, transparent 50%);
   --mailboxes-bg: var(--surface);
-  --card: rgba(30, 41, 59, 0.85);
-  --card-glass: rgba(30, 41, 59, 0.6);
+  --card: var(--card);
+  --card-glass: var(--card);
   --text: #f8fafc;
   --text-light: #e2e8f0;
   --text-muted: #94a3b8;
-  --border: #334155;
+  --border: var(--separator);
   --border-glass: rgba(255, 255, 255, 0.1);
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -2px rgba(0, 0, 0, 0.25);
   --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(99, 102, 241, 0.1);
-  --primary: #6366f1;
+  --primary: var(--accent);
   --primary-light: rgba(99, 102, 241, 0.2);
 }
 
@@ -1070,7 +1064,7 @@
 
 /* 顶部导航栏 */
 :root.dark .topbar {
-  background: rgba(30, 41, 59, 0.85);
+  background: var(--card);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -1082,7 +1076,7 @@
 
 /* 工具栏 */
 :root.dark .toolbar {
-  background: rgba(30, 41, 59, 0.7);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -1096,12 +1090,12 @@
 
 /* 搜索栏 */
 :root.dark .searchbar {
-  background: rgba(30, 41, 59, 0.7);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 :root.dark .search-input {
-  background: rgba(15, 23, 42, 0.7)
+  background: var(--card-2)
   color: #f8fafc
   border-color: rgba(255, 255, 255, 0.15)
 }
@@ -1111,7 +1105,7 @@
 }
 
 :root.dark .search-input:focus {
-  background: rgba(15, 23, 42, 0.9)
+  background: var(--card-2)
   border-color: rgba(99, 102, 241, 0.6)
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15)
 }
@@ -1123,13 +1117,13 @@
 }
 
 :root.dark .search-btn:hover {
-  background: #6366f1;
+  background: var(--accent);
   color: white;
 }
 
 /* 卡片 */
 :root.dark .card {
-  background: rgba(30, 41, 59, 0.85);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -1139,12 +1133,12 @@
 }
 
 :root.dark .mailbox-card {
-  background: rgba(30, 41, 59, 0.85);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 :root.dark .mailbox-card:hover {
-  background: rgba(30, 41, 59, 0.95);
+  background: var(--card);
   border-color: rgba(99, 102, 241, 0.3);
   transform: translateY(-4px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
@@ -1152,13 +1146,13 @@
 
 /* 卡片悬停时的操作按钮 */
 :root.dark .mailbox-card .actions {
-  background: rgba(30, 41, 59, 0.95)
+  background: var(--card)
   border: 1px solid rgba(99, 102, 241, 0.3)
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4)
 }
 
 :root.dark .mailbox-card .actions .btn-icon {
-  background: rgba(15, 23, 42, 0.8)
+  background: var(--card-2)
   border-color: rgba(99, 102, 241, 0.3)
   color: #94a3b8
 }
@@ -1166,7 +1160,7 @@
 :root.dark .mailbox-card .actions .btn-icon:hover {
   background: rgba(99, 102, 241, 0.2)
   border-color: rgba(99, 102, 241, 0.5)
-  color: #818cf8
+  color: var(--accent)
 }
 
 /* 列表视图 */
@@ -1175,12 +1169,12 @@
 }
 
 :root.dark .mailbox-row {
-  background: rgba(30, 41, 59, 0.7);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 :root.dark .mailbox-row:hover {
-  background: rgba(30, 41, 59, 0.9);
+  background: var(--card);
   border-color: rgba(99, 102, 241, 0.3);
 }
 
@@ -1206,12 +1200,12 @@
 :root.dark .mailbox-card.selected,
 :root.dark .mailbox-row.selected {
   background: rgba(99, 102, 241, 0.15);
-  border-color: #6366f1;
+  border-color: var(--accent);
 }
 
 /* 操作按钮 */
 :root.dark .action-btn {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #e2e8f0;
 }
@@ -1223,7 +1217,7 @@
 
 /* 视图切换按钮 */
 :root.dark .view-toggle {
-  background: rgba(30, 41, 59, 0.6);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -1233,7 +1227,7 @@
 
 :root.dark .view-btn.active {
   background: rgba(99, 102, 241, 0.15);
-  color: #818cf8;
+  color: var(--accent);
 }
 
 :root.dark .view-btn:hover:not(.active) {
@@ -1242,7 +1236,7 @@
 
 /* 创建按钮 */
 :root.dark .create-btn {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent) 100%);
   color: white;
   border: none;
 }
@@ -1254,7 +1248,7 @@
 
 /* 排序按钮 */
 :root.dark .sort-btn {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8;
 }
@@ -1266,8 +1260,8 @@
 
 :root.dark .sort-btn.active {
   background: rgba(99, 102, 241, 0.2);
-  border-color: #6366f1;
-  color: #818cf8;
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* 空状态 */
@@ -1280,7 +1274,7 @@
 }
 
 :root.dark .empty-icon {
-  color: #475569;
+  color: var(--separator-strong);
 }
 
 :root.dark .empty-title {
@@ -1291,12 +1285,12 @@
 
 /* 列表视图 - 邮箱行 */
 :root.dark .mailbox-list-item {
-  background: rgba(30, 41, 59, 0.7);
+  background: var(--card);
   border-color: rgba(255, 255, 255, 0.08);
 }
 
 :root.dark .mailbox-list-item:hover {
-  background: rgba(30, 41, 59, 0.9)
+  background: var(--card)
   border-color: rgba(99, 102, 241, 0.3);
   transform: translateY(-1px);
 }
@@ -1307,14 +1301,14 @@
 }
 
 :root.dark .pagination button {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #e2e8f0;
 }
 
 :root.dark .pagination button:hover:not(:disabled) {
   background: rgba(99, 102, 241, 0.15);
-  border-color: #6366f1;
+  border-color: var(--accent);
   color: #a5b4fc;
 }
 
@@ -1329,20 +1323,20 @@
 
 /* 加载更多 */
 :root.dark .load-more {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8;
 }
 
 :root.dark .load-more:hover {
   background: rgba(99, 102, 241, 0.15);
-  border-color: #6366f1;
+  border-color: var(--accent);
   color: #a5b4fc;
 }
 
 /* 确认对话框 */
 :root.dark .confirm-dialog {
-  background: rgba(30, 41, 59, 0.98);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -1356,7 +1350,7 @@
 
 /* 返回按钮 */
 :root.dark .back-btn {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8;
 }
@@ -1368,7 +1362,7 @@
 
 /* 按钮 */
 :root.dark .btn {
-  background: rgba(30, 41, 59, 0.7);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #e2e8f0;
 }
@@ -1387,18 +1381,18 @@
 
 :root.dark .btn-ghost:hover {
   background: rgba(99, 102, 241, 0.15);
-  border-color: #6366f1;
+  border-color: var(--accent);
   color: #a5b4fc;
 }
 
 :root.dark .btn-secondary {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #e2e8f0;
 }
 
 :root.dark .btn-primary {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent) 100%);
   color: white;
   border: none;
 }
@@ -1412,7 +1406,7 @@
 
 /* 链接 */
 :root.dark a {
-  color: #818cf8;
+  color: var(--accent);
 }
 
 :root.dark a:hover {
@@ -1421,7 +1415,7 @@
 
 /* ===== 筛选框样式 ===== */
 :root.dark .filter-actions {
-  background: rgba(30, 41, 59, 0.6)
+  background: var(--card)
   border: 1px solid rgba(255, 255, 255, 0.08)
   border-radius: 12px;
   padding: 8px 12px;
@@ -1433,8 +1427,8 @@
   border-radius: 8px;
   font-size: 13px;
   color: #e2e8f0;
-  background-color: rgba(15, 23, 42, 0.9);
-  background: rgba(15, 23, 42, 0.9);
+  background-color: var(--card-2);
+  background: var(--card-2);
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 100px;
@@ -1446,20 +1440,20 @@
 
 :root.dark .filter-select:hover {
   border-color: rgba(99, 102, 241, 0.5);
-  background-color: rgba(15, 23, 42, 1);
-  background: rgba(15, 23, 42, 1);
+  background-color: var(--card-2);
+  background: var(--card-2);
 }
 
 :root.dark .filter-select:focus {
   border-color: rgba(99, 102, 241, 0.6);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-  background-color: rgba(15, 23, 42, 1);
-  background: rgba(15, 23, 42, 1);
+  background-color: var(--card-2);
+  background: var(--card-2);
 }
 
 /* 下拉选项在暗黑模式下的颜色 */
 :root.dark .filter-select option {
-  background: rgba(30, 41, 59, 0.95);
+  background: var(--card);
   color: #f8fafc;
   padding: 8px;
 }
@@ -1473,7 +1467,7 @@
 
 :root.dark .batch-actions .btn,
 :root.dark .batch-actions .btn-ghost {
-  background: rgba(30, 41, 59, 0.8)
+  background: var(--card)
   border: 1px solid rgba(255, 255, 255, 0.1)
   color: #e2e8f0
 }
@@ -1481,13 +1475,13 @@
 :root.dark .batch-actions .btn:hover,
 :root.dark .batch-actions .btn-ghost:hover {
   background: rgba(99, 102, 241, 0.15)
-  border-color: #6366f1
+  border-color: var(--accent)
   color: #a5b4fc
 }
 
 /* 视图切换按钮 */
 :root.dark .view-toggle {
-  background: rgba(30, 41, 59, 0.6)
+  background: var(--card)
   border: 1px solid rgba(255, 255, 255, 0.08)
 }
 
@@ -1497,7 +1491,7 @@
 
 :root.dark .view-btn.active {
   background: rgba(99, 102, 241, 0.15)
-  color: #818cf8
+  color: var(--accent)
 }
 
 :root.dark .view-btn:hover:not(.active) {
@@ -1507,21 +1501,21 @@
 /* ===== 模态框内联样式覆盖 ===== */
 /* 批量操作模态框 textarea */
 :root.dark #batch-emails-input {
-  background: rgba(15, 23, 42, 0.9)
+  background: var(--card-2)
   color: #f8fafc
   border-color: rgba(99, 102, 241, 0.3)
 }
 
 /* 转发目标输入框 */
 :root.dark #batch-forward-target {
-  background: rgba(15, 23, 42, 0.9)
+  background: var(--card-2)
   color: #f8fafc
   border-color: rgba(99, 102, 241, 0.3)
 }
 
 /* 模态框标题 */
 :root.dark .modal-header {
-  background: rgba(30, 41, 59, 0.8)
+  background: var(--card)
   border-bottom: 1px solid rgba(255, 255, 255, 0.1)
 }
 
@@ -1530,7 +1524,7 @@
 }
 
 :root.dark .modal-header .modal-icon {
-  color: #818cf8
+  color: var(--accent)
 }
 
 /* 模态框内容区域 - 标签颜色 */
@@ -1544,7 +1538,7 @@
 
 /* 模态框内邮箱信息卡片 */
 :root.dark .modal-body > div[style*="border:1px solid"] {
-  background: rgba(15, 23, 42, 0.6)
+  background: var(--card-2)
   border-color: rgba(99, 102, 241, 0.3)
 }
 
@@ -1564,47 +1558,47 @@
 
 /* 批量操作模态框 */
 :root.dark #batch-login-modal .modal-card {
-  background: rgba(30, 41, 59, 0.98)
+  background: var(--card)
 }
 
 :root.dark #batch-login-modal .modal-body {
-  background: rgba(30, 41, 59, 0.95)
+  background: var(--card)
 }
 
 /* 密码操作模态框 */
 :root.dark #password-modal .modal-card {
-  background: rgba(30, 41, 59, 0.98)
+  background: var(--card)
 }
 
 :root.dark #password-modal .modal-body {
-  background: rgba(30, 41, 59, 0.95)
+  background: var(--card)
 }
 
 /* 修改密码模态框 */
 :root.dark #change-password-modal .modal-card {
-  background: rgba(30, 41, 59, 0.98)
+  background: var(--card)
 }
 
 :root.dark #change-password-modal .modal-body {
-  background: rgba(30, 41, 59, 0.95)
+  background: var(--card)
 }
 
 /* 重置密码模态框 */
 :root.dark #reset-modal .modal-card {
-  background: rgba(30, 41, 59, 0.98)
+  background: var(--card)
 }
 
 :root.dark #reset-modal .modal-body {
-  background: rgba(30, 41, 59, 0.95)
+  background: var(--card)
 }
 
 /* 登录权限确认模态框 */
 :root.dark #login-confirm-modal .modal-card {
-  background: rgba(30, 41, 59, 0.98)
+  background: var(--card)
 }
 
 :root.dark #login-confirm-modal .modal-body {
-  background: rgba(30, 41, 59, 0.95)
+  background: var(--card)
 }
 
 /* 模态框关闭按钮 */
@@ -1618,7 +1612,7 @@
 
 /* 新密码输入框 (form-input 类) */
 :root.dark .form-input {
-  background: rgba(15, 23, 42, 0.9)
+  background: var(--card-2)
   color: #f8fafc
   border-color: rgba(99, 102, 241, 0.3)
 }
@@ -1637,7 +1631,7 @@
 }
 
 :root.dark .modal-info-box {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.6) 100%);
+  background: linear-gradient(135deg, var(--card) 0%, var(--card-2) 100%);
   border-color: rgba(99, 102, 241, 0.2);
 }
 

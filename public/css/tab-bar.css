@@ -1,0 +1,163 @@
+/* =============================================
+   iOS 底部 Tab Bar + 设置 sheet
+   仅在 standalone / pwa-preview 生效（主应用页）。
+   普通桌面/移动 Safari 不显示，避免与浏览器底栏冲突。
+   ============================================= */
+
+.tabbar { display: none; }
+
+html.is-standalone .tabbar,
+html.is-pwa-preview .tabbar {
+  display: flex;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  align-items: stretch;
+  height: calc(50px + var(--safe-area-bottom));
+  padding-bottom: var(--safe-area-bottom);
+  padding-left: var(--safe-area-left);
+  padding-right: var(--safe-area-right);
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-top: 0.5px solid var(--separator);
+}
+
+:root.dark.is-standalone .tabbar,
+:root.dark.is-pwa-preview .tabbar {
+  background: rgba(28, 28, 30, 0.9);
+}
+
+.tabbar-item {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: none;
+  background: transparent;
+  color: var(--label-2);
+  font-size: 10px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  letter-spacing: 0;
+  cursor: pointer;
+  padding: 6px 0 4px;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s ease;
+}
+
+.tabbar-item svg {
+  width: 25px;
+  height: 25px;
+  display: block;
+}
+
+.tabbar-item.is-active {
+  color: var(--accent);
+}
+
+.tabbar-label {
+  line-height: 1;
+}
+
+/* standalone 下：旧的顶部分段切换与顶栏操作迁移到底部 Tab / 设置 */
+html.is-standalone #mobile-main-switch,
+html.is-pwa-preview #mobile-main-switch,
+html.is-standalone .nav-actions,
+html.is-pwa-preview .nav-actions {
+  display: none !important;
+}
+
+/* 为底部 Tab 预留空间（覆盖 pwa.css 的 body 底部内边距） */
+html.is-standalone body,
+html.is-pwa-preview body {
+  padding-bottom: calc(50px + var(--safe-area-bottom) + 12px) !important;
+}
+
+/* ===== 设置 sheet ===== */
+.settings-sheet-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.settings-sheet-overlay.is-open {
+  display: block;
+}
+
+.settings-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 51;
+  background: var(--card);
+  border-radius: 16px 16px 0 0;
+  padding: 0 0 calc(12px + var(--safe-area-bottom));
+  transform: translateY(110%);
+  transition: transform 0.26s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: var(--shadow-float);
+}
+
+.settings-sheet.is-open {
+  transform: translateY(0);
+}
+
+.settings-sheet-handle {
+  width: 36px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--separator);
+  margin: 8px auto 10px;
+}
+
+.settings-sheet-title {
+  text-align: center;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text);
+  margin: 0 0 6px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 15px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  text-align: left;
+  border-top: 0.5px solid var(--separator);
+}
+
+.settings-row:active {
+  background: var(--card-2);
+}
+
+.settings-row svg {
+  width: 22px;
+  height: 22px;
+  color: var(--label-2);
+  flex: 0 0 auto;
+}
+
+.settings-row.is-danger {
+  color: var(--danger);
+}
+
+.settings-row.is-danger svg {
+  color: var(--danger);
+}

@@ -244,14 +244,14 @@ body.is-standalone [contenteditable="true"] {
     max-width: 100%;
     min-height: 100dvh;
     overflow-x: hidden;
-    background-color: #f8fafc;
+    background-color: var(--bg);
     padding-bottom: calc(26px + var(--safe-area-bottom));
     overscroll-behavior-x: none;
   }
 
   html.dark.is-standalone body,
   html.dark.is-pwa-preview body {
-    background-color: #1e293b;
+    background-color: var(--bg);
   }
 
   html.is-standalone body *,
@@ -270,12 +270,15 @@ body.is-standalone [contenteditable="true"] {
     min-height: 72px;
     padding: calc(10px + var(--safe-area-top)) max(12px, var(--safe-area-right)) 10px max(12px, var(--safe-area-left));
     gap: 8px;
-    background-color: rgba(248, 250, 252, 0.94);
+    background-color: rgba(242, 242, 247, 0.9);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 0.5px solid var(--separator);
   }
 
   html.dark.is-standalone .topbar,
   html.dark.is-pwa-preview .topbar {
-    background-color: rgba(30, 41, 59, 0.94);
+    background-color: rgba(28, 28, 30, 0.9);
   }
 
   html.is-standalone .topbar .topbar-inner,

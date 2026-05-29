@@ -324,7 +324,7 @@
   transform: translateY(-2px);
   background: rgba(99, 102, 241, 0.1);
   border-color: rgba(99, 102, 241, 0.3);
-  color: #4338ca;
+  color: var(--accent-press);
   box-shadow: 
     0 6px 20px rgba(99, 102, 241, 0.2),
     0 3px 10px rgba(0, 0, 0, 0.1);

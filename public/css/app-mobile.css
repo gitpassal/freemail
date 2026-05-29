@@ -374,7 +374,7 @@
 
   :root.dark .email-display.has-email {
     background: rgba(99, 102, 241, 0.15);
-    border-color: #6366f1;
+    border-color: var(--accent);
     color: #a5b4fc;
   }
 
@@ -386,7 +386,7 @@
 
   :root.dark .mailbox-item:hover {
     background: rgba(30, 41, 59, 0.85);
-    border-color: #6366f1;
+    border-color: var(--accent);
   }
 
   :root.dark .mailbox-item .address {
@@ -405,7 +405,7 @@
 
   :root.dark .email-item:hover {
     background: rgba(30, 41, 59, 0.85);
-    border-color: #6366f1;
+    border-color: var(--accent);
   }
 
   :root.dark .email-sender {
@@ -461,7 +461,7 @@
 
   :root.dark .btn-ghost:hover {
     background: rgba(99, 102, 241, 0.15);
-    border-color: #6366f1;
+    border-color: var(--accent);
     color: #a5b4fc;
   }
 
@@ -477,7 +477,7 @@
 
   :root.dark .spinner {
     border-color: rgba(99, 102, 241, 0.2);
-    border-top-color: #6366f1;
+    border-top-color: var(--accent);
   }
 
   /* 视图切换 */
@@ -541,6 +541,6 @@
   :root.dark .mailbox-actions .btn-ghost:hover {
     background: rgba(99, 102, 241, 0.15);
     color: #a5b4fc;
-    border-color: #6366f1;
+    border-color: var(--accent);
   }
 }

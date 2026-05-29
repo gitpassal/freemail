@@ -2,142 +2,89 @@
    Freemail - 按钮 / 邮件列表 / 发件样式
    ============================================== */
 
-/* ===== 增强按钮系统 ===== */
+/* ===== 按钮系统（极简原生 iOS） ===== */
 .btn{
-  background: var(--card-glass);
+  background: var(--secondary);
   color: var(--text);
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-md);
-  padding: 14px 24px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  padding: 12px 20px;
   cursor: pointer;
-  transition: all 0.25s var(--ease-out-expo);
+  transition: background 0.18s ease, color 0.18s ease, opacity 0.18s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 48px;
+  height: 44px;
   font-weight: 600;
   font-size: 14px;
   letter-spacing: -0.01em;
   text-decoration: none;
   position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
-}
-
-.btn::before{
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.5s var(--ease-out-expo);
-}
-
-.btn::after{
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 50%);
-  border-radius: inherit;
-  opacity: 1;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .btn:hover{
-  background: var(--card-glass-hover);
-  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  border-color: var(--border-focus);
-  transform: translateY(-2px);
-}
-
-.btn:hover::before{
-  left: 100%;
+  background: var(--secondary-hover);
 }
 
 .btn:active{
-  transform: translateY(0) scale(0.98);
-  box-shadow: var(--shadow-xs), inset 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition-duration: 0.1s;
+  opacity: 0.6;
 }
 
 .btn:focus-visible{
   outline: none;
-  box-shadow: var(--shadow-md), 0 0 0 3px var(--primary-light);
+  box-shadow: 0 0 0 3px var(--accent-tint);
 }
 
-/* 主要按钮 - 鲜艳渐变 */
+/* 主要按钮 - 实色强调 */
 .btn-primary{
-  background: var(--primary-gradient);
-  color: var(--text-inverse);
+  background: var(--accent);
+  color: #ffffff;
   border: none;
-  box-shadow: var(--shadow-button);
-}
-
-.btn-primary::after{
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+  box-shadow: none;
 }
 
 .btn-primary:hover{
-  background: linear-gradient(135deg, var(--primary-hover) 0%, #7c3aed 50%, #a855f7 100%);
-  box-shadow: var(--shadow-button-hover);
-  transform: translateY(-3px);
-  border: none;
+  background: var(--accent-press);
 }
 
 .btn-primary:active{
-  background: linear-gradient(135deg, var(--primary-active) 0%, #6d28d9 100%);
-  box-shadow: var(--shadow), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  opacity: 0.7;
 }
 
-/* 次要按钮 - 透明玻璃 */
+/* 次要按钮 - 中性填充 */
 .btn-secondary{
-  background: var(--card-glass);
+  background: var(--secondary);
   color: var(--text);
-  border: 1px solid var(--border-glass);
-  backdrop-filter: var(--blur-lg);
-  -webkit-backdrop-filter: var(--blur-lg);
-  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid transparent;
+  box-shadow: none;
 }
 
 .btn-secondary:hover{
-  background: var(--card-glass-hover);
-  border-color: var(--primary);
-  color: var(--primary);
-  box-shadow: var(--shadow-md), 0 0 0 1px var(--primary-light);
-  transform: translateY(-2px);
+  background: var(--secondary-hover);
+  color: var(--text);
 }
 
 .btn-secondary:active{
-  background: var(--primary-light);
+  opacity: 0.7;
 }
 
-/* 危险按钮 - 红色渐变 */
+/* 危险按钮 - 实色红 */
 .btn-danger{
-  background: var(--danger-gradient);
-  color: var(--text-inverse);
+  background: var(--danger);
+  color: #ffffff;
   border: none;
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-
-.btn-danger::after{
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+  box-shadow: none;
 }
 
 .btn-danger:hover{
-  background: linear-gradient(135deg, var(--danger-hover) 0%, #f87171 100%);
-  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transform: translateY(-3px);
-  border: none;
+  background: var(--danger-hover);
 }
 
 .btn-danger:active{
-  background: linear-gradient(135deg, var(--danger-active) 0%, #dc2626 100%);
+  opacity: 0.7;
 }
 
 .btn-sm{

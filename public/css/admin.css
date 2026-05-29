@@ -5,14 +5,14 @@
 
 :root {
   /* 主题颜色 - 紫色系 */
-  --admin-primary: #7c3aed;
-  --admin-primary-hover: #6d28d9;
-  --admin-secondary: #a78bfa;
+  --admin-primary: var(--accent);
+  --admin-primary-hover: var(--accent-press);
+  --admin-secondary: var(--accent);
   --admin-accent: #f97316;
   --admin-success: #10b981;
   --admin-warning: #f59e0b;
   --admin-danger: #ef4444;
-  --admin-gradient: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #c084fc 100%);
+  --admin-gradient: linear-gradient(135deg, var(--accent) 0%, var(--accent) 50%, var(--accent) 100%);
   --admin-glass: rgba(255, 255, 255, 0.85);
   --admin-glass-hover: rgba(255, 255, 255, 0.95);
   --admin-shadow: 0 4px 20px rgba(124, 58, 237, 0.1);
@@ -47,8 +47,7 @@
 
 /* 页面背景 */
 .admin-page {
-  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 25%, #f0fdfa 50%, #fff7ed 75%, #faf5ff 100%);
-  background-attachment: fixed;
+  background: var(--bg);
   position: relative;
 }
 
@@ -106,12 +105,12 @@
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  background: linear-gradient(135deg, var(--accent), var(--accent));
   color: white;
 }
 
 .stat-icon-admin {
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  background: linear-gradient(135deg, #3b82f6, var(--accent));
 }
 
 .stat-icon-mailbox {
@@ -193,7 +192,7 @@
   height: 32px;
   border-radius: 8px;
   background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(167, 139, 250, 0.1));
-  color: #7c3aed;
+  color: var(--accent);
 }
 
 .badge-count {
@@ -290,7 +289,7 @@
 }
 
 .action-btn-primary {
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  background: linear-gradient(135deg, var(--accent), var(--accent-press));
   color: white;
   box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
 }
@@ -379,7 +378,7 @@
 .col-id { width: 50px; display: none; }
 .col-username { width: 18%; font-weight: 600; }
 .col-role { width: 12%; }
-.col-mailbox { width: 12%; font-weight: 600; color: #7c3aed; }
+.col-mailbox { width: 12%; font-weight: 600; color: var(--accent); }
 .col-can { width: 10%; }
 .col-created { width: 18%; font-size: 11px; color: #64748b; }
 .col-actions { width: 15%; }
@@ -394,7 +393,7 @@
 }
 
 .role-admin {
-  color: #7c3aed;
+  color: var(--accent);
   background: rgba(124, 58, 237, 0.1);
   border: 1px solid rgba(124, 58, 237, 0.2);
 }
@@ -428,14 +427,14 @@
   font-size: 12px;
   background: rgba(124, 58, 237, 0.1);
   border: 1px solid rgba(124, 58, 237, 0.2);
-  color: #7c3aed;
+  color: var(--accent);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .btn-edit:hover {
-  background: #7c3aed;
+  background: var(--accent);
   color: white;
   transform: scale(1.05);
 }
@@ -561,14 +560,14 @@
   padding: 0;
   background: rgba(124, 58, 237, 0.1);
   border: 1px solid rgba(124, 58, 237, 0.2);
-  color: #7c3aed;
+  color: var(--accent);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .btn-pagination:hover:not(:disabled) {
-  background: #7c3aed;
+  background: var(--accent);
   color: white;
 }
 
@@ -730,7 +729,7 @@
   padding: 4px 12px;
   border-radius: 20px;
   background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(167, 139, 250, 0.1));
-  color: #7c3aed;
+  color: var(--accent);
   font-size: 12px;
   font-weight: 600;
 }
@@ -767,7 +766,7 @@
   height: 32px;
   border-radius: 8px;
   background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(167, 139, 250, 0.1));
-  color: #7c3aed;
+  color: var(--accent);
   flex-shrink: 0;
 }
 
@@ -851,7 +850,7 @@
   width: 20px;
   height: 20px;
   border: 2px solid rgba(124, 58, 237, 0.2);
-  border-top-color: #7c3aed;
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -986,14 +985,14 @@
 
 :root.dark {
   /* 页面背景 */
-  --surface: linear-gradient(135deg, #0f172a 0%, #1e1b4b 25%, #1e293b 50%, #18181b 75%, #1c1917 100%);
+  --surface: linear-gradient(135deg, var(--card-2) 0%, var(--card) 25%, var(--card) 50%, #18181b 75%, #1c1917 100%);
   --admin-bg: var(--surface);
-  --admin-glass: rgba(30, 41, 59, 0.85);
-  --admin-glass-hover: rgba(30, 41, 59, 0.95);
+  --admin-glass: var(--card);
+  --admin-glass-hover: var(--card);
   --text: #f8fafc;
   --text-light: #e2e8f0;
   --text-muted: #94a3b8;
-  --border: #334155;
+  --border: var(--separator);
 }
 
 :root.dark body {
@@ -1049,7 +1048,7 @@
 
 /* 顶部导航栏 */
 :root.dark .topbar {
-  background: rgba(30, 41, 59, 0.9);
+  background: var(--card);
   backdrop-filter: blur(24px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -1085,7 +1084,7 @@
 
 :root.dark .card-icon {
   background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(167, 139, 250, 0.15));
-  color: #a78bfa;
+  color: var(--accent);
 }
 
 :root.dark .badge-count {
@@ -1095,7 +1094,7 @@
 
 /* 操作按钮 */
 :root.dark .action-btn-primary {
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  background: linear-gradient(135deg, var(--accent), var(--accent-press));
   box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
 }
 
@@ -1118,7 +1117,7 @@
 
 /* 表格 */
 :root.dark .table {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--card-2);
   border-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -1143,7 +1142,7 @@
 
 /* 角色徽章 */
 :root.dark .role-admin {
-  color: #a78bfa;
+  color: var(--accent);
   background: rgba(124, 58, 237, 0.15);
   border-color: rgba(124, 58, 237, 0.3);
 }
@@ -1155,17 +1154,17 @@
 }
 
 :root.dark .col-mailbox {
-  color: #a78bfa;
+  color: var(--accent);
 }
 
 /* 邮箱列表 */
 :root.dark .mailbox-item {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--card-2);
   border-color: rgba(255, 255, 255, 0.08);
 }
 
 :root.dark .mailbox-item:hover {
-  background: rgba(15, 23, 42, 0.8);
+  background: var(--card-2);
   border-color: rgba(124, 58, 237, 0.3);
 }
 
@@ -1183,15 +1182,15 @@
 
 /* 按钮 */
 :root.dark .btn-primary {
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  background: linear-gradient(135deg, var(--accent), var(--accent-press));
 }
 
 :root.dark .btn-primary:hover {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  background: linear-gradient(135deg, var(--accent), var(--accent));
 }
 
 :root.dark .btn-secondary {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border-color: rgba(255, 255, 255, 0.1);
   color: #e2e8f0;
 }
@@ -1221,28 +1220,28 @@
 
 :root.dark .btn-ghost:hover {
   background: rgba(124, 58, 237, 0.15);
-  color: #a78bfa;
+  color: var(--accent);
 }
 
 :root.dark .btn-pagination {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border-color: rgba(255, 255, 255, 0.1);
-  color: #a78bfa;
+  color: var(--accent);
 }
 
 :root.dark .btn-pagination:hover:not(:disabled) {
-  background: #7c3aed;
+  background: var(--accent);
   color: white;
 }
 
 :root.dark .btn-edit {
   background: rgba(124, 58, 237, 0.15);
   border-color: rgba(124, 58, 237, 0.3);
-  color: #a78bfa;
+  color: var(--accent);
 }
 
 :root.dark .btn-edit:hover {
-  background: #7c3aed;
+  background: var(--accent);
   color: white;
 }
 
@@ -1258,16 +1257,16 @@
 :root.dark .input,
 :root.dark .select,
 :root.dark textarea {
-  background: rgba(15, 23, 42, 0.8);
+  background: var(--card-2);
   border-color: rgba(255, 255, 255, 0.1);
   color: #f8fafc;
 }
 
 :root.dark .input:focus,
 :root.dark .select:focus {
-  border-color: #7c3aed;
+  border-color: var(--accent);
   box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
-  background: rgba(15, 23, 42, 0.9);
+  background: var(--card-2);
 }
 
 :root.dark .input::placeholder {
@@ -1284,7 +1283,7 @@
 
 /* 开关 */
 :root.dark .toggle-switch {
-  background: #334155;
+  background: var(--separator);
 }
 
 :root.dark .toggle-text {
@@ -1299,7 +1298,7 @@
 }
 
 :root.dark .modal-card {
-  background: rgba(30, 41, 59, 0.98);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.3),
@@ -1308,7 +1307,7 @@
 }
 
 :root.dark .modal-header {
-  background: rgba(30, 41, 59, 0.8)
+  background: var(--card)
   border-bottom: 1px solid rgba(255, 255, 255, 0.1)
 }
 
@@ -1317,12 +1316,12 @@
 }
 
 :root.dark .modal-header .modal-icon {
-  color: #818cf8
+  color: var(--accent)
 }
 
 :root.dark .modal-header .close,
 :root.dark .close-btn {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8
 }
@@ -1335,11 +1334,11 @@
 }
 
 :root.dark .modal-body {
-  background: rgba(30, 41, 59, 0.95);
+  background: var(--card);
 }
 
 :root.dark .modal-footer {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -1349,12 +1348,12 @@
 }
 
 :root.dark .form-label svg {
-  color: #818cf8
+  color: var(--accent)
 }
 
 :root.dark .input,
 :root.dark .select {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--card-2);
   border: 1.5px solid rgba(99, 102, 241, 0.3);
   color: #f8fafc;
 }
@@ -1367,7 +1366,7 @@
 :root.dark .select:focus {
   border-color: rgba(129, 140, 248, 0.5)
   box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15)
-  background: rgba(30, 41, 59, 0.9);
+  background: var(--card);
 }
 
 :root.dark .help-text {
@@ -1379,7 +1378,7 @@
 }
 
 :root.dark .toggle-text svg {
-  color: #818cf8;
+  color: var(--accent);
 }
 
 /* 确认对话框 */
@@ -1406,12 +1405,12 @@
 /* 加载 */
 :root.dark .spinner {
   border-color: rgba(99, 102, 241, 0.2);
-  border-top-color: #818cf8;
+  border-top-color: var(--accent);
 }
 
 /* Toast */
 :root.dark .toast {
-  background: #1e293b;
+  background: var(--card);
   color: #f1f5f9;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -1423,6 +1422,6 @@
   }
 
   :root.dark .modal-footer {
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--card-2);
   }
 }

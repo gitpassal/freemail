@@ -6,8 +6,8 @@
 (function() {
   const PREFERENCE_KEY = 'freemail:theme-preference';
   const LEGACY_KEY = 'freemail:theme';
-  const LIGHT_THEME_COLOR = '#f8fafc';
-  const DARK_THEME_COLOR = '#1e293b';
+  const LIGHT_THEME_COLOR = '#f2f2f7';
+  const DARK_THEME_COLOR = '#000000';
 
   let currentTheme = 'light';
 

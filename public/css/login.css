@@ -9,11 +9,11 @@
   --card-shadow: rgba(255, 255, 255, 0.2);
   --card-glass: rgba(255, 255, 255, 0.5);
   --muted: #64748b;
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --primary-active: #4338ca;
+  --primary: var(--accent);
+  --primary-hover: var(--accent-press);
+  --primary-active: var(--accent-press);
   --primary-light: rgba(99, 102, 241, 0.12);
-  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  --primary-gradient: linear-gradient(135deg, var(--accent) 0%, var(--accent) 50%, var(--accent) 100%);
   --border: #e2e8f0;
   --border-light: #f1f5f9;
   --border-glass: rgba(255, 255, 255, 0.35);
@@ -341,7 +341,7 @@ h1 {
 }
 
 .btn:hover {
-  background: linear-gradient(135deg, var(--primary-hover) 0%, #7c3aed 50%, #a855f7 100%);
+  background: linear-gradient(135deg, var(--primary-hover) 0%, var(--accent) 50%, var(--accent) 100%);
   transform: translateY(-3px);
   box-shadow: 0 12px 28px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
@@ -386,8 +386,8 @@ h1 {
 .theme-toggle-login:hover {
   transform: scale(1.1) rotate(15deg);
   box-shadow: 0 6px 24px rgba(99, 102, 241, 0.3);
-  background: #6366f1;
-  border-color: #6366f1;
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 .theme-toggle-login:hover svg {
@@ -395,19 +395,19 @@ h1 {
 }
 
 .theme-toggle-login svg {
-  color: #6366f1;
+  color: var(--accent);
   transition: color 0.3s ease;
 }
 
 /* 暗黑模式 */
 :root.dark .theme-toggle-login {
-  background: rgba(30, 41, 59, 0.9);
+  background: var(--card);
   border-color: rgba(255, 255, 255, 0.15);
 }
 
 :root.dark .theme-toggle-login:hover {
-  background: #6366f1;
-  border-color: #6366f1;
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 /* ===== 暗色模式变量覆盖（由 login_black.css 合并） ===== */
@@ -417,8 +417,8 @@ h1 {
 
 :root.dark {
   /* 登录页面背景 */
-  --login-bg: linear-gradient(135deg, #0f172a 0%, #1e1b4b 25%, #1e293b 50%, #18181b 75%, #1c1917 100%);
-  --login-card-bg: rgba(30, 41, 59, 0.85);
+  --login-bg: linear-gradient(135deg, var(--card-2) 0%, var(--card) 25%, var(--card) 50%, #18181b 75%, #1c1917 100%);
+  --login-card-bg: var(--card);
   --login-border: rgba(255, 255, 255, 0.1);
 }
 
@@ -470,7 +470,7 @@ h1 {
 :root.dark input[type="text"],
 :root.dark input[type="password"],
 :root.dark input[type="email"] {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--card-2);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #f8fafc;
 }
@@ -482,53 +482,53 @@ h1 {
 
 :root.dark .input:focus,
 :root.dark input:focus {
-  background: rgba(15, 23, 42, 0.8);
-  border-color: #6366f1;
+  background: var(--card-2);
+  border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
 /* 下拉框 */
 :root.dark .select,
 :root.dark select {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--card-2);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #f8fafc;
 }
 
 /* 按钮 */
 :root.dark .btn {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #e2e8f0;
 }
 
 :root.dark .btn:hover {
   background: rgba(99, 102, 241, 0.15);
-  border-color: #6366f1;
+  border-color: var(--accent);
   color: #a5b4fc;
 }
 
 :root.dark .btn-primary {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent) 50%, var(--accent) 100%);
   color: white;
   border: none;
 }
 
 :root.dark .btn-primary:hover {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%);
+  background: linear-gradient(135deg, var(--accent-press) 0%, var(--accent) 50%, var(--accent-press) 100%);
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
 }
 
 :root.dark .btn-secondary {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #e2e8f0;
 }
 
 :root.dark .btn-secondary:hover {
   background: rgba(99, 102, 241, 0.15);
-  border-color: #6366f1;
+  border-color: var(--accent);
   color: #a5b4fc;
 }
 
@@ -549,7 +549,7 @@ h1 {
 /* 链接 */
 :root.dark a,
 :root.dark .link {
-  color: #818cf8;
+  color: var(--accent);
 }
 
 :root.dark a:hover,
@@ -559,7 +559,7 @@ h1 {
 
 /* 加载动画 */
 :root.dark .loading {
-  color: #6366f1;
+  color: var(--accent);
 }
 
 /* 页脚 */
@@ -576,7 +576,7 @@ h1 {
 
 /* 社交登录按钮 */
 :root.dark .social-btn {
-  background: rgba(30, 41, 59, 0.8);
+  background: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #e2e8f0;
 }
@@ -588,13 +588,13 @@ h1 {
 
 /* 复选框 */
 :root.dark input[type="checkbox"] {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--card-2);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
 :root.dark input[type="checkbox"]:checked {
-  background: #6366f1;
-  border-color: #6366f1;
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 /* 记住我标签 */
@@ -609,12 +609,12 @@ h1 {
 }
 
 :root.dark .admin-link:hover {
-  color: #818cf8;
+  color: var(--accent);
 }
 
 /* Toast 提示 */
 :root.dark .toast {
-  background: rgba(30, 41, 59, 0.95);
+  background: var(--card);
   color: #f8fafc;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);

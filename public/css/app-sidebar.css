@@ -794,11 +794,11 @@
 }
 
 .generate-card{
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+  background: var(--card);
 }
 
 .inbox-card{
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(6, 182, 212, 0.05));
+  background: var(--card);
 }
 .listcard-header{
   display: grid;

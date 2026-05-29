@@ -39,14 +39,10 @@
 
 .mailbox-item.pinned{
   position: relative;
-  background: linear-gradient(135deg, 
-    rgba(251, 191, 36, 0.12) 0%, 
-    rgba(245, 158, 11, 0.08) 100%);
+  background: var(--warning-light);
   border-left: 3px solid var(--warning);
-  border-color: rgba(245, 158, 11, 0.25);
-  box-shadow: 
-    var(--shadow-xs),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .mailbox-item.pinned::before{
@@ -149,11 +145,10 @@
 
 /* 选中邮箱高亮效果 */
 .mailbox-item.selected{
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.05) 100%);
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  border-left: 3px solid var(--primary);
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
-  transform: translateX(3px);
+  background: var(--accent-tint);
+  border: 1px solid transparent;
+  border-left: 3px solid var(--accent);
+  box-shadow: none;
   position: relative;
   z-index: 5;
   padding-left: 18px;
@@ -181,19 +176,15 @@
 }
 
 .mailbox-item.selected:hover{
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
-  transform: translateX(4px);
+  background: var(--accent-tint);
+  box-shadow: none;
 }
 
 /* 同时置顶和选中的邮箱项 */
 .mailbox-item.pinned.selected{
-  background: linear-gradient(135deg,
-    rgba(99, 102, 241, 0.06) 0%,
-    rgba(251, 191, 36, 0.03) 50%,
-    rgba(139, 92, 246, 0.04) 100%);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-left: 3px solid var(--primary);
+  background: var(--accent-tint);
+  border: 1px solid transparent;
+  border-left: 3px solid var(--accent);
 }
 
 .mailbox-item.pinned.selected::before{
@@ -267,35 +258,9 @@
   overflow: hidden;
 }
 
-.card::before{
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--primary-gradient);
-  opacity: 0.9;
-  transition: var(--transition);
-}
-
-.card::after{
-  content: '';
-  position: absolute;
-  top: 3px;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: linear-gradient(180deg, var(--primary-glass) 0%, transparent 100%);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
+/* 卡片顶部装饰条与悬浮位移已移除（极简原生） */
 .card:hover{
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
-  transform: translateY(-6px);
-  border-color: var(--border-focus);
+  box-shadow: var(--shadow-card);
 }
 
 .card:hover::before{
@@ -370,7 +335,7 @@
 
 /* ===== 增强邮箱显示区域 ===== */
 .email-display{
-  background: linear-gradient(135deg, rgba(248, 250, 252, 0.9), rgba(241, 245, 249, 0.8));
+  background: var(--card-2);
   border: 2px dashed var(--border);
   border-radius: var(--radius-md);
   padding: 20px;
@@ -390,11 +355,11 @@
   -webkit-backdrop-filter: var(--blur-sm);
 }
 
-.custom-overlay{ position:absolute; inset:0; display:grid; grid-template-columns:minmax(0, 1fr) auto auto; align-items:center; gap:10px; background: rgba(255,255,255,0.75); backdrop-filter: blur(2px); padding:12px; }
-.custom-input{ min-width:0; width:100%; height:44px; padding:10px 14px; border:1px solid var(--border-glass); border-radius: var(--radius-sm); background: var(--card-glass); box-shadow: var(--shadow-glass); font-size:14px; }
+.custom-overlay{ position:absolute; inset:0; display:grid; grid-template-columns:minmax(0, 1fr) auto auto; align-items:center; gap:10px; background: var(--card); padding:12px; }
+.custom-input{ min-width:0; width:100%; height:44px; padding:10px 14px; border:1px solid var(--separator); border-radius: var(--radius-control); background: var(--card-2); box-shadow: none; font-size:14px; color: var(--text); }
 .custom-input::placeholder{ color: var(--muted2); }
-.custom-input:focus{ outline:none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); background:#fff; }
-.custom-cf-toggle{ height:44px; display:flex; align-items:center; gap:8px; padding:0 12px; border:1px solid var(--border-glass); border-radius: var(--radius-sm); background: rgba(255,255,255,0.9); color: var(--text); font-size:13px; font-family: 'Open Sans', sans-serif; font-weight:600; white-space:nowrap; box-shadow: var(--shadow-glass); cursor:pointer; }
+.custom-input:focus{ outline:none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-tint); background: var(--card); }
+.custom-cf-toggle{ height:44px; display:flex; align-items:center; gap:8px; padding:0 12px; border:1px solid var(--separator); border-radius: var(--radius-control); background: var(--card-2); color: var(--text); font-size:13px; font-family: var(--font-sans); font-weight:600; white-space:nowrap; box-shadow: none; cursor:pointer; }
 .custom-cf-toggle input{ accent-color: var(--primary); }
 /* 覆盖层内"创建"按钮：强制水平/垂直居中 */
 .custom-overlay .btn{ height:44px; padding:0 16px; justify-content:center; align-items:center; }
