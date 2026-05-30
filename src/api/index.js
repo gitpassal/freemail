@@ -87,6 +87,10 @@ export async function handleApiRequest(request, db, mailDomains, options = {
   response = await handleNotificationsApi(request, db, url, path, options);
   if (response) return response;
 
+  // Web Push API
+  response = await handlePushApi(request, db, url, path, options);
+  if (response) return response;
+
   // 用户管理 API
   response = await handleUsersApi(request, db, url, path, options);
   if (response) return response;
