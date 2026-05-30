@@ -1183,3 +1183,71 @@ html.is-pwa-preview .sidebar .mailbox-item .mailbox-actions .btn.del { color: va
 /* 置顶项左侧旧的高亮条/渐变去掉 */
 html.is-standalone .sidebar .mailbox-item.pinned,
 html.is-pwa-preview .sidebar .mailbox-item.pinned { background: transparent !important; }
+
+/* ===== 二级邮箱视图 #list-card（历史邮箱点进某邮箱的收/发件箱）standalone 协调化 =====
+   该视图与底栏「收件箱」聚合视图功能重叠，此处不逐元素重塑，仅做卡片化+橙强调+去渐变，
+   保证与新设计配色协调、不突兀。真实结构：.email-item>.email-meta + .email-content。 */
+html.is-standalone #list-card,
+html.is-pwa-preview #list-card {
+  background: transparent !important; box-shadow: none !important; border: none !important;
+  padding: 4px 0 0 !important;
+}
+html.is-standalone #list-card .listcard-header,
+html.is-pwa-preview #list-card .listcard-header { border: none !important; padding: 0 4px 10px !important; }
+html.is-standalone #list-card .listcard-title,
+html.is-pwa-preview #list-card .listcard-title {
+  font-family: var(--font-serif) !important; font-size: 26px !important; font-weight: 700 !important;
+  letter-spacing: -0.02em !important; color: var(--label) !important;
+}
+html.is-standalone #list-card .listcard-title .card-icon,
+html.is-pwa-preview #list-card .listcard-title .card-icon { display: none !important; }
+/* 收/发件箱分段 */
+html.is-standalone #list-card .view-switch,
+html.is-pwa-preview #list-card .view-switch {
+  background: color-mix(in srgb, var(--label) 7%, transparent) !important;
+  border: none !important; border-radius: 9px !important; padding: 2px !important;
+}
+html.is-standalone #list-card .view-switch .seg-btn,
+html.is-pwa-preview #list-card .view-switch .seg-btn { color: var(--label-2) !important; }
+html.is-standalone #list-card .view-switch .seg-btn.active,
+html.is-pwa-preview #list-card .view-switch .seg-btn.active {
+  background: var(--card) !important; color: var(--accent) !important;
+  border-radius: 7px !important; box-shadow: var(--shadow-soft) !important;
+}
+/* 邮件列表通栏分组卡 */
+html.is-standalone #list,
+html.is-pwa-preview #list {
+  background: var(--card) !important; border-radius: 14px !important; overflow: hidden;
+  box-shadow: var(--shadow-soft) !important;
+}
+html.is-standalone #list .email-item,
+html.is-pwa-preview #list .email-item {
+  background: transparent !important; border: none !important;
+  border-bottom: 0.5px solid var(--separator) !important; border-radius: 0 !important;
+  box-shadow: none !important; padding: 12px 16px !important; margin: 0 !important;
+}
+html.is-standalone #list .email-item:last-child,
+html.is-pwa-preview #list .email-item:last-child { border-bottom: none !important; }
+html.is-standalone #list .email-item::before,
+html.is-pwa-preview #list .email-item::before,
+html.is-standalone #list .email-item::after,
+html.is-pwa-preview #list .email-item::after { display: none !important; }
+/* 文字色协调（覆盖渐变文字） */
+html.is-standalone #list .email-item .value-text,
+html.is-pwa-preview #list .email-item .value-text,
+html.is-standalone #list .email-item .meta-from-text,
+html.is-pwa-preview #list .email-item .meta-from-text {
+  color: var(--label) !important; -webkit-text-fill-color: var(--label) !important; background: none !important;
+}
+html.is-standalone #list .email-item .email-preview,
+html.is-pwa-preview #list .email-item .email-preview { color: var(--label-2) !important; -webkit-text-fill-color: var(--label-2) !important; }
+html.is-standalone #list .email-item .email-time,
+html.is-pwa-preview #list .email-item .email-time { color: var(--label-2) !important; }
+/* 标签 chip 用中性灰 */
+html.is-standalone #list .email-item .label-chip,
+html.is-pwa-preview #list .email-item .label-chip,
+html.is-standalone #list .email-item .meta-label,
+html.is-pwa-preview #list .email-item .meta-label {
+  background: color-mix(in srgb, var(--label) 7%, transparent) !important;
+  color: var(--label-2) !important; border: none !important;
+}
