@@ -38,7 +38,7 @@ export async function handleApiRequest(request, db, mailDomains, options = {
     const mailboxId = payload?.mailboxId;
     
     // 允许的API端点
-    const allowedPaths = ['/api/inbox', '/api/emails', '/api/email/', '/api/auth', '/api/quota', '/api/mailbox/info', '/api/mailbox/password'];
+    const allowedPaths = ['/api/inbox', '/api/notifications', '/api/push', '/api/emails', '/api/email/', '/api/auth', '/api/quota', '/api/mailbox/info', '/api/mailbox/password'];
     const isAllowedPath = allowedPaths.some(allowedPath => path.startsWith(allowedPath));
     
     if (!isAllowedPath) {
@@ -81,6 +81,10 @@ export async function handleApiRequest(request, db, mailDomains, options = {
 
   // 系统设置 API
   response = await handleSettingsApi(request, db, url, path, options);
+  if (response) return response;
+
+  // 站内通知 API
+  response = await handleNotificationsApi(request, db, url, path, options);
   if (response) return response;
 
   // 用户管理 API

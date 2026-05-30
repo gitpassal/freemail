@@ -59,6 +59,8 @@ async function performFirstTimeSetup(db) {
     await migrateSentEmailsFields(db);
     await ensureCfAliasCodesTable(db);
     await ensureSystemSettingsTable(db);
+    await ensureNotificationsTable(db);
+    await ensurePushSubscriptionsTable(db);
     return;
   }
   
@@ -70,9 +72,29 @@ async function performFirstTimeSetup(db) {
   await db.exec("CREATE TABLE IF NOT EXISTS sent_emails (id INTEGER PRIMARY KEY AUTOINCREMENT, resend_id TEXT, from_name TEXT, from_addr TEXT NOT NULL, to_addrs TEXT NOT NULL, subject TEXT NOT NULL, html_content TEXT, text_content TEXT, status TEXT DEFAULT 'queued', scheduled_at TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP, provider TEXT NOT NULL DEFAULT 'resend');");
   await ensureCfAliasCodesTable(db);
   await ensureSystemSettingsTable(db);
-  
+  await ensureNotificationsTable(db);
+  await ensurePushSubscriptionsTable(db);
+
   // 创建索引
   await createIndexes(db);
+}
+
+/**
+ * 站内通知表（应用内通知中心使用）
+ */
+async function ensureNotificationsTable(db) {
+  await db.exec("CREATE TABLE IF NOT EXISTS notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, mailbox_id INTEGER NOT NULL, message_id INTEGER, type TEXT NOT NULL DEFAULT 'new_mail', title TEXT NOT NULL DEFAULT '', body TEXT NOT NULL DEFAULT '', is_read INTEGER NOT NULL DEFAULT 0, created_at TEXT DEFAULT CURRENT_TIMESTAMP);");
+  await db.exec("CREATE INDEX IF NOT EXISTS idx_notifications_mailbox ON notifications(mailbox_id, created_at DESC);");
+  await db.exec("CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(mailbox_id, is_read);");
+}
+
+/**
+ * Web Push 订阅表
+ */
+async function ensurePushSubscriptionsTable(db) {
+  await db.exec("CREATE TABLE IF NOT EXISTS push_subscriptions (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, mailbox_id INTEGER, endpoint TEXT NOT NULL UNIQUE, p256dh TEXT NOT NULL, auth TEXT NOT NULL, created_at TEXT DEFAULT CURRENT_TIMESTAMP);");
+  await db.exec("CREATE INDEX IF NOT EXISTS idx_push_subs_user ON push_subscriptions(user_id);");
+  await db.exec("CREATE INDEX IF NOT EXISTS idx_push_subs_mailbox ON push_subscriptions(mailbox_id);");
 }
 
 /**
