@@ -78,6 +78,10 @@
     bar.className = 'tabbar';
     bar.setAttribute('role', 'tablist');
     bar.setAttribute('aria-label', '主导航');
+
+    // 磨砂胶囊：承载四个标签
+    var pills = document.createElement('div');
+    pills.className = 'tabbar-pills';
     TABS.forEach(function (t) {
       var btn = document.createElement('button');
       btn.type = 'button';
@@ -87,8 +91,24 @@
       btn.setAttribute('aria-label', tr(t.labelKey));
       btn.innerHTML = icon(t.icon) + '<span class="tabbar-label">' + tr(t.labelKey) + '</span>';
       btn.addEventListener('click', function () { onTab(t.key); });
-      bar.appendChild(btn);
+      pills.appendChild(btn);
     });
+    bar.appendChild(pills);
+
+    // 独立圆形 FAB：写邮件
+    var fab = document.createElement('button');
+    fab.type = 'button';
+    fab.className = 'tabbar-fab';
+    fab.setAttribute('aria-label', tr('gmail.compose'));
+    fab.innerHTML = icon('edit');
+    fab.addEventListener('click', function () {
+      try {
+        if (window.GmailInbox && window.GmailInbox.openCompose) { window.GmailInbox.openCompose({}); return; }
+      } catch (e) {}
+      clickEl('compose');
+    });
+    bar.appendChild(fab);
+
     document.body.appendChild(bar);
     setActive('generate');
   }

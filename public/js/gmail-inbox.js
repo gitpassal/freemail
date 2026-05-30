@@ -522,9 +522,22 @@
     else if (t === 'inbox') hideInbox();
   });
 
+  // 确保发件人列表可用（底栏 FAB 在未打开收件箱时直接写信）
+  function ensureFromsThenCompose(opts) {
+    ensureRoot();
+    if (availableFroms().length) { openCompose(opts || {}); return; }
+    gapi('/api/inbox?page=1&limit=20').then(function (r) { return r.json(); }).then(function (d) {
+      var list = (d && d.list) || [];
+      if (!state.items.length) state.items = list;
+      openCompose(opts || {});
+    }).catch(function () { openCompose(opts || {}); });
+  }
+
   window.GmailInbox = {
     open: openInbox,
     close: function () { hideCompose(); hideReader(); hideInbox(); },
-    refresh: function () { if (root && root.classList.contains('is-open')) loadPage(1, true); }
+    refresh: function () { if (root && root.classList.contains('is-open')) loadPage(1, true); },
+    openCompose: function (opts) { ensureFromsThenCompose(opts || {}); },
+    openMail: function (id) { openInbox(); openReader(id); }
   };
 })();
