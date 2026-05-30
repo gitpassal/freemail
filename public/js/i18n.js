@@ -69,7 +69,7 @@
     'lang.toggleTitle': { zh: '切换语言', en: 'Switch language' },
 
     // —— 角色徽章 ——
-    'role.super': { zh: '超级管理员', en: 'Admin' },
+    'role.super': { zh: '超级管理员', en: 'admin' },
     'role.demo': { zh: '演示模式', en: 'Demo' },
     'role.advanced': { zh: '高级用户：{name}', en: 'Premium: {name}' },
     'role.user': { zh: '用户：{name}', en: 'User: {name}' },

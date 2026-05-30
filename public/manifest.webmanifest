@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "Cloudflare Alias",
   "short_name": "CF Alias",
   "description": "Cloudflare Alias mailbox app",

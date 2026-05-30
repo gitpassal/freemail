@@ -39,14 +39,19 @@
         'gmail.subject':       { zh: '主题', en: 'Subject' },
         'gmail.composeNeedTo': { zh: '请填写收件人', en: 'Enter a recipient' },
         'gmail.composeNoFrom': { zh: '没有可用的发件邮箱', en: 'No mailbox available to send from' },
-        'gmail.sentTo':        { zh: '发送至', en: 'To' }
+        'gmail.sentTo':        { zh: '发送至', en: 'To' },
+        'gmail.boxInbox':      { zh: '收件箱', en: 'Inbox' },
+        'gmail.boxSent':       { zh: '已发送', en: 'Sent' },
+        'gmail.boxStarred':    { zh: '星标', en: 'Starred' },
+        'gmail.menuTitle':     { zh: '邮箱', en: 'Mailbox' },
+        'gmail.byAlias':       { zh: '按别名', en: 'By alias' }
       });
     }
   } catch (e) { }
 
   function tr(k) { try { return window.t ? window.t(k) : k; } catch (e) { return k; } }
   function toast(m, t) { try { if (window.showToast) window.showToast(m, t || 'info'); } catch (e) { } }
-  var SHOW_ALIAS = true;
+  var SHOW_ALIAS = false;
 
   function icon(name, extraStyle) {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
@@ -114,8 +119,8 @@
   }
 
   // ---- 状态 ----
-  var state = { items: [], page: 1, limit: 20, hasMore: true, loading: false, query: '' };
-  var root = null, listEl = null, searchEl = null;
+  var state = { items: [], page: 1, limit: 20, hasMore: true, loading: false, query: '', box: 'inbox' };
+  var root = null, listEl = null, searchEl = null, drawer = null, aliasesLoaded = false;
   var reader = null, currentEmail = null;
   var composer = null;
 
@@ -131,18 +136,15 @@
         '<div class="gi-avatar-me">' + icon('user') + '</div>' +
       '</div>' +
       '<div class="gi-section-label">' + esc(tr('gmail.inboxLabel')) + '</div>' +
-      '<div class="gi-list"><div class="gi-refresh-hint">' + esc(tr('gmail.loading')) + '</div><div class="gi-rows"></div></div>' +
-      '<button class="gi-fab">' + icon('edit') + '<span>' + esc(tr('gmail.compose')) + '</span></button>';
+      '<div class="gi-list"><div class="gi-refresh-hint">' + esc(tr('gmail.loading')) + '</div><div class="gi-rows"></div></div>';
     document.body.appendChild(root);
 
     listEl = root.querySelector('.gi-list');
     var rowsEl = root.querySelector('.gi-rows');
     searchEl = root.querySelector('.gi-search');
 
-    // 汉堡 → 打开底部设置面板（最接近 Gmail 的"菜单"）
-    root.querySelector('.gi-hamburger').addEventListener('click', function () {
-      var s = document.querySelector('.tabbar-item[data-tab="settings"]'); if (s) s.click();
-    });
+    // 汉堡 → 打开左侧筛选抽屉
+    root.querySelector('.gi-hamburger').addEventListener('click', function () { openDrawer(); });
     // 搜索（本地过滤）
     var st;
     searchEl.addEventListener('input', function () {
@@ -158,12 +160,11 @@
     });
     // 无限滚动 + 下拉刷新
     listEl.addEventListener('scroll', function () {
+      if (listEl.scrollTop > 40 && root.classList.contains('search-open')) root.classList.remove('search-open');
       if (state.query || state.loading || !state.hasMore) return;
       if (listEl.scrollTop + listEl.clientHeight >= listEl.scrollHeight - 80) loadPage(state.page + 1, false);
     });
     bindPullToRefresh();
-    // FAB
-    root.querySelector('.gi-fab').addEventListener('click', function () { openCompose({}); });
   }
 
   function bindPullToRefresh() {
@@ -175,9 +176,10 @@
     listEl.addEventListener('touchmove', function (e) {
       if (!pulling) return;
       var dy = e.touches[0].clientY - startY;
-      if (dy > 60) hint.classList.add('show'); else hint.classList.remove('show');
+      if (dy > 40) root.classList.add('search-open');
+      if (dy > 110) hint.classList.add('show'); else hint.classList.remove('show');
     }, { passive: true });
-    listEl.addEventListener('touchend', function (e) {
+    listEl.addEventListener('touchend', function () {
       if (!pulling) return; pulling = false;
       if (hint.classList.contains('show')) { hint.classList.remove('show'); loadPage(1, true); }
     });
@@ -215,10 +217,17 @@
     rowsEl.innerHTML = items.map(rowHTML).join('');
   }
 
+  function inboxUrl(page) {
+    var u = '/api/inbox?page=' + page + '&limit=' + state.limit;
+    if (state.box === 'sent') u += '&box=sent';
+    else if (state.box === 'starred') u += '&starred=1';
+    else if (state.box && state.box.indexOf('mailbox:') === 0) u += '&mailbox=' + encodeURIComponent(state.box.slice(8));
+    return u;
+  }
   function loadPage(page, reset) {
     if (state.loading) return;
     state.loading = true;
-    gapi('/api/inbox?page=' + page + '&limit=' + state.limit)
+    gapi(inboxUrl(page))
       .then(function (r) { return r.json(); })
       .then(function (d) {
         var list = (d && d.list) || [];
@@ -312,18 +321,24 @@
   function openReader(id) {
     ensureReader();
     currentEmail = null;
+    var isSent = (state.box === 'sent');
+    reader.classList.toggle('is-sent', isSent);
     reader.querySelector('.gi-r-scroll').innerHTML = '<div class="gi-empty">' + esc(tr('gmail.loading')) + '</div>';
     reader.classList.add('is-open');
     pushLayer();
-    gapi('/api/email/' + id).then(function (r) { return r.json(); }).then(function (e) {
+    gapi(isSent ? ('/api/sent/' + id) : ('/api/email/' + id)).then(function (r) { return r.json(); }).then(function (e) {
       e.id = e.id || id;
+      if (isSent) {
+        e.__sent = true;
+        e.sender = e.from_addr || e.sender || '';
+        e.received_at = e.created_at || e.received_at;
+        e.content = e.text_content || e.content || '';
+      }
       var it = state.items.filter(function (x) { return String(x.id) === String(id); })[0];
       if (it && !e.mailbox_address && it.mailbox_address) e.mailbox_address = it.mailbox_address;
       currentEmail = e;
       renderReader(e);
-      applyStarToItem(id, e.is_starred ? 1 : 0);
-      if (it) it.is_read = 1;
-      render();
+      if (!isSent) { applyStarToItem(id, e.is_starred ? 1 : 0); if (it) it.is_read = 1; render(); }
     }).catch(function () {
       reader.querySelector('.gi-r-scroll').innerHTML = '<div class="gi-empty">' + esc(tr('gmail.loadFail')) + '</div>';
     });
@@ -359,8 +374,7 @@
         (SHOW_ALIAS && e.mailbox_address ? '<span class="gi-alias-tag">' + esc(e.mailbox_address) + '</span>' : '') + '</div>' +
       '<div class="gi-r-sender">' + avatarHTML(e.sender) +
         '<div class="gi-r-sender-info"><div class="gi-r-sender-name">' + esc(fromName) + '</div>' +
-        '<div class="gi-r-sender-sub">' + esc(tr('gmail.sentTo')) + ' ' + esc(e.mailbox_address || e.to_addrs || '') +
-        ' · ' + esc(fmtDate(e.received_at)) + '</div></div></div>' +
+        '<div class="gi-r-sender-sub">' + esc(fmtDate(e.received_at)) + '</div></div></div>' +
       codeHtml + bodyHtml + attHtml;
 
     updateReaderStar();
@@ -396,7 +410,8 @@
   function deleteCurrent() {
     if (!currentEmail) return;
     var id = currentEmail.id;
-    gapi('/api/email/' + id, { method: 'DELETE' }).then(function (r) { return r.json().catch(function () { return {}; }); })
+    var delUrl = currentEmail.__sent ? ('/api/sent/' + id) : ('/api/email/' + id);
+    gapi(delUrl, { method: 'DELETE' }).then(function (r) { return r.json().catch(function () { return {}; }); })
       .then(function (d) {
         if (d && d.error) { toast(d.error, 'error'); return; }
         state.items = state.items.filter(function (x) { return String(x.id) !== String(id); });
@@ -511,6 +526,7 @@
   function topmost() {
     if (composer && composer.classList.contains('is-open')) return 'compose';
     if (reader && reader.classList.contains('is-open')) return 'reader';
+    if (drawer && drawer.classList.contains('is-open')) return 'drawer';
     if (root && root.classList.contains('is-open')) return 'inbox';
     return null;
   }
@@ -519,8 +535,72 @@
     var t = topmost();
     if (t === 'compose') hideCompose();
     else if (t === 'reader') hideReader();
+    else if (t === 'drawer') closeDrawer();
     else if (t === 'inbox') hideInbox();
   });
+
+  // ============== 左侧筛选抽屉 ==============
+  function ensureDrawer() {
+    if (drawer) return;
+    var ov = document.createElement('div');
+    ov.className = 'gi-drawer-overlay';
+    drawer = document.createElement('div');
+    drawer.className = 'gi-drawer';
+    drawer.innerHTML =
+      '<div class="gi-drawer-title">' + esc(tr('gmail.menuTitle')) + '</div>' +
+      '<button class="gi-drawer-item" data-box="inbox">' + icon('inbox') + '<span>' + esc(tr('gmail.boxInbox')) + '</span></button>' +
+      '<button class="gi-drawer-item" data-box="sent">' + icon('send') + '<span>' + esc(tr('gmail.boxSent')) + '</span></button>' +
+      '<button class="gi-drawer-item" data-box="starred">' + icon('star') + '<span>' + esc(tr('gmail.boxStarred')) + '</span></button>' +
+      '<div class="gi-drawer-sub">' + esc(tr('gmail.byAlias')) + '</div>' +
+      '<div class="gi-drawer-aliases"></div>';
+    document.body.appendChild(ov);
+    document.body.appendChild(drawer);
+    drawer._overlay = ov;
+    ov.addEventListener('click', function () { history.back(); });
+    drawer.addEventListener('click', function (ev) {
+      var b = ev.target.closest ? ev.target.closest('.gi-drawer-item') : null;
+      if (!b) return;
+      selectBox(b.getAttribute('data-box'), (b.querySelector('span') ? b.querySelector('span').textContent : b.textContent));
+    });
+  }
+  function openDrawer() {
+    ensureDrawer();
+    loadAliases();
+    drawer.classList.add('is-open');
+    drawer._overlay.classList.add('is-open');
+    markActiveDrawer();
+    pushLayer();
+  }
+  function closeDrawer() {
+    if (drawer) { drawer.classList.remove('is-open'); drawer._overlay.classList.remove('is-open'); }
+  }
+  function markActiveDrawer() {
+    if (!drawer) return;
+    var items = drawer.querySelectorAll('.gi-drawer-item');
+    for (var i = 0; i < items.length; i++) items[i].classList.toggle('is-active', items[i].getAttribute('data-box') === state.box);
+  }
+  function selectBox(box, label) {
+    state.box = box || 'inbox';
+    state.query = ''; if (searchEl) searchEl.value = '';
+    var lbl = root && root.querySelector('.gi-section-label');
+    if (lbl) lbl.textContent = label || tr('gmail.boxInbox');
+    markActiveDrawer();
+    try { history.back(); } catch (e) { closeDrawer(); }   // 关抽屉
+    loadPage(1, true);
+  }
+  function loadAliases() {
+    if (aliasesLoaded || !drawer) return;
+    aliasesLoaded = true;
+    var box = drawer.querySelector('.gi-drawer-aliases');
+    gapi('/api/mailboxes?page=1&size=50').then(function (r) { return r.json(); }).then(function (d) {
+      var arr = Array.isArray(d) ? d : ((d && (d.list || d.mailboxes || d.items)) || []);
+      box.innerHTML = arr.map(function (m) {
+        var a = (m && m.address) ? m.address : (typeof m === 'string' ? m : '');
+        if (!a) return '';
+        return '<button class="gi-drawer-item" data-box="mailbox:' + esc(a) + '"><span>' + esc(a) + '</span></button>';
+      }).join('');
+    }).catch(function () { aliasesLoaded = false; });
+  }
 
   // 确保发件人列表可用（底栏 FAB 在未打开收件箱时直接写信）
   function ensureFromsThenCompose(opts) {
@@ -535,7 +615,7 @@
 
   window.GmailInbox = {
     open: openInbox,
-    close: function () { hideCompose(); hideReader(); hideInbox(); },
+    close: function () { hideCompose(); hideReader(); closeDrawer(); hideInbox(); },
     refresh: function () { if (root && root.classList.contains('is-open')) loadPage(1, true); },
     openCompose: function (opts) { ensureFromsThenCompose(opts || {}); },
     openMail: function (id) { openInbox(); openReader(id); }

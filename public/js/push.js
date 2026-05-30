@@ -67,4 +67,22 @@
   }
 
   window.WebPush = { enable: enable, disable: disable, isEnabled: isEnabled, supported: supported };
+
+  // 首次用户手势时自动申请一次通知权限（iOS 要求手势触发；localStorage 记一次，不重复打扰）
+  function maybeAutoPrompt() {
+    try {
+      if (!supported()) return;
+      if (Notification.permission !== 'default') return;            // 已授权或已拒绝则不再弹
+      if (localStorage.getItem('mf:pushPrompted') === '1') return;  // 只自动申请一次
+    } catch (e) { return; }
+    function onFirstGesture() {
+      document.removeEventListener('pointerdown', onFirstGesture, true);
+      document.removeEventListener('click', onFirstGesture, true);
+      try { localStorage.setItem('mf:pushPrompted', '1'); } catch (e) {}
+      enable().catch(function () { /* 用户拒绝/失败：已记一次，不再自动弹 */ });
+    }
+    document.addEventListener('pointerdown', onFirstGesture, true);
+    document.addEventListener('click', onFirstGesture, true);
+  }
+  maybeAutoPrompt();
 })();

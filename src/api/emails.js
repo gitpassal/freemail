@@ -63,9 +63,36 @@ export async function handleEmailsApi(request, db, url, path, options) {
     const page = Math.max(parseInt(url.searchParams.get('page') || '1', 10), 1);
     const offset = (page - 1) * limit;
     try {
-      if (isMock) return Response.json(buildMockAggregateInbox(page, limit));
+      const box = (url.searchParams.get('box') || '').trim();
+      if (isMock) {
+        if (box === 'sent') return Response.json({ list: [], page, hasMore: false, box: 'sent' });
+        return Response.json(buildMockAggregateInbox(page, limit));
+      }
 
       const ctx = getAuthContext(request, options);
+
+      // ---- 已发送（sent_emails 聚合，按可见范围） ----
+      if (box === 'sent') {
+        let sWhere = '', sBinds = [];
+        if (ctx.strictAdmin) {
+          sWhere = '1=1';
+        } else if (ctx.role === 'mailbox' && ctx.mailboxAddress) {
+          sWhere = 'LOWER(s.from_addr) = ?'; sBinds = [ctx.mailboxAddress];
+        } else if (ctx.userId) {
+          sWhere = 'LOWER(s.from_addr) IN (SELECT LOWER(m.address) FROM user_mailboxes um JOIN mailboxes m ON m.id = um.mailbox_id WHERE um.user_id = ?)';
+          sBinds = [ctx.userId];
+        } else {
+          return Response.json({ list: [], page, hasMore: false, box: 'sent' });
+        }
+        const sentSql = `SELECT s.id, s.from_addr AS sender, s.to_addrs, s.subject, s.created_at AS received_at,
+                                1 AS is_read, substr(COALESCE(s.text_content, ''), 1, 120) AS preview,
+                                NULL AS verification_code, 0 AS is_starred, s.from_addr AS mailbox_address, s.status
+                         FROM sent_emails s WHERE ${sWhere} ORDER BY s.created_at DESC LIMIT ? OFFSET ?`;
+        const { results: sres } = await db.prepare(sentSql).bind(...sBinds, limit, offset).all();
+        const slist = sres || [];
+        return Response.json({ list: slist, page, hasMore: slist.length === limit, box: 'sent' });
+      }
+
       const COLS = `msg.id, msg.sender, msg.to_addrs, msg.subject, msg.received_at, msg.is_read, msg.preview, msg.verification_code, COALESCE(msg.is_starred, 0) AS is_starred, m.address AS mailbox_address`;
       const COLS_NOSTAR = `msg.id, msg.sender, msg.to_addrs, msg.subject, msg.received_at, msg.is_read, msg.preview, msg.verification_code, 0 AS is_starred, m.address AS mailbox_address`;
 
@@ -86,12 +113,25 @@ export async function handleEmailsApi(request, db, url, path, options) {
         return Response.json({ list: [], page, hasMore: false });
       }
 
-      const buildSql = (cols) => `SELECT ${cols} FROM messages msg ${joins} WHERE ${where} ORDER BY msg.received_at DESC LIMIT ? OFFSET ?`;
+      // 可选筛选：指定别名 / 仅星标
+      let extra = '';
+      const mailboxParam = (url.searchParams.get('mailbox') || '').trim();
+      if (mailboxParam) {
+        const normalized = extractEmail(mailboxParam).trim().toLowerCase();
+        const mid = await getMailboxIdByAddress(db, normalized);
+        if (!mid) return Response.json({ list: [], page, hasMore: false });
+        const access = await getMailboxAccess(db, request, options, { mailboxId: mid });
+        if (!access.allowed) return errorResponse('Forbidden', 403);
+        extra += ' AND msg.mailbox_id = ' + Number(mid);
+      }
+      const starred = url.searchParams.get('starred') === '1';
+
+      const buildSql = (cols, starCond) => `SELECT ${cols} FROM messages msg ${joins} WHERE ${where}${extra}${starCond} ORDER BY msg.received_at DESC LIMIT ? OFFSET ?`;
       let results;
       try {
-        ({ results } = await db.prepare(buildSql(COLS)).bind(...binds, limit, offset).all());
+        ({ results } = await db.prepare(buildSql(COLS, starred ? ' AND COALESCE(msg.is_starred,0) = 1' : '')).bind(...binds, limit, offset).all());
       } catch (_) {
-        ({ results } = await db.prepare(buildSql(COLS_NOSTAR)).bind(...binds, limit, offset).all());
+        ({ results } = await db.prepare(buildSql(COLS_NOSTAR, '')).bind(...binds, limit, offset).all());
       }
       const list = results || [];
       return Response.json({ list, page, hasMore: list.length === limit });

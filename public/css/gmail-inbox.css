@@ -27,22 +27,33 @@ html.is-pwa-preview .gmail-inbox.is-open {
   inset: 0;
   z-index: 35;
   background: var(--bg, #f2f2f7);
-  padding-top: var(--safe-area-top, 0px);
+  padding-top: calc(72px + var(--safe-area-top, 0px));
   overflow: hidden;
 }
 
-/* 顶部搜索栏 */
+/* 顶部搜索栏：默认折叠隐藏，下拉时 .search-open 展开 */
 html.is-standalone .gmail-inbox .gi-topbar,
 html.is-pwa-preview .gmail-inbox .gi-topbar {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 10px 12px 6px;
-  padding: 8px 12px;
+  margin: 0 12px;
+  padding: 0 12px;
   background: var(--card, #fff);
   border-radius: 999px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   flex-shrink: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height .22s ease, opacity .22s ease, margin .22s ease, padding .22s ease;
+}
+html.is-standalone .gmail-inbox.search-open .gi-topbar,
+html.is-pwa-preview .gmail-inbox.search-open .gi-topbar {
+  max-height: 52px;
+  opacity: 1;
+  margin: 8px 12px 4px;
+  padding: 8px 12px;
 }
 html.is-standalone .gmail-inbox .gi-hamburger,
 html.is-pwa-preview .gmail-inbox .gi-hamburger {
@@ -394,7 +405,7 @@ html.is-pwa-preview .gi-compose .gi-c-field input,
 html.is-standalone .gi-compose .gi-c-field select,
 html.is-pwa-preview .gi-compose .gi-c-field select {
   flex: 1; border: none; outline: none; background: transparent;
-  font-size: 15px; color: var(--text, #1c1c1e);
+  font-size: 16px; color: var(--text, #1c1c1e);
 }
 html.is-standalone .gi-compose .gi-c-textarea,
 html.is-pwa-preview .gi-compose .gi-c-textarea {
