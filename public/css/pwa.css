@@ -1373,3 +1373,78 @@ html.is-standalone #list .email-item .email-actions .btn,
 html.is-pwa-preview #list .email-item .email-actions .btn {
   width: 34px !important; height: 34px !important; padding: 0 !important; border-radius: 9px !important;
 }
+
+/* ============================================================
+   iOS 生成页 v4（standalone）：配合 ios-generate.js 重排——
+   邮箱卡只留 复制+进入收件，生成按钮组提到卡下方（随机生成主橙/其余次），高级选项折叠
+   ============================================================ */
+/* 邮箱卡操作区：只显示 复制(#copy) 与 进入收件(#enter-mailbox)，其余隐藏 */
+html.is-standalone #email-actions #compose,
+html.is-pwa-preview #email-actions #compose,
+html.is-standalone #email-actions #clear,
+html.is-pwa-preview #email-actions #clear,
+html.is-standalone #email-actions #refresh,
+html.is-pwa-preview #email-actions #refresh,
+html.is-standalone #email-actions #forward-setting,
+html.is-pwa-preview #email-actions #forward-setting,
+html.is-standalone #email-actions #toggle-favorite,
+html.is-pwa-preview #email-actions #toggle-favorite { display: none !important; }
+/* 复制 + 进入：两列并排 */
+html.is-standalone #email-actions,
+html.is-pwa-preview #email-actions {
+  display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px !important;
+  margin-top: 14px !important;
+}
+html.is-standalone #email-actions #copy,
+html.is-pwa-preview #email-actions #copy {
+  width: 100% !important; height: 46px !important; border-radius: 12px !important;
+  background: color-mix(in srgb, var(--label) 7%, transparent) !important; color: var(--label) !important;
+  border: none !important; font-size: 15px !important; font-weight: 600 !important;
+}
+html.is-standalone #email-actions #enter-mailbox,
+html.is-pwa-preview #email-actions #enter-mailbox {
+  width: 100% !important; height: 46px !important; border-radius: 12px !important;
+  background: var(--accent) !important; color: #fff !important; border: none !important;
+  font-size: 15px !important; font-weight: 600 !important;
+}
+
+/* 生成按钮组（提到邮箱卡下方的 .gi-gen-actions 容器内） */
+html.is-standalone .gi-gen-actions,
+html.is-pwa-preview .gi-gen-actions { margin-bottom: 16px !important; }
+html.is-standalone .gi-gen-actions .generate-action,
+html.is-pwa-preview .gi-gen-actions .generate-action { margin: 0 !important; }
+html.is-standalone .gi-gen-actions .generate-buttons,
+html.is-pwa-preview .gi-gen-actions .generate-buttons {
+  flex-direction: column !important; gap: 10px !important; margin-bottom: 10px !important;
+}
+html.is-standalone .gi-gen-actions .btn,
+html.is-pwa-preview .gi-gen-actions .btn {
+  width: 100% !important; height: 50px !important; border-radius: 14px !important;
+  font-size: 16px !important; font-weight: 600 !important;
+}
+/* 随机生成 = 主橙 */
+html.is-standalone .gi-gen-actions #gen,
+html.is-pwa-preview .gi-gen-actions #gen {
+  background: var(--accent) !important; color: #fff !important; border: none !important;
+}
+html.is-standalone .gi-gen-actions #gen .btn-icon svg,
+html.is-pwa-preview .gi-gen-actions #gen .btn-icon svg { color: #fff !important; }
+/* 随机人名 / 切换自定义 = 次（灰底） */
+html.is-standalone .gi-gen-actions #gen-name,
+html.is-pwa-preview .gi-gen-actions #gen-name,
+html.is-standalone .gi-gen-actions #toggle-custom,
+html.is-pwa-preview .gi-gen-actions #toggle-custom {
+  background: color-mix(in srgb, var(--label) 7%, transparent) !important; color: var(--label) !important;
+  border: none !important;
+}
+
+/* 高级选项折叠：.gi-collapsed 时隐藏 config-form */
+html.is-standalone .mailbox-config-section.gi-collapsed .config-form,
+html.is-pwa-preview .mailbox-config-section.gi-collapsed .config-form { display: none !important; }
+html.is-standalone .mailbox-config-section .section-header,
+html.is-pwa-preview .mailbox-config-section .section-header { cursor: pointer !important; }
+/* 折叠箭头随状态旋转（config-toggle 图标） */
+html.is-standalone .mailbox-config-section.gi-collapsed #config-toggle-icon,
+html.is-pwa-preview .mailbox-config-section.gi-collapsed #config-toggle-icon { transform: rotate(-90deg) !important; }
+html.is-standalone .mailbox-config-section #config-toggle-icon,
+html.is-pwa-preview .mailbox-config-section #config-toggle-icon { transition: transform .2s ease !important; }
