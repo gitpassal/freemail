@@ -316,20 +316,21 @@ html.is-pwa-preview {
   --ios-dur: 0.34s;
 }
 
-/* 深色态 = 完整 Proton 深紫底 + 亮青绿（accent 在深底上提亮） */
+/* 深色态 = 顶栏同款中性黑底（#1C1C1E）+ 亮青绿 accent。
+   底色与 .topbar 的 rgba(28,28,30,.72) 同源，body 与顶栏无缝衔接；卡片中性深灰、去紫。 */
 html.is-standalone.dark,
 html.is-pwa-preview.dark {
-  --bg: #16141f;
-  --bg-elevated: #22202b;
-  --card: #22202b;
-  --card-2: #2a2833;
+  --bg: #1C1C1E;
+  --bg-elevated: #2C2C2E;
+  --card: #2C2C2E;
+  --card-2: #3A3A3C;
   --separator: rgba(255, 255, 255, 0.08);
   --separator-strong: rgba(255, 255, 255, 0.14);
   --label: #ECEAF3;
-  --label-2: #9b98a8;
-  --label-3: #6b6878;
-  --secondary: #2a2833;
-  --secondary-hover: #353241;
+  --label-2: #98989F;
+  --label-3: #6B6B70;
+  --secondary: #2C2C2E;
+  --secondary-hover: #3A3A3C;
 
   --accent: #7fd8c0;
   --accent-press: #6bc4ad;

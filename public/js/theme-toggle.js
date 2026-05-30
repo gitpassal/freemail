@@ -7,7 +7,7 @@
   const PREFERENCE_KEY = 'freemail:theme-preference';
   const LEGACY_KEY = 'freemail:theme';
   const LIGHT_THEME_COLOR = '#f2f2f7';
-  const DARK_THEME_COLOR = '#16141f';  /* Proton 深紫底，与 standalone 深色一致 */
+  const DARK_THEME_COLOR = '#1C1C1E';  /* 顶栏同款中性黑，与 standalone 深色 body 一致 */
 
   let currentTheme = 'light';
 
