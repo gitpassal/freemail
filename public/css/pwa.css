@@ -1251,3 +1251,125 @@ html.is-pwa-preview #list .email-item .meta-label {
   background: color-mix(in srgb, var(--label) 7%, transparent) !important;
   color: var(--label-2) !important; border: none !important;
 }
+
+/* ============================================================
+   iOS 重设计 v3（standalone）：旧阅读模态框 sheet 化 + 二级列表去 chip + 标题去图标
+   ============================================================ */
+
+/* ---- 历史邮箱/生成页标题：去掉标题前的小图标，纯衬线大标题 ---- */
+html.is-standalone .sidebar.history-inline .sidebar-header .sidebar-icon,
+html.is-pwa-preview .sidebar.history-inline .sidebar-header .sidebar-icon,
+html.is-standalone .sidebar.history-inline .sidebar-header svg,
+html.is-pwa-preview .sidebar.history-inline .sidebar-header svg { display: none !important; }
+
+/* ---- 旧邮件阅读模态框 #email-modal → iOS 底部 sheet 风 ---- */
+html.is-standalone #email-modal.modal,
+html.is-pwa-preview #email-modal.modal {
+  align-items: flex-end !important;       /* 贴底 */
+  background: rgba(0,0,0,0.4) !important;  /* 遮罩 */
+  padding: 0 !important;
+}
+html.is-standalone #email-modal .modal-card,
+html.is-pwa-preview #email-modal .modal-card {
+  width: 100% !important; max-width: 100% !important;
+  max-height: 92vh !important; margin: 0 !important;
+  border-radius: 18px 18px 0 0 !important;
+  background: var(--card) !important; border: none !important;
+}
+/* 顶栏：去橙渐变条，改发丝线 + 抓手 */
+html.is-standalone #email-modal .modal-header,
+html.is-pwa-preview #email-modal .modal-header {
+  background: var(--card) !important;
+  border-bottom: 0.5px solid var(--separator) !important;
+  padding: 16px 18px 12px !important; position: relative !important;
+}
+html.is-standalone #email-modal .modal-header::before,
+html.is-pwa-preview #email-modal .modal-header::before {
+  content: '' !important; position: absolute !important; top: 6px !important; left: 50% !important;
+  transform: translateX(-50%) !important; width: 38px !important; height: 5px !important;
+  border-radius: 3px !important; background: var(--label-3) !important;
+}
+html.is-standalone #email-modal #modal-subject,
+html.is-pwa-preview #email-modal #modal-subject {
+  font-family: var(--font-serif) !important; font-size: 20px !important; font-weight: 700 !important;
+  color: var(--label) !important; letter-spacing: -0.01em !important;
+}
+html.is-standalone #email-modal .modal-icon,
+html.is-pwa-preview #email-modal .modal-icon { display: none !important; }
+html.is-standalone #email-modal .close,
+html.is-pwa-preview #email-modal .close { color: var(--label-2) !important; background: none !important; }
+/* meta 区：去白药丸，改简洁竖排发丝线行 */
+html.is-standalone #email-modal .email-meta-inline,
+html.is-pwa-preview #email-modal .email-meta-inline {
+  display: flex !important; flex-direction: column !important; gap: 0 !important;
+  background: var(--card-2) !important; border: none !important; border-radius: 12px !important;
+  padding: 4px 14px !important; margin-bottom: 14px !important;
+}
+html.is-standalone #email-modal .email-meta-inline span,
+html.is-pwa-preview #email-modal .email-meta-inline span {
+  background: none !important; border: none !important; border-radius: 0 !important;
+  border-bottom: 0.5px solid var(--separator) !important;
+  padding: 11px 0 !important; color: var(--label-2) !important; font-size: 14px !important;
+  box-shadow: none !important;
+}
+html.is-standalone #email-modal .email-meta-inline span:last-child,
+html.is-pwa-preview #email-modal .email-meta-inline span:last-child { border-bottom: none !important; }
+html.is-standalone #email-modal .email-meta-inline span svg,
+html.is-pwa-preview #email-modal .email-meta-inline span svg { color: var(--label-3) !important; }
+/* 验证码块橙色 */
+html.is-standalone #email-modal .code-highlight,
+html.is-pwa-preview #email-modal .code-highlight {
+  background: var(--accent-tint) !important; color: var(--accent) !important;
+  border: none !important; border-radius: 12px !important;
+  font-size: 22px !important; letter-spacing: 4px !important;
+}
+html.is-standalone #email-modal .code-highlight::before,
+html.is-pwa-preview #email-modal .code-highlight::before { display: none !important; }
+/* 正文卡白底浅色（HTML 邮件本是浅色文档） */
+html.is-standalone #email-modal .email-content-area,
+html.is-pwa-preview #email-modal .email-content-area {
+  background: #fff !important; border-radius: 12px !important; border: 0.5px solid var(--separator) !important;
+}
+html.is-standalone #email-modal .email-content-area::before,
+html.is-pwa-preview #email-modal .email-content-area::before { display: none !important; }
+html.is-standalone #email-modal .email-content-text,
+html.is-pwa-preview #email-modal .email-content-text { color: #1c1c1e !important; }
+
+/* ---- 二级邮件列表 #list .email-item：去 chip 标签，清爽两行 ---- */
+/* 隐藏「发件人/收件人/主题/内容」标签 chip 与图标，只留值 */
+html.is-standalone #list .email-item .label-chip,
+html.is-pwa-preview #list .email-item .label-chip,
+html.is-standalone #list .email-item .meta-label,
+html.is-pwa-preview #list .email-item .meta-label,
+html.is-standalone #list .email-item .time-icon,
+html.is-pwa-preview #list .email-item .time-icon,
+html.is-standalone #list .email-item .meta-to,
+html.is-pwa-preview #list .email-item .meta-to { display: none !important; }
+/* 发件人加粗主文字 */
+html.is-standalone #list .email-item .meta-from-text,
+html.is-pwa-preview #list .email-item .meta-from-text {
+  font-size: 16px !important; font-weight: 600 !important; color: var(--label) !important;
+  -webkit-text-fill-color: var(--label) !important;
+}
+html.is-standalone #list .email-item .email-time,
+html.is-pwa-preview #list .email-item .email-time { font-size: 13px !important; color: var(--label-2) !important; }
+/* 主题中等、内容次要，单行省略 */
+html.is-standalone #list .email-item .subject.value-text,
+html.is-pwa-preview #list .email-item .subject.value-text {
+  font-size: 14px !important; font-weight: 600 !important; color: var(--label) !important;
+  display: block !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
+}
+html.is-standalone #list .email-item .email-preview,
+html.is-pwa-preview #list .email-item .email-preview {
+  font-size: 13px !important; color: var(--label-2) !important;
+  display: block !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
+}
+html.is-standalone #list .email-item .email-line,
+html.is-pwa-preview #list .email-item .email-line { display: block !important; margin: 0 !important; }
+/* 操作按钮：复制中性、删除红色图标钮（去大红块） */
+html.is-standalone #list .email-item .email-actions,
+html.is-pwa-preview #list .email-item .email-actions { gap: 4px !important; }
+html.is-standalone #list .email-item .email-actions .btn,
+html.is-pwa-preview #list .email-item .email-actions .btn {
+  width: 34px !important; height: 34px !important; padding: 0 !important; border-radius: 9px !important;
+}
