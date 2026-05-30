@@ -180,6 +180,23 @@
     watchSystemTheme();
     watchStorageChanges();
 
+    // standalone 类可能在 pwa.js 之后才打上；若届时仍无用户偏好，应用 Proton 深色默认
+    if (!getSavedTheme()) {
+      let tries = 0;
+      const recheck = function () {
+        if (getSavedTheme()) return;                    // 用户已手动选过，不强制
+        if (isStandaloneLike() && currentTheme !== 'dark') {
+          applyTheme('dark'); updateThemeToggleButton('dark'); dispatchThemeChange('dark', 'system');
+          return;
+        }
+        if (!isStandaloneLike() && tries++ < 25) setTimeout(recheck, 120);  // 等 standalone 类就位
+      };
+      setTimeout(recheck, 60);
+      try {
+        window.matchMedia('(display-mode: standalone)').addEventListener('change', recheck);
+      } catch (e) {}
+    }
+
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', function() {
         setTimeout(addThemeToggleToNav, 300);
