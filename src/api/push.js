@@ -6,6 +6,25 @@
 import { getAuthContext, errorResponse } from './helpers.js';
 import { getOrCreateVapidKeys, getVapidPublicKey, sendWebPush } from '../utils/webpush.js';
 
+// 仅允许已知推送服务的 endpoint，防止 SSRF（收信时会 fetch(endpoint)）
+const PUSH_HOST_ALLOW = [
+  /(^|\.)push\.apple\.com$/,            // web.push.apple.com
+  /(^|\.)googleapis\.com$/,             // fcm.googleapis.com
+  /(^|\.)notify\.windows\.com$/,        // *.notify.windows.com
+  /(^|\.)push\.services\.mozilla\.com$/ // updates.push.services.mozilla.com
+];
+export function isValidPushEndpoint(endpoint) {
+  try {
+    const u = new URL(String(endpoint || ''));
+    if (u.protocol !== 'https:') return false;
+    const h = u.hostname.toLowerCase();
+    if (h === 'localhost' || h.endsWith('.local')) return false;
+    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h)) return false; // 裸 IPv4
+    if (h.indexOf(':') >= 0) return false;               // IPv6 字面量
+    return PUSH_HOST_ALLOW.some((re) => re.test(h));
+  } catch (_) { return false; }
+}
+
 export async function handlePushApi(request, db, url, path, options) {
   if (!path.startsWith('/api/push')) return null;
   const isMock = !!options.mockOnly;
@@ -23,17 +42,23 @@ export async function handlePushApi(request, db, url, path, options) {
     if (isMock) return errorResponse('演示模式不可订阅', 403);
     try {
       const ctx = getAuthContext(request, options);
-      if (!ctx.userId && !ctx.mailboxId) return errorResponse('需要登录', 401);
+      if (!ctx.userId && !ctx.mailboxId && !ctx.strictAdmin) return errorResponse('需要登录', 401);
       const sub = await request.json();
       const endpoint = sub && sub.endpoint;
       const p256dh = sub && sub.keys && sub.keys.p256dh;
       const auth = sub && sub.keys && sub.keys.auth;
       if (!endpoint || !p256dh || !auth) return errorResponse('无效订阅', 400);
+      if (!isValidPushEndpoint(endpoint)) return errorResponse('不支持的推送端点', 400);
+      const isAdmin = ctx.strictAdmin ? 1 : 0;
+      // 仅在该 endpoint 不存在、或已属于当前身份时才写入/更新（防止改绑他人订阅）
       await db.prepare(
-        `INSERT INTO push_subscriptions (user_id, mailbox_id, endpoint, p256dh, auth)
-         VALUES (?, ?, ?, ?, ?)
-         ON CONFLICT(endpoint) DO UPDATE SET user_id=excluded.user_id, mailbox_id=excluded.mailbox_id, p256dh=excluded.p256dh, auth=excluded.auth`
-      ).bind(ctx.userId || null, ctx.mailboxId || null, endpoint, p256dh, auth).run();
+        `INSERT INTO push_subscriptions (user_id, mailbox_id, is_admin, endpoint, p256dh, auth)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(endpoint) DO UPDATE SET p256dh=excluded.p256dh, auth=excluded.auth, is_admin=excluded.is_admin
+         WHERE (push_subscriptions.user_id IS NOT NULL AND push_subscriptions.user_id = excluded.user_id)
+            OR (push_subscriptions.mailbox_id IS NOT NULL AND push_subscriptions.mailbox_id = excluded.mailbox_id)
+            OR (push_subscriptions.is_admin = 1 AND excluded.is_admin = 1)`
+      ).bind(ctx.userId || null, ctx.mailboxId || null, isAdmin, endpoint, p256dh, auth).run();
       return Response.json({ success: true });
     } catch (e) {
       console.error('订阅失败:', e);
@@ -41,13 +66,20 @@ export async function handlePushApi(request, db, url, path, options) {
     }
   }
 
-  // 退订
+  // 退订（需鉴权，且仅能删除自己的订阅）
   if (path === '/api/push/unsubscribe' && request.method === 'POST') {
     if (isMock) return Response.json({ success: true });
     try {
+      const ctx = getAuthContext(request, options);
+      if (!ctx.userId && !ctx.mailboxId) return errorResponse('需要登录', 401);
       const body = await request.json().catch(function () { return {}; });
       const endpoint = body && body.endpoint;
-      if (endpoint) await db.prepare('DELETE FROM push_subscriptions WHERE endpoint = ?').bind(endpoint).run();
+      if (endpoint) {
+        await db.prepare(
+          `DELETE FROM push_subscriptions WHERE endpoint = ?
+           AND ((user_id IS NOT NULL AND user_id = ?) OR (mailbox_id IS NOT NULL AND mailbox_id = ?))`
+        ).bind(endpoint, ctx.userId || -1, ctx.mailboxId || -1).run();
+      }
       return Response.json({ success: true });
     } catch (e) { return errorResponse('退订失败', 500); }
   }
@@ -57,13 +89,13 @@ export async function handlePushApi(request, db, url, path, options) {
     if (isMock) return errorResponse('演示模式不可用', 403);
     try {
       const ctx = getAuthContext(request, options);
-      if (!ctx.userId && !ctx.mailboxId) return errorResponse('需要登录', 401);
+      if (!ctx.userId && !ctx.mailboxId && !ctx.strictAdmin) return errorResponse('需要登录', 401);
       const vapid = await getOrCreateVapidKeys(db);
       if (!vapid) return errorResponse('VAPID 未就绪', 500);
       const { results: subs } = await db.prepare(
         `SELECT id, endpoint, p256dh, auth FROM push_subscriptions
-         WHERE (user_id IS NOT NULL AND user_id = ?) OR (mailbox_id IS NOT NULL AND mailbox_id = ?)`
-      ).bind(ctx.userId || -1, ctx.mailboxId || -1).all();
+         WHERE (user_id IS NOT NULL AND user_id = ?) OR (mailbox_id IS NOT NULL AND mailbox_id = ?) OR (is_admin = 1 AND ? = 1)`
+      ).bind(ctx.userId || -1, ctx.mailboxId || -1, ctx.strictAdmin ? 1 : 0).all();
       let sent = 0;
       for (const s of (subs || [])) {
         try {

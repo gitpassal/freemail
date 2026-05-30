@@ -118,7 +118,19 @@ async function encryptPayload(sub, payloadBytes) {
  * 发送一条 Web Push。
  * @returns {Promise<{status:number}>}
  */
+// 防 SSRF 兜底：仅允许已知推送服务主机
+const PUSH_HOST_ALLOW = [/(^|\.)push\.apple\.com$/, /(^|\.)googleapis\.com$/, /(^|\.)notify\.windows\.com$/, /(^|\.)push\.services\.mozilla\.com$/];
+function endpointAllowed(endpoint) {
+  try {
+    const u = new URL(String(endpoint || ''));
+    if (u.protocol !== 'https:') return false;
+    const h = u.hostname.toLowerCase();
+    return PUSH_HOST_ALLOW.some((re) => re.test(h));
+  } catch (_) { return false; }
+}
+
 export async function sendWebPush(sub, payloadObj, vapid) {
+  if (!endpointAllowed(sub && sub.endpoint)) return { status: 0, skipped: true };
   const payloadBytes = new TextEncoder().encode(JSON.stringify(payloadObj || {}));
   const body = await encryptPayload(sub, payloadBytes);
   const jwt = await buildVapidJWT(sub.endpoint, vapid);

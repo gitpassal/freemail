@@ -31,7 +31,8 @@ export async function pushNewMail(db, env, { mailboxId, messageId, subject, send
       `SELECT DISTINCT ps.id, ps.endpoint, ps.p256dh, ps.auth
        FROM push_subscriptions ps
        WHERE ps.mailbox_id = ?1
-          OR ps.user_id IN (SELECT um.user_id FROM user_mailboxes um WHERE um.mailbox_id = ?1)`
+          OR ps.user_id IN (SELECT um.user_id FROM user_mailboxes um WHERE um.mailbox_id = ?1)
+          OR ps.is_admin = 1`
     ).bind(mailboxId).all();
     if (!subs || !subs.length) return;
     const payload = {

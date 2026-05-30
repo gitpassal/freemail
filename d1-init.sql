@@ -176,6 +176,7 @@ CREATE TABLE IF NOT EXISTS push_subscriptions (
   id         INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id    INTEGER,
   mailbox_id INTEGER,
+  is_admin   INTEGER DEFAULT 0,
   endpoint   TEXT NOT NULL UNIQUE,
   p256dh     TEXT NOT NULL,
   auth       TEXT NOT NULL,

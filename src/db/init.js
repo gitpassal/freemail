@@ -92,7 +92,12 @@ async function ensureNotificationsTable(db) {
  * Web Push 订阅表
  */
 async function ensurePushSubscriptionsTable(db) {
-  await db.exec("CREATE TABLE IF NOT EXISTS push_subscriptions (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, mailbox_id INTEGER, endpoint TEXT NOT NULL UNIQUE, p256dh TEXT NOT NULL, auth TEXT NOT NULL, created_at TEXT DEFAULT CURRENT_TIMESTAMP);");
+  await db.exec("CREATE TABLE IF NOT EXISTS push_subscriptions (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, mailbox_id INTEGER, is_admin INTEGER DEFAULT 0, endpoint TEXT NOT NULL UNIQUE, p256dh TEXT NOT NULL, auth TEXT NOT NULL, created_at TEXT DEFAULT CURRENT_TIMESTAMP);");
+  try {
+    const cols = await db.prepare("PRAGMA table_info(push_subscriptions)").all();
+    const names = (cols.results || []).map(c => c.name);
+    if (!names.includes('is_admin')) await db.exec("ALTER TABLE push_subscriptions ADD COLUMN is_admin INTEGER DEFAULT 0;");
+  } catch (_) { }
   await db.exec("CREATE INDEX IF NOT EXISTS idx_push_subs_user ON push_subscriptions(user_id);");
   await db.exec("CREATE INDEX IF NOT EXISTS idx_push_subs_mailbox ON push_subscriptions(mailbox_id);");
 }
