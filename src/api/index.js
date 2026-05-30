@@ -8,6 +8,8 @@ import { handleMailboxesApi } from './mailboxes.js';
 import { handleEmailsApi } from './emails.js';
 import { handleSendApi } from './send.js';
 import { handleSettingsApi } from './settings.js';
+import { handleNotificationsApi } from './notifications.js';
+import { handlePushApi } from './push.js';
 import { getJwtPayload, errorResponse } from './helpers.js';
 
 /**
