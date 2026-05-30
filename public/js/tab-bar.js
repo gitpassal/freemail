@@ -117,52 +117,61 @@
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'settings-row' + (opts.danger ? ' is-danger' : '');
-    btn.innerHTML = icon(opts.icon) + '<span>' + opts.label + '</span>';
+    var valHtml = opts.value ? '<span class="settings-row-value">' + opts.value + '</span>' : '';
+    btn.innerHTML = icon(opts.icon) + '<span>' + opts.label + '</span>' + valHtml;
     btn.addEventListener('click', function () {
       closeSheet();
       if (opts.onClick) opts.onClick();
     });
     return btn;
   }
+  function makeGroup(labelText, rows) {
+    var frag = document.createDocumentFragment();
+    if (labelText) {
+      var lab = document.createElement('div');
+      lab.className = 'settings-grouplabel';
+      lab.textContent = labelText;
+      frag.appendChild(lab);
+    }
+    var grp = document.createElement('div');
+    grp.className = 'settings-group';
+    rows.forEach(function (r) { if (r) grp.appendChild(r); });
+    frag.appendChild(grp);
+    return frag;
+  }
+  function curThemeLabel() {
+    return tr(document.documentElement.classList.contains('dark') ? 'settings.dark' : 'settings.light');
+  }
+  function curLangLabel() {
+    var en = false; try { en = window.i18n.getLang() === 'en'; } catch (e) {}
+    return en ? 'English' : '简体中文';
+  }
 
-  // 每次打开时重建行，确保按角色显示的管理入口反映最新状态
+  // 每次打开时重建行（分组），确保按角色显示的管理入口反映最新状态
   function populateSheet() {
-    // 清空旧行（保留 handle + title）
-    var rows = sheet.querySelectorAll('.settings-row');
-    for (var i = 0; i < rows.length; i++) { rows[i].remove(); }
+    var olds = sheet.querySelectorAll('.settings-row, .settings-group, .settings-grouplabel');
+    for (var i = 0; i < olds.length; i++) { olds[i].remove(); }
 
-    sheet.appendChild(makeRow({
-      icon: 'moon', label: tr('settings.theme'),
-      onClick: function () { clickEl('theme-toggle'); }
-    }));
-    sheet.appendChild(makeRow({
-      icon: 'globe', label: tr('settings.language'),
-      onClick: function () {
-        try { var cur = window.i18n.getLang(); window.i18n.setLang(cur === 'en' ? 'zh' : 'en'); } catch (e) {}
-      }
-    }));
-    if (isShown('admin')) {
-      sheet.appendChild(makeRow({
-        icon: 'wrench', label: tr('settings.users'),
-        onClick: function () { clickEl('admin'); }
-      }));
-    }
-    if (isShown('all-mailboxes')) {
-      sheet.appendChild(makeRow({
-        icon: 'package', label: tr('settings.allMailboxes'),
-        onClick: function () { clickEl('all-mailboxes'); }
-      }));
-    }
-    if (document.getElementById('repo')) {
-      sheet.appendChild(makeRow({
-        icon: 'github', label: tr('settings.github'),
-        onClick: function () { clickEl('repo'); }
-      }));
-    }
-    sheet.appendChild(makeRow({
-      icon: 'logout', label: tr('settings.signout'), danger: true,
-      onClick: function () { clickEl('logout'); }
-    }));
+    sheet.appendChild(makeGroup(tr('settings.appearance'), [
+      makeRow({ icon: 'moon', label: tr('settings.theme'), value: curThemeLabel(),
+        onClick: function () { clickEl('theme-toggle'); } }),
+      makeRow({ icon: 'globe', label: tr('settings.language'), value: curLangLabel(),
+        onClick: function () { try { var cur = window.i18n.getLang(); window.i18n.setLang(cur === 'en' ? 'zh' : 'en'); } catch (e) {} } })
+    ]));
+
+    var mgmt = [];
+    if (isShown('admin')) mgmt.push(makeRow({ icon: 'wrench', label: tr('settings.users'),
+      onClick: function () { clickEl('admin'); } }));
+    if (isShown('all-mailboxes')) mgmt.push(makeRow({ icon: 'package', label: tr('settings.allMailboxes'),
+      onClick: function () { clickEl('all-mailboxes'); } }));
+    if (mgmt.length) sheet.appendChild(makeGroup(tr('settings.manage'), mgmt));
+
+    var about = [];
+    if (document.getElementById('repo')) about.push(makeRow({ icon: 'github', label: tr('settings.github'),
+      onClick: function () { clickEl('repo'); } }));
+    about.push(makeRow({ icon: 'logout', label: tr('settings.signout'), danger: true,
+      onClick: function () { clickEl('logout'); } }));
+    sheet.appendChild(makeGroup(tr('settings.account'), about));
   }
 
   function buildSheet() {

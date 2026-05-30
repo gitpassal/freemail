@@ -130,21 +130,28 @@
     root = document.createElement('div');
     root.className = 'gmail-inbox';
     root.innerHTML =
-      '<div class="gi-topbar">' +
-        '<input class="gi-search" type="search" placeholder="' + esc(tr('gmail.search')) + '">' +
-      '</div>' +
-      '<div class="gi-section-label">' +
+      '<div class="gi-subnav">' +
         '<button class="gi-filter-btn" aria-label="' + esc(tr('gmail.menuTitle')) + '">' + icon('list') + '</button>' +
-        '<span class="gi-section-text">' + esc(tr('gmail.inboxLabel')) + '</span>' +
+        '<span class="gi-nav-title gi-section-text">' + esc(tr('gmail.inboxLabel')) + '</span>' +
+        '<span class="gi-subnav-spacer"></span>' +
       '</div>' +
-      '<div class="gi-list"><div class="gi-refresh-hint">' + esc(tr('gmail.loading')) + '</div><div class="gi-rows"></div></div>';
+      '<div class="gi-list">' +
+        '<div class="gi-refresh-hint">' + esc(tr('gmail.loading')) + '</div>' +
+        '<div class="gi-list-head">' +
+          '<h2 class="gi-large-title">' + esc(tr('gmail.inboxLabel')) + '</h2>' +
+          '<div class="gi-searchbox">' + icon('search') +
+            '<input class="gi-search" type="search" placeholder="' + esc(tr('gmail.search')) + '">' +
+          '</div>' +
+        '</div>' +
+        '<div class="gi-rows"></div>' +
+      '</div>';
     document.body.appendChild(root);
 
     listEl = root.querySelector('.gi-list');
     var rowsEl = root.querySelector('.gi-rows');
     searchEl = root.querySelector('.gi-search');
 
-    // 筛选按钮（常驻在分组标题行，始终可点）→ 打开左侧筛选抽屉
+    // 筛选按钮（常驻在子导航行，始终可点）→ 打开左侧筛选抽屉
     root.querySelector('.gi-filter-btn').addEventListener('click', function () { openDrawer(); });
     // 搜索（本地过滤）
     var st;
@@ -152,20 +159,60 @@
       clearTimeout(st);
       st = setTimeout(function () { state.query = (searchEl.value || '').trim().toLowerCase(); render(); }, 200);
     });
-    // 行点击（委托）
+    // 行点击（委托）：先关闭已展开的滑动行；星标单独处理
     rowsEl.addEventListener('click', function (ev) {
-      var starBtn = ev.target.closest ? ev.target.closest('.gi-star') : null;
+      var t = ev.target;
+      var delBtn = t.closest ? t.closest('.gi-row-del') : null;
+      if (delBtn) { ev.stopPropagation(); deleteById(delBtn.getAttribute('data-del')); return; }
+      var open = rowsEl.querySelector('.gi-row.swiped');
+      if (open) { open.classList.remove('swiped'); if (t.closest && t.closest('.gi-row') === open) return; }
+      var starBtn = t.closest ? t.closest('.gi-star') : null;
       if (starBtn) { ev.stopPropagation(); toggleStar(starBtn.getAttribute('data-star')); return; }
-      var rowEl = ev.target.closest ? ev.target.closest('.gi-row') : null;
+      var rowEl = t.closest ? t.closest('.gi-row') : null;
       if (rowEl) openReader(rowEl.getAttribute('data-id'));
     });
-    // 无限滚动 + 下拉刷新
+    // 无限滚动 + 大标题滚动收起
     listEl.addEventListener('scroll', function () {
-      if (listEl.scrollTop > 40 && root.classList.contains('search-open')) root.classList.remove('search-open');
+      root.classList.toggle('title-collapsed', listEl.scrollTop > 36);
       if (state.query || state.loading || !state.hasMore) return;
       if (listEl.scrollTop + listEl.clientHeight >= listEl.scrollHeight - 80) loadPage(state.page + 1, false);
     });
     bindPullToRefresh();
+    bindSwipe(rowsEl);
+  }
+
+  // 行内横向滑动：左滑露出删除，右滑切换星标（iOS 邮件同款）
+  function bindSwipe(rowsEl) {
+    var sx = 0, sy = 0, cur = null, main = null, dir = 0, active = false;
+    rowsEl.addEventListener('touchstart', function (e) {
+      var row = e.target.closest ? e.target.closest('.gi-row') : null;
+      if (!row) return;
+      cur = row; main = row.querySelector('.gi-row-main');
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY; dir = 0; active = false;
+    }, { passive: true });
+    rowsEl.addEventListener('touchmove', function (e) {
+      if (!cur || !main) return;
+      var dx = e.touches[0].clientX - sx, dy = e.touches[0].clientY - sy;
+      if (!dir) { if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) + 4) { dir = dx < 0 ? -1 : 1; active = true; } else if (Math.abs(dy) > 10) { dir = 2; } }
+      if (active && (dir === -1 || dir === 1)) {
+        var tx = Math.max(-84, Math.min(84, dx));
+        main.style.transition = 'none';
+        main.style.transform = 'translateX(' + tx + 'px)';
+        main.style.setProperty('--star-reveal', dx > 0 ? Math.min(1, dx / 70) : 0);
+      }
+    }, { passive: true });
+    rowsEl.addEventListener('touchend', function () {
+      if (!cur || !main || !active) { cur = null; main = null; return; }
+      var row = cur, m = main; cur = null; main = null;
+      m.style.transition = '';
+      var tx = 0;
+      try { tx = new WebKitCSSMatrix(getComputedStyle(m).transform).m41; } catch (_) {}
+      m.style.transform = '';
+      m.style.removeProperty('--star-reveal');
+      if (tx <= -52) { row.classList.add('swiped'); }
+      else { row.classList.remove('swiped'); }
+      if (tx >= 52) { toggleStar(row.getAttribute('data-id')); }
+    });
   }
 
   function bindPullToRefresh() {
@@ -177,8 +224,7 @@
     listEl.addEventListener('touchmove', function (e) {
       if (!pulling) return;
       var dy = e.touches[0].clientY - startY;
-      if (dy > 40) root.classList.add('search-open');
-      if (dy > 110) hint.classList.add('show'); else hint.classList.remove('show');
+      if (dy > 70) hint.classList.add('show'); else hint.classList.remove('show');
     }, { passive: true });
     listEl.addEventListener('touchend', function () {
       if (!pulling) return; pulling = false;
@@ -190,15 +236,18 @@
     var a = parseAddr(e.sender);
     var from = a.name || a.email || tr('gmail.unknownSender');
     var unread = !e.is_read;
-    return '<div class="gi-row' + (unread ? ' is-unread' : '') + (SHOW_ALIAS ? ' show-alias' : '') + '" data-id="' + e.id + '">' +
-      avatarHTML(e.sender) +
-      '<div class="gi-row-top"><span class="gi-from">' + esc(from) + '</span></div>' +
-      '<span class="gi-date">' + esc(fmtDate(e.received_at)) + '</span>' +
-      '<div class="gi-subject">' + esc(e.subject || tr('gmail.noSubject')) + '</div>' +
-      '<div class="gi-preview">' + esc(e.preview || '') + '</div>' +
-      (SHOW_ALIAS ? '<span class="gi-alias-chip">' + esc(e.mailbox_address || '') + '</span>' : '') +
-      '<button class="gi-star' + (e.is_starred ? ' is-on' : '') + '" data-star="' + e.id + '" aria-label="' + esc(tr('gmail.star')) + '">' +
-        icon(e.is_starred ? 'star' : 'star-empty') + '</button>' +
+    return '<div class="gi-row' + (unread ? ' is-unread' : '') + '" data-id="' + e.id + '">' +
+      '<div class="gi-row-star-bg">' + icon('star') + '</div>' +
+      '<button class="gi-row-del" data-del="' + e.id + '" aria-label="' + esc(tr('gmail.delete')) + '">' + icon('trash') + '<span>' + esc(tr('gmail.delete')) + '</span></button>' +
+      '<div class="gi-row-main">' +
+        '<span class="gi-unread-dot"></span>' +
+        '<div class="gi-row-top"><span class="gi-from">' + esc(from) + '</span></div>' +
+        '<span class="gi-date">' + esc(fmtDate(e.received_at)) + icon('chevron-right') + '</span>' +
+        '<div class="gi-subject">' + esc(e.subject || tr('gmail.noSubject')) + '</div>' +
+        '<div class="gi-preview">' + esc(e.preview || '') + '</div>' +
+        '<button class="gi-star' + (e.is_starred ? ' is-on' : '') + '" data-star="' + e.id + '" aria-label="' + esc(tr('gmail.star')) + '">' +
+          icon(e.is_starred ? 'star' : 'star-empty') + '</button>' +
+      '</div>' +
       '</div>';
   }
 
@@ -257,6 +306,21 @@
   }
   function hideInbox() { if (root) root.classList.remove('is-open'); }
 
+  // ============== 列表内删除（左滑）==============
+  function deleteById(id) {
+    if (!id) return;
+    var isSent = (state.box === 'sent');
+    var delUrl = isSent ? ('/api/sent/' + id) : ('/api/email/' + id);
+    // 乐观移除
+    state.items = state.items.filter(function (x) { return String(x.id) !== String(id); });
+    render();
+    gapi(delUrl, { method: 'DELETE' }).then(function (r) { return r.json().catch(function () { return {}; }); })
+      .then(function (d) {
+        if (d && d.error) { toast(d.error, 'error'); loadPage(1, true); return; }
+        toast(tr('gmail.deleted'), 'success');
+      }).catch(function () { toast(tr('gmail.delete') + ' ✗', 'error'); loadPage(1, true); });
+  }
+
   // ============== 星标 ==============
   function applyStarToItem(id, val) {
     var it = state.items.filter(function (x) { return String(x.id) === String(id); })[0];
@@ -288,13 +352,15 @@
     reader.className = 'gi-reader';
     reader.innerHTML =
       '<div class="gi-r-topbar">' +
-        '<button class="gi-icon-btn gi-r-back" aria-label="back">' + icon('chevron-left') + '</button>' +
+        '<button class="gi-icon-btn gi-r-back" aria-label="back">' + icon('chevron-left') + '<span class="gi-r-back-text">' + esc(tr('gmail.inboxLabel')) + '</span></button>' +
         '<div class="gi-r-spacer"></div>' +
-        '<button class="gi-icon-btn gi-r-delete" aria-label="' + esc(tr('gmail.delete')) + '">' + icon('trash') + '</button>' +
-        '<button class="gi-icon-btn gi-r-unread" aria-label="' + esc(tr('gmail.markUnread')) + '">' + icon('mail') + '</button>' +
         '<button class="gi-icon-btn gi-r-star" aria-label="' + esc(tr('gmail.star')) + '">' + icon('star-empty') + '</button>' +
         '<button class="gi-icon-btn gi-r-more" aria-label="more">' + icon('more-horizontal') + '</button>' +
-        '<div class="gi-more-menu"><button class="gi-more-download">' + icon('download') + '<span>' + esc(tr('gmail.download')) + '</span></button></div>' +
+        '<div class="gi-more-menu">' +
+          '<button class="gi-more-unread">' + icon('mail') + '<span>' + esc(tr('gmail.markUnread')) + '</span></button>' +
+          '<button class="gi-more-download">' + icon('download') + '<span>' + esc(tr('gmail.download')) + '</span></button>' +
+          '<button class="gi-more-delete gi-danger">' + icon('trash') + '<span>' + esc(tr('gmail.delete')) + '</span></button>' +
+        '</div>' +
       '</div>' +
       '<div class="gi-r-scroll"></div>' +
       '<div class="gi-r-actions">' +
@@ -314,8 +380,8 @@
       var url = currentEmail.download || ('/api/email/' + currentEmail.id + '/download');
       var a = document.createElement('a'); a.href = url; a.setAttribute('download', ''); document.body.appendChild(a); a.click(); a.remove();
     });
-    reader.querySelector('.gi-r-delete').addEventListener('click', deleteCurrent);
-    reader.querySelector('.gi-r-unread').addEventListener('click', markCurrentUnread);
+    reader.querySelector('.gi-more-delete').addEventListener('click', deleteCurrent);
+    reader.querySelector('.gi-more-unread').addEventListener('click', markCurrentUnread);
     reader.querySelector('.gi-r-reply').addEventListener('click', function () { openReplyForward('reply'); });
     reader.querySelector('.gi-r-forward').addEventListener('click', function () { openReplyForward('forward'); });
   }
@@ -395,8 +461,9 @@
           if (h) ifr.style.height = (h + 24) + 'px';
         } catch (_) { }
       });
+      // HTML 邮件本质是浅色文档：固定深字白底（iframe 容器亦为白），避免深色模式白底白字
       ifr.srcdoc = '<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">' +
-        '<base target="_blank"><style>body{margin:0;font-family:-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.6;color:#1c1c1e;word-break:break-word}img{max-width:100%;height:auto}</style></head><body>' +
+        '<base target="_blank"><style>body{margin:0;font-family:-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.6;color:#1c1c1e;background:#fff;word-break:break-word}a{color:#ff6633}img{max-width:100%;height:auto}</style></head><body>' +
         (e.html_content || '') + '</body></html>';
     }
   }

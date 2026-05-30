@@ -934,3 +934,78 @@ html.is-pwa-preview .push-banner.is-open { transform: translateY(0); opacity: 1;
   background: var(--primary, #007aff); color: #fff; border: none; cursor: pointer;
   border-radius: 999px; font-size: 13px; font-weight: 600; padding: 8px 16px;
 }
+
+/* ============================================================
+   iOS 重设计（standalone 作用域，桌面零影响）：生成页 + 我的邮箱
+   追加在文件末尾，同特异性后置覆盖既有 standalone 生成规则
+   ============================================================ */
+@media (max-width: 900px) {
+  /* 写邮件统一走底栏 FAB / 回复转发；隐藏其它可见写信入口（.click() 仍可用） */
+  html.is-standalone #compose,
+  html.is-pwa-preview #compose { display: none !important; }
+
+  /* 生成卡：去外框，内部分块成卡 */
+  html.is-standalone .generate-card,
+  html.is-pwa-preview .generate-card {
+    background: transparent; box-shadow: none; border: none; padding: 4px 0 0;
+  }
+  html.is-standalone .generate-card .generate-header h2,
+  html.is-pwa-preview .generate-card .generate-header h2 {
+    font-family: var(--font-serif); font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+  }
+  html.is-standalone .generate-card .generate-header h2 .icon,
+  html.is-pwa-preview .generate-card .generate-header h2 .icon { display: none; }
+
+  /* 大邮箱地址卡 */
+  html.is-standalone .mailbox-display-section,
+  html.is-pwa-preview .mailbox-display-section {
+    background: var(--card); border-radius: 16px; padding: 16px 18px;
+    box-shadow: var(--shadow-float); margin-bottom: 16px;
+  }
+  html.is-standalone .mailbox-display-header .display-label,
+  html.is-pwa-preview .mailbox-display-header .display-label {
+    font-size: 12px; color: var(--label-2); text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  html.is-standalone .email-display .email-text,
+  html.is-pwa-preview .email-display .email-text {
+    font-size: 20px; font-weight: 600; letter-spacing: -0.02em; color: var(--label); word-break: break-all;
+  }
+  html.is-standalone .email-display,
+  html.is-pwa-preview .email-display { padding: 8px 0 0; }
+
+  /* 配置块成卡（域名/长度） */
+  html.is-standalone .mailbox-config-section,
+  html.is-pwa-preview .mailbox-config-section {
+    background: var(--card); border-radius: 14px; padding: 2px 14px; margin-bottom: 16px;
+  }
+  html.is-standalone .mailbox-config-section .config-header,
+  html.is-pwa-preview .mailbox-config-section .config-header { padding: 12px 0 8px; }
+
+  /* 主操作按钮：橙（btn-primary/btn-generate 已经 var(--primary)→橙），统一高度圆角 */
+  html.is-standalone .generate-buttons .btn,
+  html.is-pwa-preview .generate-buttons .btn,
+  html.is-standalone .generate-actions .btn-custom-toggle,
+  html.is-pwa-preview .generate-actions .btn-custom-toggle {
+    height: 50px; border-radius: 14px; font-size: 16px; font-weight: 600;
+  }
+
+  /* ===== 我的邮箱 = 别名管理（standalone 重设计） ===== */
+  html.is-standalone .mailbox-item,
+  html.is-pwa-preview .mailbox-item {
+    background: var(--card); border-radius: 0; border: none;
+    border-bottom: 0.5px solid var(--separator);
+    padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+  }
+  html.is-standalone #mb-list,
+  html.is-pwa-preview #mb-list {
+    background: var(--card); border-radius: 14px; overflow: hidden;
+  }
+  html.is-standalone .mailbox-item .mailbox-address,
+  html.is-pwa-preview .mailbox-item .mailbox-address {
+    font-size: 15px; font-weight: 600; color: var(--label);
+  }
+  html.is-standalone .mailbox-item .btn.pin,
+  html.is-pwa-preview .mailbox-item .btn.pin { color: var(--accent); }
+  html.is-standalone .mailbox-item .btn.del,
+  html.is-pwa-preview .mailbox-item .btn.del { color: var(--label-3); }
+}

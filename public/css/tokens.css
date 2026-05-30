@@ -279,3 +279,59 @@ body::after,
   --shadow-card: var(--shadow-soft);
   --shadow-card-hover: var(--shadow-md);
 }
+
+/* =============================================================
+   iOS standalone 作用域覆盖（仅 PWA / 预览；桌面与普通移动浏览器零影响）
+   —— 品牌橙强调色 + New York 衬线大标题 + iOS spring 缓动。
+   选择器特异性 html.is-standalone > :root，自然权威覆盖，无需 !important。
+   ============================================================= */
+html.is-standalone,
+html.is-pwa-preview {
+  /* 强调色：Cloudflare 橙（中性为主，橙做点缀：主按钮/选中/未读点/链接/验证码） */
+  --accent: #ff6633;
+  --accent-press: #e0561f;
+  --accent-tint: rgba(255, 102, 51, 0.12);
+  --accent-rgb: 255, 102, 51;
+  /* 历史别名同步指向橙（列表/阅读/抽屉等仍引用这些旧名 + #007aff 兜底值） */
+  --primary: #ff6633;
+  --primary-hover: #e0561f;
+  --primary-active: #e0561f;
+  --primary-light: rgba(255, 102, 51, 0.12);
+  --primary-rgb: 255, 102, 51;
+  --primary-gradient: #ff6633;
+  --accent-hover: #e0561f;
+  --accent-light: rgba(255, 102, 51, 0.12);
+  --info: #ff6633;
+  --info-light: rgba(255, 102, 51, 0.12);
+  --border-focus: #ff6633;
+
+  /* 大标题衬线字体（系统自带，零加载） */
+  --font-serif: ui-serif, "New York", Georgia, "Songti SC", "Noto Serif SC", serif;
+
+  /* 星标金色（语义化，供列表/阅读页用） */
+  --star: #f4b400;
+
+  /* iOS spring 缓动 + 转场时长（更有存在感） */
+  --ios-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --ios-dur: 0.34s;
+}
+
+html.is-standalone.dark,
+html.is-pwa-preview.dark {
+  /* 深色下橙提亮一档，保证对比度 */
+  --accent: #ff7a4d;
+  --accent-press: #ff6633;
+  --accent-tint: rgba(255, 122, 77, 0.18);
+  --accent-rgb: 255, 122, 77;
+  --primary: #ff7a4d;
+  --primary-hover: #ff6633;
+  --primary-active: #ff6633;
+  --primary-light: rgba(255, 122, 77, 0.18);
+  --primary-rgb: 255, 122, 77;
+  --primary-gradient: #ff7a4d;
+  --accent-hover: #ff6633;
+  --accent-light: rgba(255, 122, 77, 0.18);
+  --info: #ff7a4d;
+  --info-light: rgba(255, 122, 77, 0.18);
+  --border-focus: #ff7a4d;
+}
