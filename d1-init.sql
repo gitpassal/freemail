@@ -152,3 +152,34 @@ CREATE TABLE IF NOT EXISTS system_settings (
 
 INSERT OR IGNORE INTO system_settings (key, value)
 VALUES ('auto_create_unknown_mailboxes', '0');
+
+-- ────────────────────────────────────────
+-- 站内通知表（应用内通知中心）
+-- ────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS notifications (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  mailbox_id  INTEGER NOT NULL,
+  message_id  INTEGER,
+  type        TEXT    NOT NULL DEFAULT 'new_mail',
+  title       TEXT    NOT NULL DEFAULT '',
+  body        TEXT    NOT NULL DEFAULT '',
+  is_read     INTEGER NOT NULL DEFAULT 0,
+  created_at  TEXT    DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_notifications_mailbox ON notifications(mailbox_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_unread  ON notifications(mailbox_id, is_read);
+
+-- ────────────────────────────────────────
+-- Web Push 订阅表
+-- ────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id    INTEGER,
+  mailbox_id INTEGER,
+  endpoint   TEXT NOT NULL UNIQUE,
+  p256dh     TEXT NOT NULL,
+  auth       TEXT NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_push_subs_user    ON push_subscriptions(user_id);
+CREATE INDEX IF NOT EXISTS idx_push_subs_mailbox ON push_subscriptions(mailbox_id);

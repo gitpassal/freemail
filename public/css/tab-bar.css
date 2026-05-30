@@ -6,37 +6,56 @@
 
 .tabbar { display: none; }
 
+/* 悬浮容器：透明定位框，承载磨砂胶囊 + 独立圆形 FAB（MoviePilot 风格） */
 html.is-standalone .tabbar,
 html.is-pwa-preview .tabbar {
   display: flex;
+  align-items: center;
+  gap: 12px;
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: max(12px, var(--safe-area-left));
+  right: max(12px, var(--safe-area-right));
+  bottom: calc(10px + var(--safe-area-bottom));
   z-index: 40;
-  align-items: stretch;
-  height: calc(50px + var(--safe-area-bottom));
-  padding-bottom: var(--safe-area-bottom);
-  padding-left: var(--safe-area-left);
-  padding-right: var(--safe-area-right);
-  background: rgba(255, 255, 255, 0.9);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(180%) blur(20px);
-  border-top: 0.5px solid var(--separator);
+  height: 60px;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border: none;
+  padding: 0;
 }
 
-:root.dark.is-standalone .tabbar,
-:root.dark.is-pwa-preview .tabbar {
-  background: rgba(28, 28, 30, 0.9);
+/* 磨砂玻璃胶囊：包裹四个标签 */
+.tabbar-pills {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  height: 60px;
+  padding: 7px 8px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: saturate(180%) blur(22px);
+  backdrop-filter: saturate(180%) blur(22px);
+  border: 0.5px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.16);
+}
+
+:root.dark.is-standalone .tabbar-pills,
+:root.dark.is-pwa-preview .tabbar-pills {
+  background: rgba(40, 40, 44, 0.72);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
 .tabbar-item {
+  position: relative;
   flex: 1 1 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   border: none;
   background: transparent;
   color: var(--label-2);
@@ -45,25 +64,46 @@ html.is-pwa-preview .tabbar {
   font-family: var(--font-sans);
   letter-spacing: 0;
   cursor: pointer;
-  padding: 6px 0 4px;
-  min-height: 44px;
+  border-radius: 21px;
   -webkit-tap-highlight-color: transparent;
-  transition: color 0.15s ease;
+  transition: color 0.18s ease, background 0.18s ease;
 }
 
 .tabbar-item svg {
-  width: 25px;
-  height: 25px;
+  width: 23px;
+  height: 23px;
   display: block;
 }
 
+/* 选中态：圆角胶囊高亮背景 */
 .tabbar-item.is-active {
   color: var(--accent);
+  background: var(--accent-tint, rgba(0, 122, 255, 0.14));
 }
 
 .tabbar-label {
   line-height: 1;
 }
+
+/* 独立圆形 FAB（写邮件） */
+.tabbar-fab {
+  flex: 0 0 60px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  background: var(--accent, #007aff);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease;
+}
+.tabbar-fab:active { transform: scale(0.94); }
+.tabbar-fab svg { width: 26px; height: 26px; display: block; }
 
 /* standalone 下：旧的顶部分段切换与顶栏操作迁移到底部 Tab / 设置 */
 html.is-standalone #mobile-main-switch,
@@ -76,7 +116,7 @@ html.is-pwa-preview .nav-actions {
 /* 为底部 Tab 预留空间（覆盖 pwa.css 的 body 底部内边距） */
 html.is-standalone body,
 html.is-pwa-preview body {
-  padding-bottom: calc(50px + var(--safe-area-bottom) + 12px) !important;
+  padding-bottom: calc(60px + var(--safe-area-bottom) + 24px) !important;
 }
 
 /* ===== 设置 sheet ===== */
