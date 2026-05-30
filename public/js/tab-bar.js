@@ -36,8 +36,8 @@
 
   var TABS = [
     { key: 'inbox', labelKey: 'tab.inbox', icon: 'inbox' },
-    { key: 'generate', labelKey: 'tab.generate', icon: 'sparkles' },
-    { key: 'mailboxes', labelKey: 'tab.mailboxes', icon: 'list' },
+    { key: 'generate', labelKey: 'tab.generate', icon: 'wand' },
+    { key: 'mailboxes', labelKey: 'tab.mailboxes', icon: 'mailboxes' },
     { key: 'settings', labelKey: 'tab.settings', icon: 'settings' }
   ];
 

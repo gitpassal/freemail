@@ -1,11 +1,6 @@
 /* Web Push 订阅控制（仅 standalone/preview）。window.WebPush = { enable, disable, isEnabled } */
 (function () {
   'use strict';
-  var d = document.documentElement;
-  function isStandaloneLike() {
-    return d.classList.contains('is-standalone') || d.classList.contains('is-pwa-preview');
-  }
-  if (!isStandaloneLike()) return;
 
   function urlBase64ToUint8Array(base64String) {
     var padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -36,6 +31,7 @@
     if (!supported()) throw new Error('unsupported');
     var perm = await Notification.requestPermission();
     if (perm !== 'granted') throw new Error('denied');
+    try { await navigator.serviceWorker.register('/sw.js', { scope: '/' }); } catch (e) {}
     var reg = await navigator.serviceWorker.ready;
     var keyResp = await gfetch('/api/push/key').then(function (r) { return r.json(); });
     var key = keyResp && keyResp.key;

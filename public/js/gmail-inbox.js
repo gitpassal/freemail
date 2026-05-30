@@ -131,11 +131,12 @@
     root.className = 'gmail-inbox';
     root.innerHTML =
       '<div class="gi-topbar">' +
-        '<button class="gi-hamburger" aria-label="menu">' + icon('list') + '</button>' +
         '<input class="gi-search" type="search" placeholder="' + esc(tr('gmail.search')) + '">' +
-        '<div class="gi-avatar-me">' + icon('user') + '</div>' +
       '</div>' +
-      '<div class="gi-section-label">' + esc(tr('gmail.inboxLabel')) + '</div>' +
+      '<div class="gi-section-label">' +
+        '<button class="gi-filter-btn" aria-label="' + esc(tr('gmail.menuTitle')) + '">' + icon('list') + '</button>' +
+        '<span class="gi-section-text">' + esc(tr('gmail.inboxLabel')) + '</span>' +
+      '</div>' +
       '<div class="gi-list"><div class="gi-refresh-hint">' + esc(tr('gmail.loading')) + '</div><div class="gi-rows"></div></div>';
     document.body.appendChild(root);
 
@@ -143,8 +144,8 @@
     var rowsEl = root.querySelector('.gi-rows');
     searchEl = root.querySelector('.gi-search');
 
-    // 汉堡 → 打开左侧筛选抽屉
-    root.querySelector('.gi-hamburger').addEventListener('click', function () { openDrawer(); });
+    // 筛选按钮（常驻在分组标题行，始终可点）→ 打开左侧筛选抽屉
+    root.querySelector('.gi-filter-btn').addEventListener('click', function () { openDrawer(); });
     // 搜索（本地过滤）
     var st;
     searchEl.addEventListener('input', function () {
@@ -582,8 +583,8 @@
   function selectBox(box, label) {
     state.box = box || 'inbox';
     state.query = ''; if (searchEl) searchEl.value = '';
-    var lbl = root && root.querySelector('.gi-section-label');
-    if (lbl) lbl.textContent = label || tr('gmail.boxInbox');
+    var txt = root && root.querySelector('.gi-section-text');
+    if (txt) txt.textContent = label || tr('gmail.boxInbox');
     markActiveDrawer();
     try { history.back(); } catch (e) { closeDrawer(); }   // 关抽屉
     loadPage(1, true);

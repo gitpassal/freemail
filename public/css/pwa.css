@@ -895,3 +895,42 @@ body.is-standalone [contenteditable="true"] {
     max-width: 104px;
   }
 }
+
+/* ===== Web Push 引导横幅（push-prompt.js；该元素仅 standalone/preview 时创建，桌面零影响） ===== */
+html.is-standalone .push-banner,
+html.is-pwa-preview .push-banner {
+  position: fixed;
+  left: 12px; right: 12px;
+  top: calc(72px + var(--safe-area-top, 0px) + 8px);
+  z-index: 60;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: var(--card, #fff);
+  border-radius: 16px;
+  box-shadow: 0 10px 34px rgba(0,0,0,0.20);
+  transform: translateY(-140%);
+  opacity: 0;
+  transition: transform .3s cubic-bezier(.22,.61,.36,1), opacity .3s ease;
+}
+html.is-standalone .push-banner.is-open,
+html.is-pwa-preview .push-banner.is-open { transform: translateY(0); opacity: 1; }
+.push-banner-icon {
+  width: 38px; height: 38px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  color: var(--primary, #007aff);
+  background: color-mix(in srgb, var(--primary, #007aff) 14%, transparent);
+}
+.push-banner-icon svg { width: 20px; height: 20px; }
+.push-banner-text { flex: 1; min-width: 0; }
+.push-banner-title { font-size: 15px; font-weight: 600; color: var(--text, #1c1c1e); }
+.push-banner-body { font-size: 12.5px; color: var(--text-muted, #64748b); margin-top: 2px; line-height: 1.35; }
+.push-banner-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.push-banner-later {
+  background: none; border: none; cursor: pointer;
+  color: var(--text-muted, #64748b); font-size: 13px; padding: 8px 6px;
+}
+.push-banner-enable {
+  background: var(--primary, #007aff); color: #fff; border: none; cursor: pointer;
+  border-radius: 999px; font-size: 13px; font-weight: 600; padding: 8px 16px;
+}

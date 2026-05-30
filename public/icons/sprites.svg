@@ -318,4 +318,23 @@
   <symbol id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
   </symbol>
+  <!-- Wand / Sparkles Icon (Generate) -->
+  <symbol id="icon-wand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 4V2"/>
+    <path d="M15 16v-2"/>
+    <path d="M8 9h2"/>
+    <path d="M20 9h2"/>
+    <path d="M17.8 11.8 19 13"/>
+    <path d="M15 9h.01"/>
+    <path d="M17.8 6.2 19 5"/>
+    <path d="m3 21 9-9"/>
+    <path d="M12.2 6.2 11 5"/>
+  </symbol>
+
+  <!-- Mailboxes / Mails Icon -->
+  <symbol id="icon-mailboxes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect width="16" height="13" x="6" y="4" rx="2"/>
+    <path d="m22 7-7.1 3.78c-.57.3-1.23.3-1.8 0L6 7"/>
+    <path d="M2 8v11c0 1.1.9 2 2 2h14"/>
+  </symbol>
 </svg>
