@@ -110,7 +110,7 @@
     bar.appendChild(fab);
 
     document.body.appendChild(bar);
-    setActive('generate');
+    setActive('inbox');
   }
 
   function makeRow(opts) {
@@ -211,6 +211,13 @@
     if (!ready) return; // 非主应用页（如登录/无 app 内容）则不注入
     buildBar();
     buildSheet();
+    // 默认进入聚合收件箱浮层（而非生成视图）
+    try {
+      if (window.GmailInbox && window.GmailInbox.open) {
+        window.GmailInbox.open();
+        setActive('inbox');
+      }
+    } catch (e) {}
   }
 
   function boot() {

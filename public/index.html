@@ -142,7 +142,7 @@
             }catch(_){ }
             // 显示 loading 界面，同时进行权限检查
             var loadingDiv = document.createElement('div');
-            loadingDiv.innerHTML = '<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg, #f2f2f7);z-index:9999"><div style="text-align:center"><div style="width:56px;height:56px;margin:0 auto 16px;background:var(--accent, #007aff);border-radius:14px;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div style="width:36px;height:36px;border:3px solid var(--separator, rgba(0,0,0,0.1));border-top:3px solid var(--accent, #007aff);border-radius:50%;animation:spin 0.9s linear infinite;margin:0 auto"></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style></div></div>';
+            loadingDiv.innerHTML = '<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg, #f2f2f7);z-index:9999"><div style="text-align:center"><img src="/apple-touch-icon.png?v=2" alt="" width="56" height="56" style="display:block;margin:0 auto 16px;border-radius:14px"/><div style="width:36px;height:36px;border:3px solid var(--separator, rgba(0,0,0,0.1));border-top:3px solid var(--accent, #007aff);border-radius:50%;animation:spin 0.9s linear infinite;margin:0 auto"></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style></div></div>';
             document.body.appendChild(loadingDiv);
             
             // 并行进行权限检查

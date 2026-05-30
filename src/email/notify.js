@@ -41,13 +41,15 @@ export async function pushNewMail(db, env, { mailboxId, messageId, subject, send
       url: '/',
       messageId: messageId || null
     };
-    for (const s of subs) {
-      try {
-        const res = await sendWebPush({ endpoint: s.endpoint, p256dh: s.p256dh, auth: s.auth }, payload, vapid);
-        if (res && (res.status === 404 || res.status === 410)) {
-          try { await db.prepare('DELETE FROM push_subscriptions WHERE id = ?').bind(s.id).run(); } catch (_) { }
-        }
-      } catch (e) { console.error('单条推送失败:', e); }
+    // 并行发送，降低多订阅时的累加延迟；失效订阅收集后统一清理
+    const gone = [];
+    await Promise.allSettled(subs.map((s) =>
+      sendWebPush({ endpoint: s.endpoint, p256dh: s.p256dh, auth: s.auth }, payload, vapid)
+        .then((res) => { if (res && (res.status === 404 || res.status === 410)) gone.push(s.id); })
+        .catch((e) => { console.error('单条推送失败:', e); })
+    ));
+    for (const id of gone) {
+      try { await db.prepare('DELETE FROM push_subscriptions WHERE id = ?').bind(id).run(); } catch (_) { }
     }
   } catch (e) {
     console.error('Web Push 流程失败:', e);

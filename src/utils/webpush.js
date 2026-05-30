@@ -140,7 +140,7 @@ export async function sendWebPush(sub, payloadObj, vapid) {
       'TTL': '2419200',
       'Content-Encoding': 'aes128gcm',
       'Content-Type': 'application/octet-stream',
-      'Urgency': 'normal',
+      'Urgency': 'high',
       'Authorization': 'vapid t=' + jwt + ', k=' + vapid.publicKeyB64url
     },
     body: body

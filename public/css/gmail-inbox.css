@@ -427,3 +427,55 @@ html.is-pwa-preview .gi-compose .gi-c-textarea {
   font-size: 15px; line-height: 1.6; color: var(--text, #1c1c1e); min-height: 200px;
   padding: 14px 4px; font-family: inherit;
 }
+
+/* ===== 左侧筛选抽屉（仅 standalone；之前漏加样式导致点击无反应） ===== */
+html.is-standalone .gi-drawer,
+html.is-pwa-preview .gi-drawer {
+  position: fixed; top: 0; bottom: 0; left: 0;
+  width: min(80%, 300px); z-index: 80;
+  background: var(--card, #fff);
+  box-shadow: 2px 0 24px rgba(0,0,0,0.18);
+  transform: translateX(-100%);
+  transition: transform .26s cubic-bezier(.22,.61,.36,1);
+  display: flex; flex-direction: column;
+  padding: calc(16px + var(--safe-area-top, 0px)) 0 calc(12px + var(--safe-area-bottom, 0px));
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+html.is-standalone .gi-drawer.is-open,
+html.is-pwa-preview .gi-drawer.is-open { transform: translateX(0); }
+html.is-standalone .gi-drawer-overlay,
+html.is-pwa-preview .gi-drawer-overlay {
+  position: fixed; inset: 0; z-index: 79;
+  background: rgba(0,0,0,0.35);
+  opacity: 0; visibility: hidden;
+  transition: opacity .26s ease, visibility .26s ease;
+}
+html.is-standalone .gi-drawer-overlay.is-open,
+html.is-pwa-preview .gi-drawer-overlay.is-open { opacity: 1; visibility: visible; }
+html.is-standalone .gi-drawer-title,
+html.is-pwa-preview .gi-drawer-title {
+  font-size: 18px; font-weight: 700; color: var(--text, #1c1c1e);
+  padding: 4px 20px 12px;
+}
+html.is-standalone .gi-drawer-item,
+html.is-pwa-preview .gi-drawer-item {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; border: none; background: none; cursor: pointer;
+  padding: 12px 20px; font-size: 15px; color: var(--text, #1c1c1e); text-align: left;
+}
+html.is-standalone .gi-drawer-item span,
+html.is-pwa-preview .gi-drawer-item span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html.is-standalone .gi-drawer-item svg,
+html.is-pwa-preview .gi-drawer-item svg { width: 22px; height: 22px; flex-shrink: 0; color: var(--text-muted, #64748b); }
+html.is-standalone .gi-drawer-item.is-active,
+html.is-pwa-preview .gi-drawer-item.is-active { background: rgba(0,122,255,0.10); color: var(--primary, #007aff); font-weight: 600; }
+html.is-standalone .gi-drawer-item.is-active svg,
+html.is-pwa-preview .gi-drawer-item.is-active svg { color: var(--primary, #007aff); }
+html.is-standalone .gi-drawer-item:active,
+html.is-pwa-preview .gi-drawer-item:active { background: rgba(0,0,0,0.06); }
+html.is-standalone .gi-drawer-sub,
+html.is-pwa-preview .gi-drawer-sub {
+  font-size: 12px; font-weight: 600; color: var(--text-muted, #94a3b8);
+  text-transform: uppercase; letter-spacing: .04em;
+  padding: 16px 20px 6px; margin-top: 8px; border-top: 0.5px solid rgba(0,0,0,0.08);
+}

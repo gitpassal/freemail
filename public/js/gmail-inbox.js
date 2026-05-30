@@ -250,9 +250,10 @@
     if (!isStandaloneLike()) return;
     ensureRoot();
     if (root.classList.contains('is-open')) return;
+    if (state.items && state.items.length) render();   // 有缓存先立即出图，消除「加载中…」闪烁
     root.classList.add('is-open');
     pushLayer();
-    loadPage(1, true);
+    loadPage(1, true);                                  // 再静默刷新
   }
   function hideInbox() { if (root) root.classList.remove('is-open'); }
 
@@ -614,11 +615,21 @@
     }).catch(function () { openCompose(opts || {}); });
   }
 
+  // 后台预取首屏，使默认进入收件箱时尽量零等待
+  function prefetchInbox() {
+    if (!isStandaloneLike()) return;
+    try { ensureRoot(); } catch (e) { return; }
+    if (!state.items.length && !state.loading) loadPage(1, true);
+  }
+
   window.GmailInbox = {
     open: openInbox,
     close: function () { hideCompose(); hideReader(); closeDrawer(); hideInbox(); },
     refresh: function () { if (root && root.classList.contains('is-open')) loadPage(1, true); },
     openCompose: function (opts) { ensureFromsThenCompose(opts || {}); },
-    openMail: function (id) { openInbox(); openReader(id); }
+    openMail: function (id) { openInbox(); openReader(id); },
+    prefetch: prefetchInbox
   };
+
+  if (isStandaloneLike()) { setTimeout(prefetchInbox, 400); }
 })();
