@@ -1448,3 +1448,85 @@ html.is-standalone .mailbox-config-section.gi-collapsed #config-toggle-icon,
 html.is-pwa-preview .mailbox-config-section.gi-collapsed #config-toggle-icon { transform: rotate(-90deg) !important; }
 html.is-standalone .mailbox-config-section #config-toggle-icon,
 html.is-pwa-preview .mailbox-config-section #config-toggle-icon { transition: transform .2s ease !important; }
+
+/* ============================================================
+   iOS 生成页 · Proton 填表式覆盖层（ios-generate.js 注入 .gi-gen）
+   仅 standalone；原 .generate-card 隐藏，由本层接管视觉。
+   ============================================================ */
+/* 隐藏原生成卡（我们用 .gi-gen 覆盖层取代），但保留 DOM（隐藏控件供提交复用） */
+html.is-standalone .generate-card,
+html.is-pwa-preview .generate-card { position:absolute !important; left:-9999px !important; width:1px !important; height:1px !important; overflow:hidden !important; }
+html.is-standalone .gi-gen,
+html.is-pwa-preview .gi-gen { display:none; }
+html.is-standalone .gi-gen,
+html.is-pwa-preview .gi-gen {
+  display:block; padding: calc(72px + var(--safe-area-top,0px) + 8px) 16px calc(60px + var(--safe-area-bottom,0px) + 28px);
+}
+.gi-gen-title{ font-family:var(--font-serif); font-size:30px; font-weight:700; letter-spacing:-.02em; color:var(--label); margin:4px 4px 18px; }
+.gi-gen-card{ background:var(--card); border:1px solid var(--separator); border-radius:16px; margin-bottom:14px; }
+.gi-gen-field{ padding:14px 16px; }
+.gi-gen-lb{ font-size:13px; color:var(--label-2); }
+.gi-gen-follow{ color:var(--accent); font-size:11px; margin-left:6px; }
+.gi-gen-input{ width:100%; border:none; outline:none; background:transparent; color:var(--label); font-size:18px; font-weight:600; margin-top:4px; font-family:var(--font-sans); }
+.gi-gen-input::placeholder{ color:var(--label-3); font-weight:400; }
+/* 即将创建 */
+.gi-gen-about{ display:flex; align-items:center; gap:13px; padding:14px 16px; position:relative; }
+.gi-gen-about-ic{ width:30px; flex-shrink:0; color:var(--accent); display:flex; justify-content:center; }
+.gi-gen-about-ic svg{ width:26px; height:26px; }
+.gi-gen-about-bd{ flex:1; min-width:0; }
+.gi-gen-addr{ font-size:16px; color:var(--accent); margin-top:2px; word-break:break-all; }
+.gi-gen-gear{ width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; background:none; border:none; color:var(--label-2); flex-shrink:0; cursor:pointer; }
+.gi-gen-gear.on{ background:var(--accent-tint); color:var(--accent); }
+.gi-gen-gear svg{ width:20px; height:20px; }
+.gi-gen-pop{ position:absolute; top:54px; right:8px; z-index:20; width:235px; background:var(--card-2); border:1px solid var(--separator-strong); border-radius:14px; box-shadow:0 14px 40px rgba(0,0,0,.5); padding:6px; display:none; }
+.gi-gen-pop.open{ display:block; }
+.gi-gen-pop-row{ display:flex; align-items:center; gap:10px; padding:12px; }
+.gi-gen-pop-bd{ flex:1; min-width:0; }
+.gi-gen-pop-t1{ font-size:14px; color:var(--label); }
+.gi-gen-pop-t2{ font-size:12px; color:var(--label-2); margin-top:2px; }
+.gi-sw{ width:44px; height:26px; border-radius:13px; background:#3a3744; position:relative; flex-shrink:0; transition:background .18s ease; cursor:pointer; }
+.gi-sw.on{ background:var(--accent); }
+.gi-sw-knob{ position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:left .18s ease; }
+.gi-sw.on .gi-sw-knob{ left:21px; }
+/* 前缀 + 后缀 拆分卡 */
+.gi-gen-split{ padding:0; }
+.gi-gen-seg{ padding:14px 16px; position:relative; }
+.gi-gen-seg + .gi-gen-seg{ border-top:.5px solid var(--separator); }
+.gi-gen-prefix-row{ display:flex; align-items:center; gap:10px; margin-top:4px; }
+.gi-gen-prefix-row .gi-gen-input{ margin-top:0; }
+.gi-gen-dice{ width:38px; height:38px; border-radius:11px; background:var(--accent-tint); display:flex; align-items:center; justify-content:center; color:var(--accent); flex-shrink:0; border:none; cursor:pointer; }
+.gi-gen-dice svg{ width:19px; height:19px; }
+.gi-gen-suffix{ cursor:pointer; }
+.gi-gen-suffix-val{ font-size:16px; color:var(--label); margin-top:4px; }
+.gi-gen-suffix-chev{ position:absolute; right:16px; top:16px; color:var(--label-3); }
+.gi-gen-suffix-chev svg{ width:18px; height:18px; }
+/* 转发到 */
+.gi-gen-fwd{ display:flex; align-items:center; gap:13px; padding:14px 16px; cursor:pointer; }
+.gi-gen-fwd-ic{ width:30px; flex-shrink:0; color:var(--label-3); display:flex; justify-content:center; }
+.gi-gen-fwd-ic.on{ color:var(--accent); }
+.gi-gen-fwd-ic svg{ width:22px; height:22px; }
+.gi-gen-fwd-bd{ flex:1; min-width:0; }
+.gi-gen-fwd-val{ font-size:16px; color:var(--label); margin-top:2px; word-break:break-all; }
+.gi-gen-fwd-val.muted{ color:var(--label-3); }
+.gi-gen-fwd-chev{ color:var(--label-3); }
+.gi-gen-fwd-chev svg{ width:18px; height:18px; }
+/* 创建主按钮 */
+.gi-gen-create{ width:100%; height:52px; border-radius:15px; background:var(--accent); color:#0c1a16; border:none; font-size:16px; font-weight:700; cursor:pointer; margin-top:2px; }
+.gi-gen-create.dis{ background:var(--secondary); color:var(--label-3); }
+
+/* ===== 通用底部 sheet（域名/转发选择）===== */
+.gi-sheet-wrap{ position:fixed; inset:0; z-index:200; }
+.gi-sheet-scrim{ position:absolute; inset:0; background:rgba(0,0,0,.55); opacity:0; transition:opacity .24s ease; }
+.gi-sheet-wrap.open .gi-sheet-scrim{ opacity:1; }
+.gi-sheet{ position:absolute; left:0; right:0; bottom:0; background:var(--bg-elevated); border-radius:20px 20px 0 0; border-top:1px solid var(--separator-strong); padding:8px 0 calc(18px + var(--safe-area-bottom,0px)); max-height:80%; overflow-y:auto; transform:translateY(100%); transition:transform .26s cubic-bezier(.32,.72,0,1); }
+.gi-sheet-wrap.open .gi-sheet{ transform:translateY(0); }
+.gi-sheet-grab{ width:38px; height:5px; border-radius:3px; background:var(--label-3); margin:8px auto 6px; }
+.gi-sheet-title{ font-size:16px; font-weight:600; color:var(--label); text-align:center; padding:6px 0 12px; border-bottom:.5px solid var(--separator); }
+.gi-sheet-opt{ display:flex; align-items:center; gap:12px; width:100%; padding:15px 20px; border:none; background:none; border-bottom:.5px solid var(--separator); cursor:pointer; text-align:left; }
+.gi-sheet-opt.sel{ background:var(--accent-tint); }
+.gi-sheet-opt.teal .gi-sheet-t1{ color:var(--accent); }
+.gi-sheet-ck{ width:22px; flex-shrink:0; color:var(--accent); display:flex; }
+.gi-sheet-ck svg{ width:20px; height:20px; }
+.gi-sheet-tx{ flex:1; min-width:0; }
+.gi-sheet-t1{ font-size:16px; color:var(--label); display:block; }
+.gi-sheet-t2{ font-size:13px; color:var(--label-2); display:block; margin-top:1px; }
