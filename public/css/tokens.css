@@ -282,28 +282,28 @@ body::after,
 
 /* =============================================================
    iOS standalone 作用域覆盖（仅 PWA / 预览；桌面与普通移动浏览器零影响）
-   —— 品牌橙强调色 + New York 衬线大标题 + iOS spring 缓动。
+   —— Proton Pass 风：青绿 teal 强调 + 深色为主（深色用 Proton 深紫底/卡片）。
    选择器特异性 html.is-standalone > :root，自然权威覆盖，无需 !important。
    ============================================================= */
 html.is-standalone,
 html.is-pwa-preview {
-  /* 强调色：Cloudflare 橙（中性为主，橙做点缀：主按钮/选中/未读点/链接/验证码） */
-  --accent: #ff6633;
-  --accent-press: #e0561f;
-  --accent-tint: rgba(255, 102, 51, 0.12);
-  --accent-rgb: 255, 102, 51;
-  /* 历史别名同步指向橙（列表/阅读/抽屉等仍引用这些旧名 + #007aff 兜底值） */
-  --primary: #ff6633;
-  --primary-hover: #e0561f;
-  --primary-active: #e0561f;
-  --primary-light: rgba(255, 102, 51, 0.12);
-  --primary-rgb: 255, 102, 51;
-  --primary-gradient: #ff6633;
-  --accent-hover: #e0561f;
-  --accent-light: rgba(255, 102, 51, 0.12);
-  --info: #ff6633;
-  --info-light: rgba(255, 102, 51, 0.12);
-  --border-focus: #ff6633;
+  /* 强调色：青绿 teal（浅色态用深一档保证对比度；中性为主，teal 点缀） */
+  --accent: #0d9488;
+  --accent-press: #0b7c72;
+  --accent-tint: rgba(13, 148, 136, 0.12);
+  --accent-rgb: 13, 148, 136;
+  /* 历史别名同步指向 teal（列表/阅读/抽屉等仍引用这些旧名 + #007aff 兜底值） */
+  --primary: #0d9488;
+  --primary-hover: #0b7c72;
+  --primary-active: #0b7c72;
+  --primary-light: rgba(13, 148, 136, 0.12);
+  --primary-rgb: 13, 148, 136;
+  --primary-gradient: #0d9488;
+  --accent-hover: #0b7c72;
+  --accent-light: rgba(13, 148, 136, 0.12);
+  --info: #0d9488;
+  --info-light: rgba(13, 148, 136, 0.12);
+  --border-focus: #0d9488;
 
   /* 大标题衬线字体（系统自带，零加载） */
   --font-serif: ui-serif, "New York", Georgia, "Songti SC", "Noto Serif SC", serif;
@@ -316,22 +316,42 @@ html.is-pwa-preview {
   --ios-dur: 0.34s;
 }
 
+/* 深色态 = 完整 Proton 深紫底 + 亮青绿（accent 在深底上提亮） */
 html.is-standalone.dark,
 html.is-pwa-preview.dark {
-  /* 深色下橙提亮一档，保证对比度 */
-  --accent: #ff7a4d;
-  --accent-press: #ff6633;
-  --accent-tint: rgba(255, 122, 77, 0.18);
-  --accent-rgb: 255, 122, 77;
-  --primary: #ff7a4d;
-  --primary-hover: #ff6633;
-  --primary-active: #ff6633;
-  --primary-light: rgba(255, 122, 77, 0.18);
-  --primary-rgb: 255, 122, 77;
-  --primary-gradient: #ff7a4d;
-  --accent-hover: #ff6633;
-  --accent-light: rgba(255, 122, 77, 0.18);
-  --info: #ff7a4d;
-  --info-light: rgba(255, 122, 77, 0.18);
-  --border-focus: #ff7a4d;
+  --bg: #16141f;
+  --bg-elevated: #22202b;
+  --card: #22202b;
+  --card-2: #2a2833;
+  --separator: rgba(255, 255, 255, 0.08);
+  --separator-strong: rgba(255, 255, 255, 0.14);
+  --label: #ECEAF3;
+  --label-2: #9b98a8;
+  --label-3: #6b6878;
+  --secondary: #2a2833;
+  --secondary-hover: #353241;
+
+  --accent: #7fd8c0;
+  --accent-press: #6bc4ad;
+  --accent-tint: rgba(127, 216, 192, 0.16);
+  --accent-rgb: 127, 216, 192;
+  --primary: #7fd8c0;
+  --primary-hover: #6bc4ad;
+  --primary-active: #6bc4ad;
+  --primary-light: rgba(127, 216, 192, 0.16);
+  --primary-rgb: 127, 216, 192;
+  --primary-gradient: #7fd8c0;
+  --accent-hover: #6bc4ad;
+  --accent-light: rgba(127, 216, 192, 0.16);
+  --info: #7fd8c0;
+  --info-light: rgba(127, 216, 192, 0.16);
+  --border-focus: #7fd8c0;
+
+  /* 历史 token 重映射到 Proton 深色（覆盖 :root.dark 的纯黑 iOS 值） */
+  --surface: var(--bg);
+  --text: var(--label);
+  --text-light: var(--label-2);
+  --text-muted: var(--label-2);
+  --text-secondary: var(--label-3);
+  --border: var(--separator);
 }

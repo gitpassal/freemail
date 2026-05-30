@@ -7,7 +7,7 @@
   const PREFERENCE_KEY = 'freemail:theme-preference';
   const LEGACY_KEY = 'freemail:theme';
   const LIGHT_THEME_COLOR = '#f2f2f7';
-  const DARK_THEME_COLOR = '#000000';
+  const DARK_THEME_COLOR = '#16141f';  /* Proton 深紫底，与 standalone 深色一致 */
 
   let currentTheme = 'light';
 
@@ -36,11 +36,20 @@
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
 
+  function isStandaloneLike() {
+    try {
+      const d = document.documentElement;
+      return d.classList.contains('is-standalone') || d.classList.contains('is-pwa-preview');
+    } catch (e) { return false; }
+  }
+
   function getEffectiveTheme() {
     const saved = getSavedTheme();
     if (saved) {
       return saved;
     }
+    // standalone（Proton 风）默认深色为主；桌面/普通浏览器仍跟随系统
+    if (isStandaloneLike()) return 'dark';
     return getSystemTheme();
   }
 
