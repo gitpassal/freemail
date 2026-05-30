@@ -139,6 +139,82 @@
     frag.appendChild(grp);
     return frag;
   }
+  // —— 转发邮箱池（localStorage 'mf:forwardPool'，与 ios-generate.js 的「转发到」共用）——
+  function getFwdPool() {
+    try { var a = JSON.parse(localStorage.getItem('mf:forwardPool') || '[]'); return Array.isArray(a) ? a : []; }
+    catch (e) { return []; }
+  }
+  function setFwdPool(arr) {
+    try { localStorage.setItem('mf:forwardPool', JSON.stringify(arr)); } catch (e) {}
+  }
+  function validEmail(s) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '').trim()); }
+  function toast(m, t) { try { if (window.showToast) window.showToast(m, t || 'info'); } catch (e) {} }
+
+  // 构建「转发邮箱」分组（自定义行，删除/添加不关闭 sheet）
+  function buildForwardGroup() {
+    var frag = document.createDocumentFragment();
+    var lab = document.createElement('div');
+    lab.className = 'settings-grouplabel';
+    lab.textContent = tr('settings.forwardGroup');
+    frag.appendChild(lab);
+
+    var grp = document.createElement('div');
+    grp.className = 'settings-group';
+    var pool = getFwdPool();
+
+    if (!pool.length) {
+      var empty = document.createElement('div');
+      empty.className = 'settings-row is-empty';
+      empty.innerHTML = icon('mail') + '<span>' + tr('settings.forwardEmpty') + '</span>';
+      grp.appendChild(empty);
+    } else {
+      pool.forEach(function (email) {
+        var row = document.createElement('div');
+        row.className = 'settings-row settings-fwd-row';
+        row.innerHTML = icon('mail') + '<span>' + email.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }) + '</span>';
+        var del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'settings-fwd-del';
+        del.setAttribute('aria-label', tr('settings.forwardRemove'));
+        del.innerHTML = icon('trash');
+        del.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var next = getFwdPool().filter(function (x) { return x !== email; });
+          setFwdPool(next);
+          toast(tr('settings.forwardRemoved'), 'success');
+          populateSheet();
+        });
+        row.appendChild(del);
+        grp.appendChild(row);
+      });
+    }
+
+    var add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'settings-row settings-fwd-add';
+    add.innerHTML = icon('plus') + '<span>' + tr('settings.forwardAdd') + '</span>';
+    add.addEventListener('click', function () {
+      var v = window.prompt(tr('settings.forwardPrompt'), '');
+      if (v == null) return;
+      v = String(v).trim().toLowerCase();
+      if (!validEmail(v)) { toast(tr('settings.forwardInvalid'), 'warn'); return; }
+      var cur = getFwdPool();
+      if (cur.indexOf(v) >= 0) { toast(tr('settings.forwardExists'), 'warn'); return; }
+      cur.push(v);
+      setFwdPool(cur);
+      toast(tr('settings.forwardAdded'), 'success');
+      populateSheet();
+    });
+    grp.appendChild(add);
+    frag.appendChild(grp);
+
+    var hint = document.createElement('div');
+    hint.className = 'settings-hint';
+    hint.textContent = tr('settings.forwardHint');
+    frag.appendChild(hint);
+    return frag;
+  }
+
   function curThemeLabel() {
     return tr(document.documentElement.classList.contains('dark') ? 'settings.dark' : 'settings.light');
   }
@@ -149,8 +225,11 @@
 
   // 每次打开时重建行（分组），确保按角色显示的管理入口反映最新状态
   function populateSheet() {
-    var olds = sheet.querySelectorAll('.settings-row, .settings-group, .settings-grouplabel');
+    var olds = sheet.querySelectorAll('.settings-row, .settings-group, .settings-grouplabel, .settings-hint');
     for (var i = 0; i < olds.length; i++) { olds[i].remove(); }
+
+    // 转发邮箱管理（置顶分组）
+    sheet.appendChild(buildForwardGroup());
 
     sheet.appendChild(makeGroup(tr('settings.appearance'), [
       makeRow({ icon: 'moon', label: tr('settings.theme'), value: curThemeLabel(),

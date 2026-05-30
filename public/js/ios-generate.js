@@ -99,6 +99,24 @@
     else document.body.appendChild(root);
     bind();
     render();
+    setupVisSync(gc);
+  }
+
+  // .gi-gen 覆盖层须跟随 .generate-card 的内联 display：
+  // showHis()/showMailboxView() 会把 genCard.style.display='none'（切到邮箱/收件视图），
+  // showGen() 会清空它。否则覆盖层会盖在邮箱列表/收件视图之上。
+  function syncVis() {
+    var gc = document.querySelector('.generate-card');
+    if (!gc || !root) return;
+    root.style.display = (gc.style.display === 'none') ? 'none' : '';
+  }
+  function setupVisSync(gc) {
+    if (!gc) return;
+    try {
+      var mo = new MutationObserver(syncVis);
+      mo.observe(gc, { attributes: true, attributeFilter: ['style'] });
+    } catch (e) {}
+    syncVis();
   }
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }

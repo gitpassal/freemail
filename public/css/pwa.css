@@ -1184,6 +1184,125 @@ html.is-pwa-preview .sidebar .mailbox-item .mailbox-actions .btn.del { color: va
 html.is-standalone .sidebar .mailbox-item.pinned,
 html.is-pwa-preview .sidebar .mailbox-item.pinned { background: transparent !important; }
 
+/* ===== Proton 风邮箱列表（按时间分组 + 隐身图标徽标） =====
+   分组：#mb-list 退化为透明容器，每个时间分组成一张独立卡（.mb-group-card），
+   分组标签（.mb-grouplabel）落在页面底色上，行内隐身圆形徽标。 */
+html.is-standalone #mb-list,
+html.is-pwa-preview #mb-list {
+  background: transparent !important; border-radius: 0 !important; box-shadow: none !important;
+  overflow: visible !important;
+}
+html.is-standalone .mb-grouplabel,
+html.is-pwa-preview .mb-grouplabel {
+  font-size: 13px; font-weight: 600; color: var(--label-2);
+  padding: 16px 4px 8px; letter-spacing: .01em;
+}
+html.is-standalone #mb-list .mb-group-card,
+html.is-pwa-preview #mb-list .mb-group-card {
+  background: var(--card); border-radius: 14px; overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+/* 隐身圆形徽标 */
+html.is-standalone .sidebar .mailbox-item.proton .mb-ico,
+html.is-pwa-preview .sidebar .mailbox-item.proton .mb-ico {
+  flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--accent-tint); color: var(--accent);
+}
+html.is-standalone .sidebar .mailbox-item.proton .mb-ico svg,
+html.is-pwa-preview .sidebar .mailbox-item.proton .mb-ico svg {
+  width: 20px; height: 20px;
+}
+/* 行内动作按钮在 Proton 行里更克制（仅图标，弱化） */
+html.is-standalone .sidebar .mailbox-item.proton .mailbox-actions .btn,
+html.is-pwa-preview .sidebar .mailbox-item.proton .mailbox-actions .btn {
+  width: 30px; height: 30px; padding: 0 !important; opacity: .65;
+}
+html.is-standalone .sidebar .mailbox-item.proton .mailbox-actions .btn.pin,
+html.is-pwa-preview .sidebar .mailbox-item.proton .mailbox-actions .btn.pin { opacity: 1; }
+
+/* ===== Proton 风邮箱详情管理卡（#list-card 顶部，ios-mailbox.js 注入） ===== */
+html.is-standalone .mb-detail,
+html.is-pwa-preview .mb-detail { display: block; margin: 0 0 4px; }
+/* 返回按钮 */
+html.is-standalone .mb-detail .mb-back,
+html.is-pwa-preview .mb-detail .mb-back {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; margin: 0 0 4px -8px; padding: 0;
+  background: transparent; border: none; color: var(--label); cursor: pointer;
+}
+html.is-standalone .mb-detail .mb-back svg,
+html.is-pwa-preview .mb-detail .mb-back svg { width: 24px; height: 24px; }
+/* hero：隐身圆标 + 本地名 + 别名副标 */
+html.is-standalone .mb-detail .mb-hero,
+html.is-pwa-preview .mb-detail .mb-hero {
+  display: flex; align-items: center; gap: 14px; padding: 6px 2px 16px;
+}
+html.is-standalone .mb-detail .mb-hero-ico,
+html.is-pwa-preview .mb-detail .mb-hero-ico {
+  flex: 0 0 auto; width: 52px; height: 52px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--accent-tint); color: var(--accent);
+}
+html.is-standalone .mb-detail .mb-hero-ico svg,
+html.is-pwa-preview .mb-detail .mb-hero-ico svg { width: 28px; height: 28px; }
+html.is-standalone .mb-detail .mb-hero-title,
+html.is-pwa-preview .mb-detail .mb-hero-title {
+  font-size: 22px; font-weight: 700; color: var(--label); line-height: 1.2;
+  word-break: break-all;
+}
+html.is-standalone .mb-detail .mb-hero-sub,
+html.is-pwa-preview .mb-detail .mb-hero-sub {
+  display: flex; align-items: center; gap: 6px; margin-top: 3px;
+  font-size: 13px; color: var(--label-2);
+}
+html.is-standalone .mb-detail .mb-hero-sub svg,
+html.is-pwa-preview .mb-detail .mb-hero-sub svg { width: 14px; height: 14px; }
+/* 管理卡 */
+html.is-standalone .mb-detail .mb-mgmt-card,
+html.is-pwa-preview .mb-detail .mb-mgmt-card {
+  background: var(--card); border-radius: 14px; overflow: hidden;
+  box-shadow: var(--shadow-soft); margin-bottom: 18px;
+}
+html.is-standalone .mb-detail .mb-mrow,
+html.is-pwa-preview .mb-detail .mb-mrow {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 14px 16px; background: transparent; border: none; text-align: left;
+  border-bottom: 0.5px solid var(--separator); color: var(--label);
+  font: inherit; cursor: pointer;
+}
+html.is-standalone .mb-detail .mb-mrow:last-child,
+html.is-pwa-preview .mb-detail .mb-mrow:last-child { border-bottom: none; }
+html.is-standalone .mb-detail .mb-mrow.mb-created,
+html.is-pwa-preview .mb-detail .mb-mrow.mb-created { cursor: default; }
+html.is-standalone .mb-detail .mb-mic,
+html.is-pwa-preview .mb-detail .mb-mic {
+  flex: 0 0 auto; width: 22px; height: 22px; color: var(--label-2);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+html.is-standalone .mb-detail .mb-mic svg,
+html.is-pwa-preview .mb-detail .mb-mic svg { width: 20px; height: 20px; }
+html.is-standalone .mb-detail .mb-mic.on,
+html.is-pwa-preview .mb-detail .mb-mic.on { color: var(--accent); }
+html.is-standalone .mb-detail .mb-mbd,
+html.is-pwa-preview .mb-detail .mb-mbd { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+html.is-standalone .mb-detail .mb-mlb,
+html.is-pwa-preview .mb-detail .mb-mlb { font-size: 12px; color: var(--label-2); }
+html.is-standalone .mb-detail .mb-mvl,
+html.is-pwa-preview .mb-detail .mb-mvl {
+  font-size: 15px; color: var(--label); word-break: break-all;
+}
+html.is-standalone .mb-detail .mb-mvl.muted,
+html.is-pwa-preview .mb-detail .mb-mvl.muted { color: var(--label-3); }
+html.is-standalone .mb-detail .mb-mcp,
+html.is-pwa-preview .mb-detail .mb-mcp { flex: 0 0 auto; color: var(--accent); display: inline-flex; }
+html.is-standalone .mb-detail .mb-mcp svg,
+html.is-pwa-preview .mb-detail .mb-mcp svg { width: 18px; height: 18px; }
+html.is-standalone .mb-detail .mb-mchev,
+html.is-pwa-preview .mb-detail .mb-mchev { flex: 0 0 auto; color: var(--label-3); display: inline-flex; }
+html.is-standalone .mb-detail .mb-mchev svg,
+html.is-pwa-preview .mb-detail .mb-mchev svg { width: 18px; height: 18px; }
+
 /* ===== 二级邮箱视图 #list-card（历史邮箱点进某邮箱的收/发件箱）standalone 协调化 =====
    该视图与底栏「收件箱」聚合视图功能重叠，此处不逐元素重塑，仅做卡片化+橙强调+去渐变，
    保证与新设计配色协调、不突兀。真实结构：.email-item>.email-meta + .email-content。 */

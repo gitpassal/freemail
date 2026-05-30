@@ -231,3 +231,33 @@ html.is-pwa-preview .settings-sheet .settings-row .settings-row-value {
   margin-left: auto; color: var(--label-2, #64748b); font-size: 15px;
   display: flex; align-items: center; gap: 6px;
 }
+
+/* ===== 转发邮箱管理（设置 sheet 置顶分组） ===== */
+html.is-standalone .settings-sheet .settings-fwd-row span,
+html.is-pwa-preview .settings-sheet .settings-fwd-row span {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-weight: 500; font-size: 15px; color: var(--label);
+}
+html.is-standalone .settings-sheet .settings-fwd-del,
+html.is-pwa-preview .settings-sheet .settings-fwd-del {
+  margin-left: auto; flex: 0 0 auto; background: transparent; border: none;
+  padding: 4px; display: inline-flex; align-items: center; cursor: pointer;
+}
+html.is-standalone .settings-sheet .settings-fwd-del svg,
+html.is-pwa-preview .settings-sheet .settings-fwd-del svg {
+  width: 18px; height: 18px; color: var(--label-3);
+}
+html.is-standalone .settings-sheet .settings-row.is-empty,
+html.is-pwa-preview .settings-sheet .settings-row.is-empty {
+  color: var(--label-3); cursor: default; font-weight: 400; font-size: 15px;
+}
+html.is-standalone .settings-sheet .settings-row.is-empty svg,
+html.is-pwa-preview .settings-sheet .settings-row.is-empty svg { color: var(--label-3); }
+html.is-standalone .settings-sheet .settings-fwd-add,
+html.is-pwa-preview .settings-sheet .settings-fwd-add { color: var(--accent); font-weight: 600; }
+html.is-standalone .settings-sheet .settings-fwd-add svg,
+html.is-pwa-preview .settings-sheet .settings-fwd-add svg { color: var(--accent); }
+html.is-standalone .settings-sheet .settings-hint,
+html.is-pwa-preview .settings-sheet .settings-hint {
+  font-size: 12px; color: var(--label-3); line-height: 1.6; padding: 8px 20px 0;
+}

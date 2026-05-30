@@ -197,6 +197,11 @@ function updateMailboxInfoUI(info) {
     els.favoriteIcon.innerHTML = IconHelper.star(18, 18, info.is_favorite);
     els.favoriteText.textContent = info.is_favorite ? window.t('app2.favorited') : window.t('app2.favorite');
   }
+  // iOS standalone 详情管理卡（ios-mailbox.js）消费；桌面无监听者，无副作用
+  try {
+    window.__cfMailboxInfo = info;
+    window.dispatchEvent(new CustomEvent('mf:mailboxinfo', { detail: info }));
+  } catch (_) {}
 }
 
 // 全局函数
