@@ -115,10 +115,19 @@ export async function handleEmailEvent(message, env, ctx) {
       }
     } catch (_) { toAddrs = resolvedRecipient || toHeader || ''; }
 
-    await DB.prepare(`
+    const insertResult = await DB.prepare(`
       INSERT INTO messages (mailbox_id, sender, to_addrs, subject, verification_code, preview, r2_bucket, r2_object_key)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(mailboxId, sender, String(toAddrs || ''), subject || '(无主题)', verificationCode || null, preview || null, 'mail-eml', objectKey || '').run();
+
+    // 站内通知 + Web Push（失败不影响收信入库）
+    try {
+      const newMessageId = insertResult?.meta?.last_row_id;
+      const { recordInboxNotification, pushNewMail } = await import('./notify.js');
+      await recordInboxNotification(DB, { mailboxId, messageId: newMessageId, subject: subject || '(无主题)', sender });
+      const pushTask = pushNewMail(DB, env, { mailboxId, messageId: newMessageId, subject: subject || '(无主题)', sender });
+      if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(pushTask); else await pushTask;
+    } catch (e) { console.error('通知/推送触发失败:', e); }
   } catch (err) {
     console.error('Email event handling error:', err);
   }

@@ -106,7 +106,7 @@ export async function handleEmailReceive(request, db, env) {
       verificationCode = extractVerificationCode({ subject, text, html });
     } catch (_) { }
 
-    await db.prepare(`
+    const insertResult = await db.prepare(`
       INSERT INTO messages (mailbox_id, sender, to_addrs, subject, verification_code, preview, r2_bucket, r2_object_key)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
@@ -119,6 +119,14 @@ export async function handleEmailReceive(request, db, env) {
       'mail-eml',
       objectKey || ''
     ).run();
+
+    // 站内通知 + Web Push（此路径无 ctx，直接 await；失败不影响收信入库）
+    try {
+      const newMessageId = insertResult?.meta?.last_row_id;
+      const { recordInboxNotification, pushNewMail } = await import('./notify.js');
+      await recordInboxNotification(db, { mailboxId, messageId: newMessageId, subject: subject || '(无主题)', sender });
+      await pushNewMail(db, env, { mailboxId, messageId: newMessageId, subject: subject || '(无主题)', sender });
+    } catch (e) { console.error('通知/推送触发失败:', e); }
 
     return Response.json({ success: true });
   } catch (error) {

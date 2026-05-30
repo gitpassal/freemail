@@ -47,7 +47,7 @@ const KNOWN_PATHS = new Set([
   '/mailbox.js', '/mailbox.css', '/mailboxes.js',
   '/mock.js', '/route-guard.js', '/app-mobile.js', '/app-mobile.css',
   '/auth-guard.js', '/storage.js', '/theme-toggle.js', '/pwa.js', '/pwa.css',
-  '/toast-utils.js', '/mailbox-settings.js',
+  '/toast-utils.js', '/mailbox-settings.js', '/sw.js',
   '/html/mailbox.html', '/html/mailboxes.html', '/html/admin.html', '/html/app.html', '/html/app',
   '/templates/app.html', '/templates/footer.html',
   '/templates/loading.html', '/templates/loading-inline.html', '/templates/toast.html',
