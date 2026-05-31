@@ -15,7 +15,7 @@ html.is-pwa-preview .tabbar {
   position: fixed;
   left: max(12px, var(--safe-area-left));
   right: max(12px, var(--safe-area-right));
-  bottom: calc(10px + var(--safe-area-bottom));
+  bottom: max(4px, calc(var(--safe-area-bottom) - 10px));
   z-index: 40;
   height: 60px;
   background: transparent;
@@ -144,11 +144,25 @@ html.is-pwa-preview body {
   transform: translateY(110%);
   transition: transform 0.26s cubic-bezier(0.32, 0.72, 0, 1);
   box-shadow: var(--shadow-float);
+  /* 内容超高时 sheet 自身滚动（背景已锁定），不再把溢出内容推到屏幕外 */
+  max-height: calc(100dvh - var(--safe-area-top, 0px) - 20px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .settings-sheet.is-open {
   transform: translateY(0);
 }
+
+/* 顶部可拖拽抓取区（手柄 + 标题）：禁用浏览器默认手势，交给 JS 跟手拖拽关闭 */
+.settings-sheet-grab {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: grab;
+}
+.settings-sheet-grab:active { cursor: grabbing; }
 
 .settings-sheet-handle {
   width: 36px;

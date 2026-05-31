@@ -333,6 +333,20 @@ body.is-standalone [contenteditable="true"] {
   html.is-standalone .topbar .topbar-inner,
   html.is-pwa-preview .topbar .topbar-inner { display: none !important; }
 
+  /* dark：压过 app-mobile.css 未加 standalone 守卫的 :root.dark 旧规则
+     （:root.dark .topbar 的 navy 背景 / :root.dark body 的 navy 渐变 background-image），
+     把状态栏条与 body 统一拍平为中性黑 var(--bg)，消除顶部 navy 色块与边界细线。 */
+  html.is-standalone.dark .topbar,
+  html.is-pwa-preview.dark .topbar {
+    background: var(--bg) !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  html.is-standalone.dark body,
+  html.is-pwa-preview.dark body {
+    background: var(--bg) !important;
+  }
+
   html.is-standalone .brand,
   html.is-pwa-preview .brand {
     flex: 1 1 auto;
@@ -425,6 +439,9 @@ body.is-standalone [contenteditable="true"] {
     padding-right: max(12px, var(--safe-area-right));
     padding-bottom: calc(34px + var(--safe-area-bottom));
     overflow-x: hidden;
+    /* 去掉桌面态 min-height:calc(100vh-100px) 的撑高，避免内容被 grid 垂直居中、顶部留大片空白；
+       body 仍 min-height:100dvh 用 --bg 填满底部 */
+    min-height: 0;
   }
 
   html.is-standalone .main,

@@ -37,7 +37,7 @@
   var TABS = [
     { key: 'inbox', labelKey: 'tab.inbox', icon: 'inbox' },
     { key: 'generate', labelKey: 'tab.generate', icon: 'wand' },
-    { key: 'mailboxes', labelKey: 'tab.mailboxes', icon: 'mailboxes' },
+    { key: 'mailboxes', labelKey: 'tab.mailboxes', icon: 'incognito' },
     { key: 'settings', labelKey: 'tab.settings', icon: 'settings' }
   ];
 
@@ -259,10 +259,68 @@
     sheet.appendChild(makeGroup(tr('settings.account'), about));
   }
 
+  // 背景滚动锁：sheet 打开时冻结背后页面（iOS 用 position:fixed 才可靠）
+  var savedScrollY = 0;
+  function lockScroll() {
+    savedScrollY = window.scrollY || window.pageYOffset || 0;
+    var b = document.body;
+    b.style.position = 'fixed';
+    b.style.top = (-savedScrollY) + 'px';
+    b.style.left = '0';
+    b.style.right = '0';
+    b.style.width = '100%';
+  }
+  function unlockScroll() {
+    var b = document.body;
+    b.style.position = '';
+    b.style.top = '';
+    b.style.left = '';
+    b.style.right = '';
+    b.style.width = '';
+    window.scrollTo(0, savedScrollY);
+  }
+
+  // 顶部手柄区域下拉手势：跟手 + 超阈值关闭，否则回弹
+  function bindSheetDrag(grabEl) {
+    var startY = 0, curY = 0, startT = 0, dragging = false;
+    grabEl.addEventListener('touchstart', function (e) {
+      if (!e.touches || !e.touches.length) return;
+      dragging = true;
+      startY = curY = e.touches[0].clientY;
+      startT = (window.performance && performance.now) ? performance.now() : (+new Date());
+      sheet.style.transition = 'none';
+    }, { passive: true });
+    grabEl.addEventListener('touchmove', function (e) {
+      if (!dragging || !e.touches || !e.touches.length) return;
+      curY = e.touches[0].clientY;
+      var dy = curY - startY;
+      if (dy < 0) dy = 0; // 只允许下拉
+      e.preventDefault();
+      sheet.style.transform = 'translateY(' + dy + 'px)';
+    }, { passive: false });
+    function end() {
+      if (!dragging) return;
+      dragging = false;
+      var dy = curY - startY;
+      var dt = ((window.performance && performance.now) ? performance.now() : (+new Date())) - startT;
+      var fast = dy > 24 && dt < 250;
+      sheet.style.transition = '';
+      if (dy > 80 || fast) {
+        closeSheet();
+      } else {
+        sheet.style.transform = ''; // 回弹到 .is-open 的 translateY(0)
+      }
+    }
+    grabEl.addEventListener('touchend', end);
+    grabEl.addEventListener('touchcancel', end);
+  }
+
   function buildSheet() {
     overlay = document.createElement('div');
     overlay.className = 'settings-sheet-overlay';
     overlay.addEventListener('click', closeSheet);
+    // 阻断遮罩上的滑动穿透到背景页面
+    overlay.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
 
     sheet = document.createElement('div');
     sheet.className = 'settings-sheet';
@@ -270,13 +328,17 @@
     sheet.setAttribute('aria-label', tr('settings.title'));
     sheet.setAttribute('aria-modal', 'true');
 
+    var grab = document.createElement('div');
+    grab.className = 'settings-sheet-grab';
     var handle = document.createElement('div');
     handle.className = 'settings-sheet-handle';
     var title = document.createElement('div');
     title.className = 'settings-sheet-title';
     title.textContent = tr('settings.title');
-    sheet.appendChild(handle);
-    sheet.appendChild(title);
+    grab.appendChild(handle);
+    grab.appendChild(title);
+    sheet.appendChild(grab);
+    bindSheetDrag(grab);
 
     document.body.appendChild(overlay);
     document.body.appendChild(sheet);
@@ -285,14 +347,20 @@
   function openSheet() {
     if (!sheet) return;
     populateSheet();
+    sheet.style.transition = '';
+    sheet.style.transform = '';
+    lockScroll();
     overlay.classList.add('is-open');
     requestAnimationFrame(function () { sheet.classList.add('is-open'); });
   }
 
   function closeSheet() {
     if (!sheet) return;
+    sheet.style.transition = '';
     sheet.classList.remove('is-open');
+    sheet.style.transform = ''; // 清除拖拽 inline transform，让其滑回 translateY(110%)
     overlay.classList.remove('is-open');
+    unlockScroll();
   }
 
   var tries = 0;
