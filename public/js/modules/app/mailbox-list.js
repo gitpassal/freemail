@@ -42,6 +42,20 @@ function localPart(addr) {
   return i > 0 ? s.slice(0, i) : s;
 }
 
+// 去掉 cf 随机后缀（giffgaff.cf113 → giffgaff），作为无标题时的回退显示
+function stripCfSuffix(lp) {
+  return String(lp || '').replace(/\.cf\d{3}$/, '');
+}
+
+// 读 ios 生成页写入的用户标题（mf:mbTitles: { 地址: 标题 }），有则作为列表粗体名
+function mbTitleFor(addr) {
+  try {
+    const map = JSON.parse(localStorage.getItem('mf:mbTitles') || '{}');
+    const t = map && map[addr];
+    return (typeof t === 'string' && t.trim()) ? t.trim() : '';
+  } catch (e) { return ''; }
+}
+
 /**
  * 渲染邮箱列表项
  * @param {object} mailbox - 邮箱数据
@@ -65,7 +79,8 @@ export function renderMailboxItem(mailbox, isActive = false) {
 
   // iOS standalone：Proton 行（隐身图标 + 粗体本地名 + 灰色完整地址）
   if (isStandaloneLike()) {
-    const name = escapeHtml(localPart(m.address));
+    // 优先显示用户生成时填的标题；无则回退为去掉 .cfNNN 的前缀（副标题仍是完整地址）
+    const name = escapeHtml(mbTitleFor(m.address) || stripCfSuffix(localPart(m.address)));
     return `
     <div class="mailbox-item proton ${isPinned} ${activeClass}" data-addr="${address}" data-created="${escapeAttr(m.created_at || '')}" onclick="selectMailbox('${address}')">
       <span class="mb-ico" aria-hidden="true">${INCOGNITO_SVG}</span>

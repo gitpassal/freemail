@@ -152,7 +152,17 @@ export async function createCustomMailbox(elements, domainSelect, api, showToast
     
     if (!r.ok) throw new Error(await r.text());
     const data = await r.json();
-    
+
+    // iOS 生成页把用户填的标题挂在 dataset.mbTitle 上；存到 mf:mbTitles 供邮箱列表显示（桌面无此值 → 不写）
+    try {
+      const mbTitle = (customCfSuffixOverlay?.dataset?.mbTitle || '').trim();
+      if (mbTitle && data.email) {
+        const map = JSON.parse(localStorage.getItem('mf:mbTitles') || '{}');
+        map[data.email] = mbTitle;
+        localStorage.setItem('mf:mbTitles', JSON.stringify(map));
+      }
+    } catch (e) {}
+
     setCurrentMailbox(data.email);
     updateEmailDisplay(elements, data.email);
     if (customOverlay) customOverlay.style.display = 'none';

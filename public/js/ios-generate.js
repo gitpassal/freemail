@@ -112,6 +112,14 @@
     bind();
     render();
     setupVisSync(gc);
+    // 域名异步加载（#domain-select 由 app.js 在 validateSession/loadDomains 后才填 option）：
+    // 就绪前 currentDomain() 落到 '…' fallback；轮询到域名就绪后刷新一次预览/后缀显示。
+    var dtries = 0;
+    (function waitDomain() {
+      if (currentDomain() !== '…') { render(); return; }
+      if (++dtries > 40) return;
+      setTimeout(waitDomain, 200);
+    })();
   }
 
   // .gi-gen 覆盖层须跟随 .generate-card 的内联 display：
@@ -196,13 +204,28 @@
     cfChk.checked = !!state.addSuffix;
     // 把预览里显示的真实号透传给既有 createCustomMailbox（它会读 dataset.cfCode 加进请求体）
     cfChk.dataset.cfCode = state.addSuffix ? (state.cfCode || '') : '';
+    // 把用户填的标题透传给 createCustomMailbox，成功后写入 mf:mbTitles 供邮箱列表显示
+    cfChk.dataset.mbTitle = state.title || '';
     var pendingFwd = state.fwd;  // 创建成功后再设转发
+    var before = '';
+    try { before = window.currentMailbox || ''; } catch (e) {}
     createBtn.click();
-    // 下次创建换新号（createCustomMailbox 在首个 await 前已同步读取 dataset，故此处重置安全）
-    state.cfCode = rollCfCode();
-    render();
     // 复用现有 createCustomMailbox 成功后会刷新；若选了转发，监听当前邮箱出现后调 forward
     if (pendingFwd) applyForwardAfterCreate(pendingFwd);
+    // 创建成功（window.currentMailbox 变为新地址）后清空表单回默认；超时不清（可能失败，保留输入）
+    var ctries = 0;
+    (function waitClear() {
+      var now = '';
+      try { now = window.currentMailbox || ''; } catch (e) {}
+      if (now && now !== before) {
+        state.title = ''; state.prefix = ''; state.prefixEdited = false; state.fwd = null;
+        state.cfCode = rollCfCode();
+        render();
+        return;
+      }
+      if (++ctries > 40) return;
+      setTimeout(waitClear, 150);
+    })();
   }
 
   function applyForwardAfterCreate(fwd) {
