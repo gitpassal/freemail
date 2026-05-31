@@ -1096,6 +1096,9 @@ html.is-standalone .sidebar.history-inline,
 html.is-pwa-preview .sidebar.history-inline {
   background: transparent !important; box-shadow: none !important; border: none !important; padding: 0 !important;
 }
+/* 去掉 sidebar 顶部 3px 蓝紫渐变装饰条（app-sidebar.css .sidebar::before 未加 standalone 守卫，泄漏到邮箱页顶部） */
+html.is-standalone .sidebar::before,
+html.is-pwa-preview .sidebar::before { display: none !important; }
 html.is-standalone .sidebar.history-inline .sidebar-header,
 html.is-pwa-preview .sidebar.history-inline .sidebar-header { padding: 4px 4px 12px !important; }
 html.is-standalone .sidebar.history-inline .sidebar-title,
@@ -1152,7 +1155,7 @@ html.is-pwa-preview .mailbox-item .btn.del { color: var(--label-3) !important; }
 /* 配额徽标用中性 */
 html.is-standalone .sidebar.history-inline #quota,
 html.is-pwa-preview .sidebar.history-inline #quota {
-  background: color-mix(in srgb, var(--label) 8%, transparent) !important; color: var(--label-2) !important;
+  background: transparent !important; box-shadow: none !important; padding: 0 !important; color: var(--label-2) !important;
 }
 
 /* 历史邮箱项：真实 DOM = .mailbox-item > .mailbox-content > span.address + span.time
@@ -1584,7 +1587,7 @@ html.is-standalone .gi-gen,
 html.is-pwa-preview .gi-gen { display:none; }
 html.is-standalone .gi-gen,
 html.is-pwa-preview .gi-gen {
-  display:block; padding: calc(var(--safe-area-top,0px) + 8px) 16px calc(60px + var(--safe-area-bottom,0px) + 28px);
+  display:block; padding: 4px 16px calc(60px + var(--safe-area-bottom,0px) + 28px);
 }
 .gi-gen-title{ font-family:var(--font-serif); font-size:30px; font-weight:700; letter-spacing:-.02em; color:var(--label); margin:4px 4px 18px; }
 .gi-gen-card{ background:var(--card); border:1px solid var(--separator); border-radius:16px; margin-bottom:14px; }

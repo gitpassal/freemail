@@ -259,25 +259,14 @@
     sheet.appendChild(makeGroup(tr('settings.account'), about));
   }
 
-  // 背景滚动锁：sheet 打开时冻结背后页面（iOS 用 position:fixed 才可靠）
-  var savedScrollY = 0;
+  // 背景滚动锁：只锁 html overflow，不改 body 定位（position:fixed 会在 iOS 上
+  // 重算视口/安全区，导致 sheet 留底缝、Tab Bar 关闭后位移）。背景不滚动另有
+  // 遮罩 touchmove preventDefault + sheet overscroll-behavior:contain + 手柄拖拽兜底。
   function lockScroll() {
-    savedScrollY = window.scrollY || window.pageYOffset || 0;
-    var b = document.body;
-    b.style.position = 'fixed';
-    b.style.top = (-savedScrollY) + 'px';
-    b.style.left = '0';
-    b.style.right = '0';
-    b.style.width = '100%';
+    document.documentElement.style.overflow = 'hidden';
   }
   function unlockScroll() {
-    var b = document.body;
-    b.style.position = '';
-    b.style.top = '';
-    b.style.left = '';
-    b.style.right = '';
-    b.style.width = '';
-    window.scrollTo(0, savedScrollY);
+    document.documentElement.style.overflow = '';
   }
 
   // 顶部手柄区域下拉手势：跟手 + 超阈值关闭，否则回弹

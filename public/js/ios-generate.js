@@ -22,7 +22,17 @@
   function toast(m, t) { try { if (window.showToast) window.showToast(m, t || 'info'); } catch (e) {} }
 
   var root = null, built = false, gearOpen = false;
-  var state = { title: '', prefix: '', prefixEdited: false, addSuffix: true, fwd: null };
+  // cfCode：客户端预先 roll 的 3 位号，实时显示在预览里并随请求发给后端（后端优先采纳，撞号才回退）
+  function rollCfCode() {
+    try {
+      var a = new Uint32Array(1);
+      (window.crypto || window.msCrypto).getRandomValues(a);
+      return String(a[0] % 1000).padStart(3, '0');
+    } catch (e) {
+      return String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+    }
+  }
+  var state = { title: '', prefix: '', prefixEdited: false, addSuffix: true, fwd: null, cfCode: rollCfCode() };
 
   function svg(p, extra) {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"' + (extra || '') + '>' + p + '</svg>';
@@ -55,9 +65,10 @@
   }
 
   function previewAddr() {
-    // 默认（无输入）显示 .cf###@domain（### 为后端即将发行的码）；输入 Title/Prefix 时前缀实时变化
+    // 实时显示真实即将创建的号：.cf<NNN>（NNN = 客户端 roll、提交时发给后端、后端优先采纳）；
+    // 输入 Title/Prefix 时前缀实时变化，cf 号保持不变。
     var p = effectivePrefix() || '';
-    var cf = state.addSuffix ? '.cf###' : '';
+    var cf = state.addSuffix ? ('.cf' + (state.cfCode || '###')) : '';
     return p + cf + '@' + currentDomain();
   }
 
@@ -183,8 +194,13 @@
     if (!localIn || !cfChk || !createBtn) { toast('生成控件未就绪', 'warn'); return; }
     localIn.value = ep;
     cfChk.checked = !!state.addSuffix;
+    // 把预览里显示的真实号透传给既有 createCustomMailbox（它会读 dataset.cfCode 加进请求体）
+    cfChk.dataset.cfCode = state.addSuffix ? (state.cfCode || '') : '';
     var pendingFwd = state.fwd;  // 创建成功后再设转发
     createBtn.click();
+    // 下次创建换新号（createCustomMailbox 在首个 await 前已同步读取 dataset，故此处重置安全）
+    state.cfCode = rollCfCode();
+    render();
     // 复用现有 createCustomMailbox 成功后会刷新；若选了转发，监听当前邮箱出现后调 forward
     if (pendingFwd) applyForwardAfterCreate(pendingFwd);
   }

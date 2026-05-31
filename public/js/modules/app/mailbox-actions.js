@@ -141,11 +141,13 @@ export async function createCustomMailbox(elements, domainSelect, api, showToast
       return;
     }
     const domainIndex = getSelectedDomainIndex(domainSelect);
-    
+    // iOS 生成页会把预先 roll 的 3 位号挂在 dataset.cfCode 上；桌面流程无此值 → 不带，行为不变
+    const cfCode = (customCfSuffixOverlay?.dataset?.cfCode || '').trim();
+
     const r = await api('/api/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ local, domainIndex, cfSuffix })
+      body: JSON.stringify({ local, domainIndex, cfSuffix, ...(cfSuffix && /^\d{3}$/.test(cfCode) ? { cfCode } : {}) })
     });
     
     if (!r.ok) throw new Error(await r.text());

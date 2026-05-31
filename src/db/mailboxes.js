@@ -100,7 +100,7 @@ export async function getOrCreateMailboxId(db, address) {
   return newId;
 }
 
-export async function issueCfAliasMailbox(db, { prefix, domain }) {
+export async function issueCfAliasMailbox(db, { prefix, domain, desiredCode } = {}) {
   const normalizedPrefix = normalizeCfAliasPrefix(prefix);
   const normalizedDomain = normalizeDomain(domain);
 
@@ -129,6 +129,20 @@ export async function issueCfAliasMailbox(db, { prefix, domain }) {
       localPart
     };
   };
+
+  // 优先采纳客户端预先指定的号（让生成页预览=真实创建结果）；撞号/非法则回退到随机生成
+  if (desiredCode != null) {
+    const code = String(desiredCode).padStart(3, '0');
+    if (/^\d{3}$/.test(code) && !usedCodes.has(code)) {
+      try {
+        return await tryIssue(code);
+      } catch (error) {
+        if (!isUniqueConstraintError(error)) throw error;
+        usedCodes.add(code);
+        if (usedCodes.size >= CF_ALIAS_CODE_LIMIT) throw exhaustedCfAliasCodesError();
+      }
+    }
+  }
 
   for (let attempt = 0; attempt < 64; attempt++) {
     const code = randomCodeCandidate();

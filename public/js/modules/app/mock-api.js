@@ -313,11 +313,17 @@ export async function mockApi(path, options = {}) {
           return new Response('该前缀的 Suffix 已用完', { status: 409 });
         }
 
-        do {
-          const arr = new Uint32Array(1);
-          crypto.getRandomValues(arr);
-          cfCode = String(arr[0] % 1000).padStart(3, '0');
-        } while (usedCodes.has(cfCode));
+        // 优先采纳客户端指定号（生成页预览=创建结果），撞号/非法则回退随机
+        const desired = /^\d{3}$/.test(String(body.cfCode || '')) ? String(body.cfCode) : '';
+        if (desired && !usedCodes.has(desired)) {
+          cfCode = desired;
+        } else {
+          do {
+            const arr = new Uint32Array(1);
+            crypto.getRandomValues(arr);
+            cfCode = String(arr[0] % 1000).padStart(3, '0');
+          } while (usedCodes.has(cfCode));
+        }
 
         localPart = `${local}.cf${cfCode}`;
       }

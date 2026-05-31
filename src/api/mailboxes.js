@@ -83,11 +83,17 @@ export async function handleMailboxesApi(request, db, mailDomains, url, path, op
             if (item.prefix === local && item.domain === chosenDomain) usedCodes.add(item.code);
           }
           if (usedCodes.size >= 1000) return errorResponse('该前缀的 Suffix 已用完', 409);
-          do {
-            const arr = new Uint32Array(1);
-            crypto.getRandomValues(arr);
-            cfCode = String(arr[0] % 1000).padStart(3, '0');
-          } while (usedCodes.has(cfCode));
+          // 优先采纳客户端指定号（预览=创建结果），撞号/非法则回退随机
+          const desired = /^\d{3}$/.test(String(body.cfCode || '')) ? String(body.cfCode) : '';
+          if (desired && !usedCodes.has(desired)) {
+            cfCode = desired;
+          } else {
+            do {
+              const arr = new Uint32Array(1);
+              crypto.getRandomValues(arr);
+              cfCode = String(arr[0] % 1000).padStart(3, '0');
+            } while (usedCodes.has(cfCode));
+          }
           localPart = `${local}.cf${cfCode}`;
           existing.push({ prefix: local, domain: chosenDomain, code: cfCode, local_part: localPart, address: `${localPart}@${chosenDomain}` });
         }
@@ -115,7 +121,8 @@ export async function handleMailboxesApi(request, db, mailDomains, url, path, op
         }
 
         if (cfSuffix) {
-          const issued = await issueCfAliasMailbox(db, { prefix: local, domain: chosenDomain });
+          const desiredCode = /^\d{3}$/.test(String(body.cfCode || '')) ? String(body.cfCode) : undefined;
+          const issued = await issueCfAliasMailbox(db, { prefix: local, domain: chosenDomain, desiredCode });
           if (userId) await assignMailboxToUser(db, { userId, address: issued.address });
           return Response.json({
             email: issued.address,
