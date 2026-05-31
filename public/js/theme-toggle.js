@@ -6,7 +6,7 @@
 (function() {
   const PREFERENCE_KEY = 'freemail:theme-preference';
   const LEGACY_KEY = 'freemail:theme';
-  const LIGHT_THEME_COLOR = '#f2f2f7';
+  const LIGHT_THEME_COLOR = '#FFFFFF';  /* Gmail 白底，与收件箱顶部一致 */
   const DARK_THEME_COLOR = '#1C1C1E';  /* 顶栏同款中性黑，与 standalone 深色 body 一致 */
 
   let currentTheme = 'light';

@@ -310,40 +310,28 @@ body.is-standalone [contenteditable="true"] {
     max-width: 100%;
   }
 
+  /* 顶栏 → 折叠为「实心状态栏安全区填充条」：去掉 logo/Demo/铃，只留不透明 safe-area 填充，
+     上翻时状态栏不被内容遮挡（内容在其下滚动）。通知铃已移入设置；收件箱由其自身白底接管。 */
   html.is-standalone .topbar,
   html.is-pwa-preview .topbar {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 45;
-    display: flex;
-    align-items: center;
+    z-index: 30;
+    display: block;
     min-width: 0;
-    min-height: 72px;
-    padding: calc(10px + var(--safe-area-top)) max(12px, var(--safe-area-right)) 10px max(12px, var(--safe-area-left));
-    gap: 8px;
-    background-color: rgba(242, 242, 247, 0.72);
-    -webkit-backdrop-filter: saturate(180%) blur(22px);
-    backdrop-filter: saturate(180%) blur(22px);
-    border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
-  }
-
-  html.dark.is-standalone .topbar,
-  html.dark.is-pwa-preview .topbar {
-    background-color: rgba(28, 28, 30, 0.72);
-    border-bottom-color: rgba(255, 255, 255, 0.08);
-  }
-
-  html.is-standalone .topbar .topbar-inner,
-  html.is-pwa-preview .topbar .topbar-inner {
-    min-width: 0;
-    width: 100%;
-    gap: 8px;
-    max-width: none;
-    margin: 0;
+    min-height: 0;
+    height: var(--safe-area-top, 0px);
     padding: 0;
+    margin: 0;
+    background: var(--bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border: none;
   }
+  html.is-standalone .topbar .topbar-inner,
+  html.is-pwa-preview .topbar .topbar-inner { display: none !important; }
 
   html.is-standalone .brand,
   html.is-pwa-preview .brand {
@@ -432,7 +420,7 @@ body.is-standalone [contenteditable="true"] {
     min-width: 0;
     margin-left: 0;
     margin-right: 0;
-    padding-top: calc(72px + var(--safe-area-top) + 8px);
+    padding-top: calc(var(--safe-area-top) + 8px);
     padding-left: max(12px, var(--safe-area-left));
     padding-right: max(12px, var(--safe-area-right));
     padding-bottom: calc(34px + var(--safe-area-bottom));
@@ -901,7 +889,7 @@ html.is-standalone .push-banner,
 html.is-pwa-preview .push-banner {
   position: fixed;
   left: 12px; right: 12px;
-  top: calc(72px + var(--safe-area-top, 0px) + 8px);
+  top: calc(var(--safe-area-top, 0px) + 8px);
   z-index: 60;
   display: flex; align-items: center; gap: 12px;
   padding: 12px 14px;
@@ -1579,7 +1567,7 @@ html.is-standalone .gi-gen,
 html.is-pwa-preview .gi-gen { display:none; }
 html.is-standalone .gi-gen,
 html.is-pwa-preview .gi-gen {
-  display:block; padding: calc(72px + var(--safe-area-top,0px) + 8px) 16px calc(60px + var(--safe-area-bottom,0px) + 28px);
+  display:block; padding: calc(var(--safe-area-top,0px) + 8px) 16px calc(60px + var(--safe-area-bottom,0px) + 28px);
 }
 .gi-gen-title{ font-family:var(--font-serif); font-size:30px; font-weight:700; letter-spacing:-.02em; color:var(--label); margin:4px 4px 18px; }
 .gi-gen-card{ background:var(--card); border:1px solid var(--separator); border-radius:16px; margin-bottom:14px; }

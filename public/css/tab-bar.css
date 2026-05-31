@@ -75,10 +75,10 @@ html.is-pwa-preview .tabbar {
   display: block;
 }
 
-/* 选中态：圆角胶囊高亮背景 */
+/* 选中态：圆角胶囊高亮背景（Gmail：light 蓝胶囊 / dark 青绿） */
 .tabbar-item.is-active {
-  color: var(--accent);
-  background: var(--accent-tint, rgba(0, 122, 255, 0.14));
+  color: var(--tab-active-ink, var(--accent));
+  background: var(--tab-active-bg, var(--accent-tint, rgba(0, 122, 255, 0.14)));
 }
 
 .tabbar-label {
@@ -96,8 +96,8 @@ html.is-pwa-preview .tabbar {
   justify-content: center;
   border: none;
   cursor: pointer;
-  color: #fff;
-  background: var(--accent, #007aff);
+  color: var(--compose-ink, #fff);
+  background: var(--compose-bg, var(--accent, #007aff));
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.12s ease;
@@ -202,9 +202,9 @@ html.is-pwa-preview body {
   color: var(--danger);
 }
 
-/* ===== 重设计精修：FAB 橙色投影 + 设置 sheet 分组 ===== */
+/* ===== 重设计精修：FAB 投影（中性，跟随 compose 色）+ 设置 sheet 分组 ===== */
 html.is-standalone .tabbar-fab,
-html.is-pwa-preview .tabbar-fab { box-shadow: 0 8px 24px rgba(255,102,51,0.40); }
+html.is-pwa-preview .tabbar-fab { box-shadow: 0 6px 18px rgba(0,0,0,0.18); }
 html.is-standalone .tabbar-fab:active,
 html.is-pwa-preview .tabbar-fab:active { transform: scale(0.94); }
 

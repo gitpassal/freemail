@@ -130,19 +130,17 @@
     root = document.createElement('div');
     root.className = 'gmail-inbox';
     root.innerHTML =
-      '<div class="gi-subnav">' +
-        '<button class="gi-filter-btn" aria-label="' + esc(tr('gmail.menuTitle')) + '">' + icon('list') + '</button>' +
-        '<span class="gi-nav-title gi-section-text">' + esc(tr('gmail.inboxLabel')) + '</span>' +
-        '<span class="gi-subnav-spacer"></span>' +
-      '</div>' +
       '<div class="gi-list">' +
-        '<div class="gi-refresh-hint">' + esc(tr('gmail.loading')) + '</div>' +
-        '<div class="gi-list-head">' +
-          '<h2 class="gi-large-title">' + esc(tr('gmail.inboxLabel')) + '</h2>' +
-          '<div class="gi-searchbox">' + icon('search') +
-            '<input class="gi-search" type="search" placeholder="' + esc(tr('gmail.search')) + '">' +
-          '</div>' +
+        // Gmail 搜索胶囊：☰(展开筛选抽屉) + 搜索 + 头像(进设置)；随列表滚走
+        '<div class="gi-head">' +
+          '<button class="gi-filter-btn" aria-label="' + esc(tr('gmail.menuTitle')) + '">' + icon('list') + '</button>' +
+          '<input class="gi-search" type="search" placeholder="' + esc(tr('gmail.search')) + '">' +
+          '<button class="gi-avatar" aria-label="account">' + icon('user') + '</button>' +
         '</div>' +
+        // 下拉刷新 spinner（蓝色圆形，复刻 Gmail）
+        '<div class="gi-refresh-hint">' + icon('refresh') + '</div>' +
+        // 收件箱 小标签（紧凑居中；筛选时显示当前 box/别名）
+        '<div class="gi-section gi-section-text">' + esc(tr('gmail.inboxLabel')) + '</div>' +
         '<div class="gi-rows"></div>' +
       '</div>';
     document.body.appendChild(root);
@@ -151,8 +149,13 @@
     var rowsEl = root.querySelector('.gi-rows');
     searchEl = root.querySelector('.gi-search');
 
-    // 筛选按钮（常驻在子导航行，始终可点）→ 打开左侧筛选抽屉
+    // 筛选按钮（搜索胶囊左侧 ☰）→ 打开左侧筛选抽屉
     root.querySelector('.gi-filter-btn').addEventListener('click', function () { openDrawer(); });
+    // 头像 → 打开设置（复用底栏 Settings tab）
+    var avatarBtn = root.querySelector('.gi-avatar');
+    if (avatarBtn) avatarBtn.addEventListener('click', function () {
+      try { var s = document.querySelector('.tabbar-item[data-tab="settings"]'); if (s) s.click(); } catch (e) {}
+    });
     // 搜索（本地过滤）
     var st;
     searchEl.addEventListener('input', function () {
@@ -228,7 +231,11 @@
     }, { passive: true });
     listEl.addEventListener('touchend', function () {
       if (!pulling) return; pulling = false;
-      if (hint.classList.contains('show')) { hint.classList.remove('show'); loadPage(1, true); }
+      if (hint.classList.contains('show')) {
+        hint.classList.add('refreshing');
+        loadPage(1, true);
+        setTimeout(function () { hint.classList.remove('show'); hint.classList.remove('refreshing'); }, 900);
+      }
     });
   }
 

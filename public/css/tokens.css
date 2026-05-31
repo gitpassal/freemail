@@ -287,23 +287,32 @@ body::after,
    ============================================================= */
 html.is-standalone,
 html.is-pwa-preview {
-  /* 强调色：青绿 teal（浅色态用深一档保证对比度；中性为主，teal 点缀） */
-  --accent: #0d9488;
-  --accent-press: #0b7c72;
-  --accent-tint: rgba(13, 148, 136, 0.12);
-  --accent-rgb: 13, 148, 136;
-  /* 历史别名同步指向 teal（列表/阅读/抽屉等仍引用这些旧名 + #007aff 兜底值） */
-  --primary: #0d9488;
-  --primary-hover: #0b7c72;
-  --primary-active: #0b7c72;
-  --primary-light: rgba(13, 148, 136, 0.12);
-  --primary-rgb: 13, 148, 136;
-  --primary-gradient: #0d9488;
-  --accent-hover: #0b7c72;
-  --accent-light: rgba(13, 148, 136, 0.12);
-  --info: #0d9488;
-  --info-light: rgba(13, 148, 136, 0.12);
-  --border-focus: #0d9488;
+  /* Light = 完全照 Gmail：主强调蓝 #0B57D0（dark 块覆盖为青绿 #7fd8c0） */
+  --accent: #0B57D0;
+  --accent-press: #0a4bb3;
+  --accent-tint: rgba(11, 87, 208, 0.12);
+  --accent-rgb: 11, 87, 208;
+  /* 历史别名同步（列表/阅读/抽屉等旧名） */
+  --primary: #0B57D0;
+  --primary-hover: #0a4bb3;
+  --primary-active: #0a4bb3;
+  --primary-light: rgba(11, 87, 208, 0.12);
+  --primary-rgb: 11, 87, 208;
+  --primary-gradient: #0B57D0;
+  --accent-hover: #0a4bb3;
+  --accent-light: rgba(11, 87, 208, 0.12);
+  --info: #0B57D0;
+  --info-light: rgba(11, 87, 208, 0.12);
+  --border-focus: #0B57D0;
+
+  /* Gmail 化专用 token（搜索胶囊 / 头像 / 写邮件 FAB / 激活 Tab / 下拉刷新）—— dark 块覆盖 */
+  --gm-pill: #E9EDF6;
+  --gm-avatar: #7C5CBF;
+  --compose-bg: #C2E7FF;
+  --compose-ink: #0B57D0;
+  --tab-active-bg: #C2E7FF;
+  --tab-active-ink: #0B57D0;
+  --gm-refresh: #1B6EF3;
 
   /* 大标题衬线字体（系统自带，零加载） */
   --font-serif: ui-serif, "New York", Georgia, "Songti SC", "Noto Serif SC", serif;
@@ -347,6 +356,15 @@ html.is-pwa-preview.dark {
   --info: #7fd8c0;
   --info-light: rgba(127, 216, 192, 0.16);
   --border-focus: #7fd8c0;
+
+  /* Gmail 化 token 的深色覆盖：维持中性黑 + 青绿 */
+  --gm-pill: rgba(255, 255, 255, 0.09);
+  --gm-avatar: #8b6ad0;
+  --compose-bg: #7fd8c0;
+  --compose-ink: #08332c;
+  --tab-active-bg: rgba(127, 216, 192, 0.20);
+  --tab-active-ink: #7fd8c0;
+  --gm-refresh: #7fd8c0;
 
   /* 历史 token 重映射到 Proton 深色（覆盖 :root.dark 的纯黑 iOS 值） */
   --surface: var(--bg);

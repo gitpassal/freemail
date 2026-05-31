@@ -228,7 +228,13 @@
     var olds = sheet.querySelectorAll('.settings-row, .settings-group, .settings-grouplabel, .settings-hint');
     for (var i = 0; i < olds.length; i++) { olds[i].remove(); }
 
-    // 转发邮箱管理（置顶分组）
+    // 通知中心（置顶分组 —— 原顶栏铃移入此处）
+    sheet.appendChild(makeGroup(tr('settings.notifGroup'), [
+      makeRow({ icon: 'bell', label: tr('settings.notifCenter'),
+        onClick: function () { try { if (window.NotifCenter && window.NotifCenter.open) window.NotifCenter.open(); } catch (e) {} } })
+    ]));
+
+    // 转发邮箱管理
     sheet.appendChild(buildForwardGroup());
 
     sheet.appendChild(makeGroup(tr('settings.appearance'), [

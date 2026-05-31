@@ -90,6 +90,8 @@
     'settings.users': { zh: '用户管理', en: 'Users' },
     'settings.allMailboxes': { zh: '所有邮箱', en: 'All mailboxes' },
     'settings.github': { zh: 'GitHub 仓库', en: 'GitHub' },
+    'settings.notifGroup': { zh: '通知', en: 'Notifications' },
+    'settings.notifCenter': { zh: '通知中心', en: 'Notification center' },
     'settings.forwardGroup': { zh: '转发邮箱', en: 'Forwarding emails' },
     'settings.forwardEmpty': { zh: '尚未添加转发邮箱', en: 'No forwarding emails yet' },
     'settings.forwardAdd': { zh: '添加转发邮箱', en: 'Add forwarding email' },

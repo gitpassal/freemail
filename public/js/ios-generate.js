@@ -55,7 +55,8 @@
   }
 
   function previewAddr() {
-    var p = effectivePrefix() || '…';
+    // 默认（无输入）显示 .cf###@domain（### 为后端即将发行的码）；输入 Title/Prefix 时前缀实时变化
+    var p = effectivePrefix() || '';
     var cf = state.addSuffix ? '.cf###' : '';
     return p + cf + '@' + currentDomain();
   }
@@ -66,6 +67,9 @@
     root.className = 'gi-gen';   // 仅 standalone 显示，CSS 在 pwa.css
     root.innerHTML =
       '<div class="gi-gen-title">' + esc(tr('app.generateTitle')) + '</div>' +
+      // 标题（置于「即将创建」上方）
+      '<div class="gi-gen-card gi-gen-field"><div class="gi-gen-lb">' + esc(tr('gi.title')) + '</div>' +
+        '<input class="gi-gen-input gi-gen-titlein" type="text" placeholder="' + esc(tr('gi.titlePh')) + '"></div>' +
       // 即将创建
       '<div class="gi-gen-card gi-gen-about">' +
         '<div class="gi-gen-about-ic">' + ICON.incognito + '</div>' +
@@ -76,9 +80,6 @@
             '<div class="gi-sw on" role="switch"><div class="gi-sw-knob"></div></div></div>' +
         '</div>' +
       '</div>' +
-      // 标题
-      '<div class="gi-gen-card gi-gen-field"><div class="gi-gen-lb">' + esc(tr('gi.title')) + '</div>' +
-        '<input class="gi-gen-input gi-gen-titlein" type="text" placeholder="' + esc(tr('gi.titlePh')) + '"></div>' +
       // 前缀 + 后缀
       '<div class="gi-gen-card gi-gen-split">' +
         '<div class="gi-gen-seg"><div class="gi-gen-lb gi-gen-prefix-lb">' + esc(tr('gi.prefix')) + '</div>' +
@@ -256,7 +257,7 @@
       'gi.addSuffix': { zh: '追加随机后缀', en: 'Append random suffix' },
       'gi.addSuffixHint': { zh: '地址末尾加 .cf### 防猜测', en: 'Add .cf### to prevent guessing' },
       'gi.title': { zh: '标题', en: 'Title' },
-      'gi.titlePh': { zh: '未命名（自动用作前缀）', en: 'Untitled (used as prefix)' },
+      'gi.titlePh': { zh: '未命名', en: 'Untitled' },
       'gi.prefix': { zh: '前缀 Prefix', en: 'Prefix' },
       'gi.prefixPh': { zh: '输入或点骰子随机', en: 'Type or roll the dice' },
       'gi.followTitle': { zh: '跟随标题', en: 'follows title' },
