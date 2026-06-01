@@ -22,52 +22,52 @@
     <link rel="shortcut icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <link rel="stylesheet" href="/css/app.css?v=20260601c" />
-    <link rel="stylesheet" href="/css/app-sidebar.css?v=20260601c" />
-    <link rel="stylesheet" href="/css/app-mailbox.css?v=20260601c" />
-    <link rel="stylesheet" href="/css/app-compose.css?v=20260601c" />
-    <link rel="stylesheet" href="/css/app-modal.css?v=20260601c" />
-    <link rel="stylesheet" href="/css/app-responsive.css?v=20260601c" />
-    <link rel="stylesheet" href="/css/app-mobile.css?v=20260601c" media="(max-width: 900px)" />
-    <link rel="stylesheet" href="/css/pwa.css?v=20260601c" />
+    <link rel="stylesheet" href="/css/app.css?v=20260601d" />
+    <link rel="stylesheet" href="/css/app-sidebar.css?v=20260601d" />
+    <link rel="stylesheet" href="/css/app-mailbox.css?v=20260601d" />
+    <link rel="stylesheet" href="/css/app-compose.css?v=20260601d" />
+    <link rel="stylesheet" href="/css/app-modal.css?v=20260601d" />
+    <link rel="stylesheet" href="/css/app-responsive.css?v=20260601d" />
+    <link rel="stylesheet" href="/css/app-mobile.css?v=20260601d" media="(max-width: 900px)" />
+    <link rel="stylesheet" href="/css/pwa.css?v=20260601d" />
     <!-- 设计 token 单一来源：最后加载，权威覆盖（极简原生 iOS 风） -->
-    <link rel="stylesheet" href="/css/tokens.css?v=20260601c" />
+    <link rel="stylesheet" href="/css/tokens.css?v=20260601d" />
     <!-- iOS 底部 Tab Bar 样式（仅 standalone/preview 生效） -->
-    <link rel="stylesheet" href="/css/tab-bar.css?v=20260601c" />
+    <link rel="stylesheet" href="/css/tab-bar.css?v=20260601d" />
     <!-- iOS 聚合收件箱样式（Gmail 风格，仅 standalone/preview 生效） -->
-    <link rel="stylesheet" href="/css/gmail-inbox.css?v=20260601c" />
+    <link rel="stylesheet" href="/css/gmail-inbox.css?v=20260601d" />
     <!-- iOS 通知中心样式（仅 standalone/preview 生效） -->
-    <link rel="stylesheet" href="/css/notifications.css?v=20260601c" />
+    <link rel="stylesheet" href="/css/notifications.css?v=20260601d" />
     <!-- 暗黑模式样式 -->
     <!-- 主题切换支持 -->
-    <script src="/js/i18n.js?v=20260601c"></script>
-    <script src="/js/pwa.js?v=20260601c" defer></script>
-    <script src="/js/theme-toggle.js?v=20260601c"></script>
+    <script src="/js/i18n.js?v=20260601d"></script>
+    <script src="/js/pwa.js?v=20260601d" defer></script>
+    <script src="/js/theme-toggle.js?v=20260601d"></script>
     <!-- iOS 底部 Tab Bar（纯 UI，仅 standalone/preview 主应用页） -->
-    <script src="/js/tab-bar.js?v=20260601c" defer></script>
+    <script src="/js/tab-bar.js?v=20260601d" defer></script>
     <!-- iOS 聚合收件箱（Gmail 风格，仅 standalone/preview） -->
-    <script src="/js/gmail-inbox.js?v=20260601c" defer></script>
+    <script src="/js/gmail-inbox.js?v=20260601d" defer></script>
     <!-- iOS 生成页重排（仅 standalone/preview） -->
-    <script src="/js/ios-generate.js?v=20260601c" defer></script>
+    <script src="/js/ios-generate.js?v=20260601d" defer></script>
     <!-- iOS 邮箱详情管理卡（仅 standalone/preview） -->
-    <script src="/js/ios-mailbox.js?v=20260601c" defer></script>
+    <script src="/js/ios-mailbox.js?v=20260601d" defer></script>
     <!-- iOS 通知中心（仅 standalone/preview） -->
-    <script src="/js/notifications.js?v=20260601c" defer></script>
+    <script src="/js/notifications.js?v=20260601d" defer></script>
     <!-- iOS Web Push（仅 standalone/preview） -->
-    <script src="/js/push.js?v=20260601c" defer></script>
-    <script src="/js/push-prompt.js?v=20260601c" defer></script>
-    <script src="/js/sw-register.js?v=20260601c" defer></script>
+    <script src="/js/push.js?v=20260601d" defer></script>
+    <script src="/js/push-prompt.js?v=20260601d" defer></script>
+    <script src="/js/sw-register.js?v=20260601d" defer></script>
 
     <!-- SVG Icons Sprite (Replace Emoji Icons) -->
     <link rel="preload" href="/icons/sprites.svg" as="image" type="image/svg+xml" crossorigin>
-    <script src="/js/toast-utils.js?v=20260601c"></script>
-    <script src="/js/mock.js?v=20260601c"></script>
+    <script src="/js/toast-utils.js?v=20260601d"></script>
+    <script src="/js/mock.js?v=20260601d"></script>
     <!-- 提前内联保存 hash，保证最早阶段即可保留路由信息 -->
     <script>
       try{ if (location.hash){ sessionStorage.setItem('mf:preservedHash', location.hash); } }catch(_){ }
     </script>
-    <script src="/js/auth-guard.js?v=20260601c"></script>
-    <script src="/js/app-router.js?v=20260601c" defer></script>
+    <script src="/js/auth-guard.js?v=20260601d"></script>
+    <script src="/js/app-router.js?v=20260601d" defer></script>
   </head>
   <body>
     <!-- SVG Icon Sprites -->
@@ -92,13 +92,13 @@
           if (recentlyChecked && !isDirectAccess){
             var s1 = document.createElement('script'); 
             s1.type='module'; 
-            s1.src='/js/app.js?v=20260601c'; 
+            s1.src='/js/app.js?v=20260601d'; 
             document.body.appendChild(s1);
             try{ 
               if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches){ 
                 var sm1=document.createElement('script'); 
                 sm1.type='module'; 
-                sm1.src='/js/app-mobile.js?v=20260601c'; 
+                sm1.src='/js/app-mobile.js?v=20260601d'; 
                 document.body.appendChild(sm1); 
               } 
             }catch(_){ }
@@ -120,8 +120,8 @@
                       // 对于有cookie但验证失败的情况，直接加载应用让其内部处理
                       // 避免跳转到登录页造成页面闪烁
                       try{ sessionStorage.setItem('auth_checked','true'); sessionStorage.setItem('auth_checked_ts', String(Date.now())); }catch(_){ }
-                      var s1=document.createElement('script'); s1.type='module'; s1.src='/js/app.js?v=20260601c'; document.body.appendChild(s1);
-                      try{ if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches){ var sm=document.createElement('script'); sm.type='module'; sm.src='/js/app-mobile.js?v=20260601c'; document.body.appendChild(sm); } }catch(_){ }
+                      var s1=document.createElement('script'); s1.type='module'; s1.src='/js/app.js?v=20260601d'; document.body.appendChild(s1);
+                      try{ if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches){ var sm=document.createElement('script'); sm.type='module'; sm.src='/js/app-mobile.js?v=20260601d'; document.body.appendChild(sm); } }catch(_){ }
                       return;
                     }
                     return r.json();
@@ -131,15 +131,15 @@
                     if (s.role === 'mailbox') { window.location.replace('/html/mailbox.html'); return; }
                     try{ sessionStorage.setItem('auth_checked','true'); sessionStorage.setItem('auth_checked_ts', String(Date.now())); }catch(_){ }
                     // 加载应用
-                    var s1=document.createElement('script'); s1.type='module'; s1.src='/js/app.js?v=20260601c'; document.body.appendChild(s1);
-                    try{ if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches){ var sm=document.createElement('script'); sm.type='module'; sm.src='/js/app-mobile.js?v=20260601c'; document.body.appendChild(sm); } }catch(_){ }
+                    var s1=document.createElement('script'); s1.type='module'; s1.src='/js/app.js?v=20260601d'; document.body.appendChild(s1);
+                    try{ if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches){ var sm=document.createElement('script'); sm.type='module'; sm.src='/js/app-mobile.js?v=20260601d'; document.body.appendChild(sm); } }catch(_){ }
                   })
                   .catch(function(){
                     // 网络错误时，如果有cookie就直接加载应用，让应用内部处理认证状态
                     // 这样避免了网络问题导致的不必要登录页跳转
                     try{ sessionStorage.setItem('auth_checked','true'); sessionStorage.setItem('auth_checked_ts', String(Date.now())); }catch(_){ }
-                    var s1=document.createElement('script'); s1.type='module'; s1.src='/js/app.js?v=20260601c'; document.body.appendChild(s1);
-                    try{ if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches){ var sm=document.createElement('script'); sm.type='module'; sm.src='/js/app-mobile.js?v=20260601c'; document.body.appendChild(sm); } }catch(_){ }
+                    var s1=document.createElement('script'); s1.type='module'; s1.src='/js/app.js?v=20260601d'; document.body.appendChild(s1);
+                    try{ if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches){ var sm=document.createElement('script'); sm.type='module'; sm.src='/js/app-mobile.js?v=20260601d'; document.body.appendChild(sm); } }catch(_){ }
                   });
                 return;
               }
@@ -181,13 +181,13 @@
                   // 加载应用
                   var s = document.createElement('script');
                   s.type = 'module';
-                  s.src = '/js/app.js?v=20260601c';
+                  s.src = '/js/app.js?v=20260601d';
                   document.body.appendChild(s);
                   try{ 
                     if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches){ 
                       var sm=document.createElement('script'); 
                       sm.type='module'; 
-                      sm.src='/js/app-mobile.js?v=20260601c'; 
+                      sm.src='/js/app-mobile.js?v=20260601d'; 
                       document.body.appendChild(sm);
                     } 
                   }catch(_){ }
@@ -219,8 +219,8 @@
                   // 如果有cookie但验证失败，让应用内部处理而不是立即跳转到登录页
                   if (hasCookie) {
                     try{ sessionStorage.setItem('auth_checked','true'); sessionStorage.setItem('auth_checked_ts', String(Date.now())); }catch(_){ }
-                    var s1 = document.createElement('script'); s1.type = 'module'; s1.src = '/js/app.js?v=20260601c'; document.body.appendChild(s1);
-                    try{ if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches){ var sm=document.createElement('script'); sm.type='module'; sm.src='/js/app-mobile.js?v=20260601c'; document.body.appendChild(sm); } }catch(_){ }
+                    var s1 = document.createElement('script'); s1.type = 'module'; s1.src = '/js/app.js?v=20260601d'; document.body.appendChild(s1);
+                    try{ if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches){ var sm=document.createElement('script'); sm.type='module'; sm.src='/js/app-mobile.js?v=20260601d'; document.body.appendChild(sm); } }catch(_){ }
                     return null;
                   }
                   window.location.replace('/html/login.html');
@@ -235,13 +235,13 @@
                 }catch(_){ }
                 var s1 = document.createElement('script');
                 s1.type = 'module';
-                s1.src = '/js/app.js?v=20260601c';
+                s1.src = '/js/app.js?v=20260601d';
                 document.body.appendChild(s1);
                 try{ 
                   if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches){ 
                     var sm=document.createElement('script'); 
                     sm.type='module'; 
-                    sm.src='/js/app-mobile.js?v=20260601c'; 
+                    sm.src='/js/app-mobile.js?v=20260601d'; 
                     document.body.appendChild(sm);
                   } 
                 }catch(_){ }
@@ -250,8 +250,8 @@
                 // 网络错误时，如果有cookie就直接加载应用
                 if (hasCookie) {
                   try{ sessionStorage.setItem('auth_checked','true'); sessionStorage.setItem('auth_checked_ts', String(Date.now())); }catch(_){ }
-                  var s1 = document.createElement('script'); s1.type = 'module'; s1.src = '/js/app.js?v=20260601c'; document.body.appendChild(s1);
-                  try{ if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches){ var sm=document.createElement('script'); sm.type='module'; sm.src='/js/app-mobile.js?v=20260601c'; document.body.appendChild(sm); } }catch(_){ }
+                  var s1 = document.createElement('script'); s1.type = 'module'; s1.src = '/js/app.js?v=20260601d'; document.body.appendChild(s1);
+                  try{ if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches){ var sm=document.createElement('script'); sm.type='module'; sm.src='/js/app-mobile.js?v=20260601d'; document.body.appendChild(sm); } }catch(_){ }
                 } else {
                   window.location.replace('/html/login.html'); 
                 }

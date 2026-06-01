@@ -319,6 +319,19 @@ html.is-pwa-preview .gi-reader .gi-r-sender .gi-ava img { position: absolute; in
 .gi-skel-body { padding: 12px 2px; display: flex; flex-direction: column; gap: 14px; }
 .gi-skel-ava, .gi-skel-line { animation: gi-skel-pulse 1.2s ease-in-out infinite; }
 @keyframes gi-skel-pulse { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
+
+/* ===== 隐藏收件箱浮层/阅读器滚动时右侧出现的原生滚动条竖线 ===== */
+html.is-standalone .gmail-inbox ::-webkit-scrollbar,
+html.is-pwa-preview .gmail-inbox ::-webkit-scrollbar,
+html.is-standalone .gi-reader ::-webkit-scrollbar,
+html.is-pwa-preview .gi-reader ::-webkit-scrollbar { width: 0 !important; height: 0 !important; display: none !important; }
+html.is-standalone .gmail-inbox, html.is-pwa-preview .gmail-inbox,
+html.is-standalone .gmail-inbox .gi-list, html.is-pwa-preview .gmail-inbox .gi-list,
+html.is-standalone .gmail-inbox .gi-rows, html.is-pwa-preview .gmail-inbox .gi-rows,
+html.is-standalone .gi-reader, html.is-pwa-preview .gi-reader,
+html.is-standalone .gi-reader .gi-r-scroll, html.is-pwa-preview .gi-reader .gi-r-scroll {
+  scrollbar-width: none; -ms-overflow-style: none;
+}
 html.is-standalone .gi-reader .gi-r-sender-info,
 html.is-pwa-preview .gi-reader .gi-r-sender-info { min-width: 0; flex: 1; }
 html.is-standalone .gi-reader .gi-r-sender-name,

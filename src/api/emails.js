@@ -7,7 +7,7 @@ import { getMailboxAccess, getMessageAccess, getAuthContext, errorResponse } fro
 import { buildMockEmails, buildMockEmailDetail, buildMockAggregateInbox } from './mock.js';
 import { extractEmail } from '../utils/common.js';
 import { getMailboxIdByAddress } from '../db/index.js';
-import { parseEmailBody, parseEmailFull } from '../email/parser.js';
+import { parseEmailBody, parseEmailFull, parseEmailMeta } from '../email/parser.js';
 
 // 邮箱登录模式只允许查看最近 24 小时内的邮件。
 function mailboxOnlyTimeFilter(enabled) {
