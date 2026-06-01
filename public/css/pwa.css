@@ -82,6 +82,17 @@ body.is-standalone [contenteditable="true"] {
   user-select: text;
 }
 
+/* standalone 下隐藏一切原生滚动条（文档级 + body + 所有后代），滚动时右侧不再出现白色竖线。
+   压过 reset.css 的通用 ::-webkit-scrollbar；桌面无 standalone class 不受影响。 */
+html.is-standalone::-webkit-scrollbar, html.is-pwa-preview::-webkit-scrollbar,
+html.is-standalone body::-webkit-scrollbar, html.is-pwa-preview body::-webkit-scrollbar,
+html.is-standalone ::-webkit-scrollbar, html.is-pwa-preview ::-webkit-scrollbar {
+  width: 0 !important; height: 0 !important; display: none !important; background: transparent !important;
+}
+html.is-standalone, html.is-pwa-preview,
+html.is-standalone body, html.is-pwa-preview body,
+html.is-standalone *, html.is-pwa-preview * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+
 @media (display-mode: standalone) {
   body {
     min-height: 100dvh;

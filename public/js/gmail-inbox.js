@@ -109,6 +109,22 @@
     return sameYear ? (d.getMonth() + 1) + '月' + d.getDate() + '日'
       : d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日';
   }
+  // 详情头部用：始终「日期 + HH:MM」（与 fmtDate 同样解析，保证和列表时间一致）
+  function fmtDateTime(iso) {
+    if (!iso) return '';
+    var d = new Date(iso); if (isNaN(d.getTime())) return '';
+    var now = new Date();
+    var lang = (window.i18n && window.i18n.getLang) ? window.i18n.getLang() : 'zh';
+    var h = d.getHours(), mi = d.getMinutes();
+    var time = (h < 10 ? '0' : '') + h + ':' + (mi < 10 ? '0' : '') + mi;
+    var sameYear = d.getFullYear() === now.getFullYear();
+    if (lang === 'en') {
+      var mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()];
+      return mon + ' ' + d.getDate() + (sameYear ? '' : ', ' + d.getFullYear()) + ', ' + time;
+    }
+    return (sameYear ? (d.getMonth() + 1) + '月' + d.getDate() + '日'
+      : d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日') + ' ' + time;
+  }
 
   // ---- 取数 ----
   function gapi(path, opts) {
@@ -138,11 +154,37 @@
   function readInboxPrefetch() {
     try { var raw = sessionStorage.getItem('mf:prefetch:inbox'); if (!raw) return null; var o = JSON.parse(raw); return (o && Array.isArray(o.data)) ? o.data : (Array.isArray(o) ? o : null); } catch (e) { return null; }
   }
+  // ---- 邮件正文持久缓存（localStorage，按用户隔离）：重启后再开读过的邮件秒开 ----
+  var emailCacheHydrated = false, emailCacheOrder = [];
+  function emailCacheKey() { return 'mf:emailcache:' + mfUserKey(); }
+  function rehydrateEmailCache() {
+    if (emailCacheHydrated) return; emailCacheHydrated = true;
+    try {
+      var raw = localStorage.getItem(emailCacheKey()); if (!raw) return;
+      var o = JSON.parse(raw); var items = o && o.items;
+      if (items && typeof items === 'object') {
+        Object.keys(items).forEach(function (id) { if (!emailCache[id]) { emailCache[id] = items[id]; emailCacheOrder.push(String(id)); } });
+      }
+    } catch (e) {}
+  }
+  function persistEmail(id) {
+    id = String(id);
+    emailCacheOrder = emailCacheOrder.filter(function (x) { return x !== id; }); emailCacheOrder.push(id);
+    try {
+      var keep = emailCacheOrder.slice(-12), out = {};   // 仅留最近 12 封，控制配额
+      keep.forEach(function (k) {
+        var e = emailCache[k]; if (!e) return;
+        if (e.html_content && e.html_content.length > 200000) return;  // 跳过超大 HTML 正文
+        out[k] = e;
+      });
+      localStorage.setItem(emailCacheKey(), JSON.stringify({ ts: Date.now(), items: out }));
+    } catch (e) {}
+  }
   // 列表渲染后后台预取前几封正文进会话缓存，使点开常见邮件秒开（仅 inbox、仅开着时）
   function prefetchVisible() {
     if (!root || !root.classList.contains('is-open')) return;
     if (state.box !== 'inbox') return;
-    state.items.slice(0, 3).forEach(function (it) {
+    state.items.slice(0, 6).forEach(function (it) {
       if (!it || emailCache[it.id]) return;
       gapi('/api/email/' + it.id).then(function (r) { return r.json(); })
         .then(function (e) { e.id = e.id || it.id; emailCache[e.id] = e; }).catch(function () {});
@@ -435,6 +477,7 @@
 
   function openReader(id) {
     ensureReader();
+    rehydrateEmailCache();   // 重启后从 localStorage 恢复读过的邮件，命中即秒开
     var isSent = (state.box === 'sent');
     reader.classList.toggle('is-sent', isSent);
     var it = state.items.filter(function (x) { return String(x.id) === String(id); })[0];
@@ -444,6 +487,7 @@
       reader.classList.add('is-open');
       pushLayer();
       renderReader(currentEmail);
+      persistEmail(id);   // 读过即落盘，供重启后秒开
       applyStarToItem(id, currentEmail.is_starred ? 1 : 0);
       if (it) { it.is_read = 1; render(); }
       return;
@@ -463,7 +507,7 @@
       }
       if (it && !e.mailbox_address && it.mailbox_address) e.mailbox_address = it.mailbox_address;
       currentEmail = e;
-      if (!isSent) emailCache[id] = e;
+      if (!isSent) { emailCache[id] = e; persistEmail(id); }   // 落盘供重启后秒开
       renderReader(e);
       if (!isSent) { applyStarToItem(id, e.is_starred ? 1 : 0); if (it) it.is_read = 1; render(); }
     }).catch(function () {
@@ -482,7 +526,7 @@
         (SHOW_ALIAS && row.mailbox_address ? '<span class="gi-alias-tag">' + esc(row.mailbox_address) + '</span>' : '') + '</div>' +
       '<div class="gi-r-sender">' + avatarHTML(row.sender || '') +
         '<div class="gi-r-sender-info"><div class="gi-r-sender-name">' + esc(fromName) + '</div>' +
-        '<div class="gi-r-sender-sub">' + esc(fmtDate(row.received_at)) + '</div></div></div>' +
+        '<div class="gi-r-sender-sub">' + esc(fmtDateTime(row.received_at)) + '</div></div></div>' +
       codeHtml +
       '<div class="gi-r-body"><div class="gi-skel gi-skel-body"><div class="gi-skel-line w90"></div><div class="gi-skel-line w80"></div><div class="gi-skel-line w60"></div><div class="gi-skel-line w85"></div></div></div>';
   }
@@ -517,7 +561,7 @@
         (SHOW_ALIAS && e.mailbox_address ? '<span class="gi-alias-tag">' + esc(e.mailbox_address) + '</span>' : '') + '</div>' +
       '<div class="gi-r-sender">' + avatarHTML(e.sender) +
         '<div class="gi-r-sender-info"><div class="gi-r-sender-name">' + esc(fromName) + '</div>' +
-        '<div class="gi-r-sender-sub">' + esc(fmtDate(e.received_at)) + '</div></div></div>' +
+        '<div class="gi-r-sender-sub">' + esc(fmtDateTime(e.received_at)) + '</div></div></div>' +
       codeHtml + bodyHtml + attHtml;
 
     updateReaderStar();
