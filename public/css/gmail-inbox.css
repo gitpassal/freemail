@@ -303,10 +303,11 @@ html.is-pwa-preview .gi-reader .gi-r-sender .gi-ava {
   display: flex; align-items: center; justify-content: center;
   color: #fff; font-weight: 600; overflow: hidden; background: var(--secondary, #e5e5ea);
 }
-html.is-standalone .gi-reader .gi-r-sender .gi-ava img,
-html.is-pwa-preview .gi-reader .gi-r-sender .gi-ava { position: relative; }
 /* logo 绝对铺满整圆、不透明白底完全盖住字母层与 HSL 彩色底 → 消除「字母与 logo 并排 / 左侧青绿条 / 被裁」 */
-.gi-r-sender .gi-ava img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #fff; }
+html.is-standalone .gi-reader .gi-r-sender .gi-ava,
+html.is-pwa-preview .gi-reader .gi-r-sender .gi-ava { position: relative; }
+html.is-standalone .gi-reader .gi-r-sender .gi-ava img,
+html.is-pwa-preview .gi-reader .gi-r-sender .gi-ava img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #fff; }
 
 /* ===== 加载骨架（列表冷启动 / 阅读器正文加载占位，替代纯空白与整屏 Loading） ===== */
 .gi-skel-row { display: flex; gap: 12px; align-items: center; padding: 14px 16px; }
