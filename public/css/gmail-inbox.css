@@ -304,7 +304,20 @@ html.is-pwa-preview .gi-reader .gi-r-sender .gi-ava {
   color: #fff; font-weight: 600; overflow: hidden; background: var(--secondary, #e5e5ea);
 }
 html.is-standalone .gi-reader .gi-r-sender .gi-ava img,
-html.is-pwa-preview .gi-reader .gi-r-sender .gi-ava img { width: 100%; height: 100%; object-fit: cover; }
+html.is-pwa-preview .gi-reader .gi-r-sender .gi-ava { position: relative; }
+/* logo 绝对铺满整圆、不透明白底完全盖住字母层与 HSL 彩色底 → 消除「字母与 logo 并排 / 左侧青绿条 / 被裁」 */
+.gi-r-sender .gi-ava img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #fff; }
+
+/* ===== 加载骨架（列表冷启动 / 阅读器正文加载占位，替代纯空白与整屏 Loading） ===== */
+.gi-skel-row { display: flex; gap: 12px; align-items: center; padding: 14px 16px; }
+.gi-skel-ava { width: 34px; height: 34px; border-radius: 50%; background: var(--secondary, #e5e5ea); flex-shrink: 0; }
+.gi-skel-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.gi-skel-line { height: 11px; border-radius: 6px; background: var(--secondary, #e5e5ea); }
+.gi-skel-line.w90 { width: 90%; } .gi-skel-line.w85 { width: 85%; } .gi-skel-line.w80 { width: 80%; }
+.gi-skel-line.w70 { width: 70%; } .gi-skel-line.w60 { width: 60%; } .gi-skel-line.w40 { width: 40%; }
+.gi-skel-body { padding: 12px 2px; display: flex; flex-direction: column; gap: 14px; }
+.gi-skel-ava, .gi-skel-line { animation: gi-skel-pulse 1.2s ease-in-out infinite; }
+@keyframes gi-skel-pulse { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
 html.is-standalone .gi-reader .gi-r-sender-info,
 html.is-pwa-preview .gi-reader .gi-r-sender-info { min-width: 0; flex: 1; }
 html.is-standalone .gi-reader .gi-r-sender-name,

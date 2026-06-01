@@ -52,6 +52,23 @@ async function loadEmailFullFromR2(r2, objectKey) {
   }
 }
 
+// 详情用：正文 + 附件「元信息」（不含二进制 content），比 loadEmailFullFromR2 更省内存/传输。
+async function loadEmailMetaFromR2(r2, objectKey) {
+  if (!r2 || !objectKey) return { content: '', html_content: '', attachments: [] };
+  try {
+    const obj = await r2.get(objectKey);
+    if (!obj) return { content: '', html_content: '', attachments: [] };
+    let raw = '';
+    if (typeof obj.text === 'function') raw = await obj.text();
+    else if (typeof obj.arrayBuffer === 'function') raw = await new Response(await obj.arrayBuffer()).text();
+    else raw = await new Response(obj.body).text();
+    const parsed = await parseEmailMeta(raw || '');
+    return { content: parsed.text || '', html_content: parsed.html || '', attachments: parsed.attachments || [] };
+  } catch (_) {
+    return { content: '', html_content: '', attachments: [] };
+  }
+}
+
 export async function handleEmailsApi(request, db, url, path, options) {
   const isMock = !!options.mockOnly;
   const isMailboxOnly = !!options.mailboxOnly;
@@ -364,9 +381,10 @@ export async function handleEmailsApi(request, db, url, path, options) {
       }
       if (!results || results.length === 0) return errorResponse('未找到邮件', 404);
 
-      await db.prepare('UPDATE messages SET is_read = 1 WHERE id = ?').bind(emailId).run();
+      // is_read 写入不阻塞响应（fire-and-forget），缩短详情关键路径
+      db.prepare('UPDATE messages SET is_read = 1 WHERE id = ?').bind(emailId).run().catch(() => {});
       const row = results[0];
-      let { content, html_content, attachments } = await loadEmailFullFromR2(r2, row.r2_object_key);
+      let { content, html_content, attachments } = await loadEmailMetaFromR2(r2, row.r2_object_key);
 
       if (!content && !html_content) {
         try {

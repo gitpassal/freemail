@@ -124,6 +124,35 @@
   var reader = null, currentEmail = null;
   var composer = null;
 
+  // ---- 邮件正文会话内缓存（id→完整邮件），命中则秒开、无需请求 ----
+  var emailCache = {};
+  // ---- 列表持久缓存（localStorage，按用户隔离），冷启动 SWR 秒开 ----
+  function mfUserKey() { try { return localStorage.getItem('mf:lastUserKey') || 'u'; } catch (e) { return 'u'; } }
+  function inboxCacheKey() { return 'mf:inboxcache:' + mfUserKey() + ':' + (state.box || 'inbox'); }
+  function readInboxCache() {
+    try { var raw = localStorage.getItem(inboxCacheKey()); if (!raw) return null; var o = JSON.parse(raw); return (o && Array.isArray(o.items)) ? o.items : null; } catch (e) { return null; }
+  }
+  function writeInboxCache(items) {
+    try { localStorage.setItem(inboxCacheKey(), JSON.stringify({ ts: Date.now(), items: (items || []).slice(0, 40) })); } catch (e) {}
+  }
+  function readInboxPrefetch() {
+    try { var raw = sessionStorage.getItem('mf:prefetch:inbox'); if (!raw) return null; var o = JSON.parse(raw); return (o && Array.isArray(o.data)) ? o.data : (Array.isArray(o) ? o : null); } catch (e) { return null; }
+  }
+  // 列表渲染后后台预取前几封正文进会话缓存，使点开常见邮件秒开（仅 inbox、仅开着时）
+  function prefetchVisible() {
+    if (!root || !root.classList.contains('is-open')) return;
+    if (state.box !== 'inbox') return;
+    state.items.slice(0, 3).forEach(function (it) {
+      if (!it || emailCache[it.id]) return;
+      gapi('/api/email/' + it.id).then(function (r) { return r.json(); })
+        .then(function (e) { e.id = e.id || it.id; emailCache[e.id] = e; }).catch(function () {});
+    });
+  }
+  function skeletonHTML() {
+    var row = '<div class="gi-skel-row"><div class="gi-skel-ava"></div><div class="gi-skel-lines"><div class="gi-skel-line w70"></div><div class="gi-skel-line w40"></div></div></div>';
+    return '<div class="gi-skel">' + row + row + row + row + row + row + '</div>';
+  }
+
   // ============== 列表层 ==============
   function ensureRoot() {
     if (root) return;
@@ -270,7 +299,12 @@
           (String(e.preview || '').toLowerCase().indexOf(q) >= 0);
       });
     }
-    if (!items.length) { rowsEl.innerHTML = '<div class="gi-empty">' + esc(tr('gmail.noMail')) + '</div>'; return; }
+    if (!items.length) {
+      rowsEl.innerHTML = (state.loading && !state.query)
+        ? skeletonHTML()
+        : ('<div class="gi-empty">' + esc(tr('gmail.noMail')) + '</div>');
+      return;
+    }
     rowsEl.innerHTML = items.map(rowHTML).join('');
   }
 
@@ -284,6 +318,7 @@
   function loadPage(page, reset) {
     if (state.loading) return;
     state.loading = true;
+    if (reset && (!state.items || !state.items.length)) render();  // 无缓存时先显示骨架，避免纯空白
     gapi(inboxUrl(page))
       .then(function (r) { return r.json(); })
       .then(function (d) {
@@ -298,6 +333,7 @@
         state.hasMore = !!(d && d.hasMore);
         state.loading = false;
         render();
+        if (reset && state.box === 'inbox' && !state.query) { writeInboxCache(state.items); prefetchVisible(); }
       })
       .catch(function () { state.loading = false; if (root) render(); });
   }
@@ -306,7 +342,11 @@
     if (!isStandaloneLike()) return;
     ensureRoot();
     if (root.classList.contains('is-open')) return;
-    if (state.items && state.items.length) render();   // 有缓存先立即出图，消除「加载中…」闪烁
+    if (!(state.items && state.items.length)) {
+      var seed = readInboxPrefetch() || readInboxCache();  // 冷启动：登录预取 / 上次列表缓存
+      if (seed && seed.length) state.items = seed;
+    }
+    if (state.items && state.items.length) render();   // 有缓存先立即出图，消除空白/「加载中…」
     root.classList.add('is-open');
     pushLayer();
     loadPage(1, true);                                  // 再静默刷新
@@ -395,10 +435,22 @@
 
   function openReader(id) {
     ensureReader();
-    currentEmail = null;
     var isSent = (state.box === 'sent');
     reader.classList.toggle('is-sent', isSent);
-    reader.querySelector('.gi-r-scroll').innerHTML = '<div class="gi-empty">' + esc(tr('gmail.loading')) + '</div>';
+    var it = state.items.filter(function (x) { return String(x.id) === String(id); })[0];
+    // 会话缓存命中 → 直接全量渲染，零请求秒开
+    if (!isSent && emailCache[id]) {
+      currentEmail = emailCache[id];
+      reader.classList.add('is-open');
+      pushLayer();
+      renderReader(currentEmail);
+      applyStarToItem(id, currentEmail.is_starred ? 1 : 0);
+      if (it) { it.is_read = 1; render(); }
+      return;
+    }
+    currentEmail = null;
+    // 先用列表行数据「出壳」（主题/发件人/头像/日期/验证码 + 正文骨架），避免整屏 Loading
+    renderReaderShell(it || { id: id });
     reader.classList.add('is-open');
     pushLayer();
     gapi(isSent ? ('/api/sent/' + id) : ('/api/email/' + id)).then(function (r) { return r.json(); }).then(function (e) {
@@ -409,14 +461,30 @@
         e.received_at = e.created_at || e.received_at;
         e.content = e.text_content || e.content || '';
       }
-      var it = state.items.filter(function (x) { return String(x.id) === String(id); })[0];
       if (it && !e.mailbox_address && it.mailbox_address) e.mailbox_address = it.mailbox_address;
       currentEmail = e;
+      if (!isSent) emailCache[id] = e;
       renderReader(e);
       if (!isSent) { applyStarToItem(id, e.is_starred ? 1 : 0); if (it) it.is_read = 1; render(); }
     }).catch(function () {
       reader.querySelector('.gi-r-scroll').innerHTML = '<div class="gi-empty">' + esc(tr('gmail.loadFail')) + '</div>';
     });
+  }
+  // 用列表行数据先渲染阅读器骨架壳（主题/发件人/日期/验证码 + 正文骨架）
+  function renderReaderShell(row) {
+    var scroll = reader.querySelector('.gi-r-scroll');
+    var a = parseAddr(row.sender || '');
+    var fromName = a.name || a.email || tr('gmail.unknownSender');
+    var codeHtml = row.verification_code ?
+      '<div class="gi-r-code" data-code="' + esc(row.verification_code) + '">' + esc(row.verification_code) + '</div>' : '';
+    scroll.innerHTML =
+      '<div class="gi-r-subject">' + esc(row.subject || tr('gmail.noSubject')) +
+        (SHOW_ALIAS && row.mailbox_address ? '<span class="gi-alias-tag">' + esc(row.mailbox_address) + '</span>' : '') + '</div>' +
+      '<div class="gi-r-sender">' + avatarHTML(row.sender || '') +
+        '<div class="gi-r-sender-info"><div class="gi-r-sender-name">' + esc(fromName) + '</div>' +
+        '<div class="gi-r-sender-sub">' + esc(fmtDate(row.received_at)) + '</div></div></div>' +
+      codeHtml +
+      '<div class="gi-r-body"><div class="gi-skel gi-skel-body"><div class="gi-skel-line w90"></div><div class="gi-skel-line w80"></div><div class="gi-skel-line w60"></div><div class="gi-skel-line w85"></div></div></div>';
   }
   function hideReader() { if (reader) { reader.classList.remove('is-open'); reader.querySelector('.gi-more-menu').classList.remove('is-open'); } }
 
@@ -428,7 +496,7 @@
       '<div class="gi-r-code" data-code="' + esc(e.verification_code) + '">' + esc(e.verification_code) + '</div>' : '';
     var bodyHtml;
     if (e.html_content) {
-      bodyHtml = '<div class="gi-r-body"><iframe class="gi-body-frame" sandbox="allow-same-origin allow-popups" style="height:240px"></iframe></div>';
+      bodyHtml = '<div class="gi-r-body"><iframe class="gi-body-frame" sandbox="allow-same-origin allow-popups" style="height:60px"></iframe></div>';
     } else {
       bodyHtml = '<div class="gi-r-body"><pre>' + esc(e.content || '') + '</pre></div>';
     }
@@ -462,10 +530,21 @@
     // iframe 正文渲染 + 高度自适应
     var ifr = scroll.querySelector('iframe.gi-body-frame');
     if (ifr) {
-      ifr.addEventListener('load', function () {
+      var fit = function () {
         try {
-          var h = ifr.contentWindow.document.body.scrollHeight;
+          var doc = ifr.contentWindow.document;
+          var h = Math.max(doc.body ? doc.body.scrollHeight : 0, doc.documentElement ? doc.documentElement.scrollHeight : 0);
           if (h) ifr.style.height = (h + 24) + 'px';
+        } catch (_) { }
+      };
+      ifr.addEventListener('load', function () {
+        fit();
+        try {
+          var b = ifr.contentWindow.document.body;
+          // 持续跟随内容高度变化（图片/字体异步加载后的回流），消除「先不全后全」与裁切/留白
+          if (window.ResizeObserver && b) { new ResizeObserver(fit).observe(b); }
+          var imgs = ifr.contentWindow.document.images || [];
+          for (var i = 0; i < imgs.length; i++) { imgs[i].addEventListener('load', fit); imgs[i].addEventListener('error', fit); }
         } catch (_) { }
       });
       // HTML 邮件本质是浅色文档：固定深字白底（iframe 容器亦为白），避免深色模式白底白字
@@ -705,5 +784,5 @@
     prefetch: prefetchInbox
   };
 
-  if (isStandaloneLike()) { setTimeout(prefetchInbox, 400); }
+  if (isStandaloneLike()) { setTimeout(prefetchInbox, 0); }
 })();

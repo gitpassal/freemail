@@ -50,6 +50,35 @@ export async function parseEmailFull(raw) {
 }
 
 /**
+ * 轻量解析：正文 + 附件「元信息」（不保留二进制 content），供邮件详情端点使用。
+ * 与 parseEmailFull 同样调用一次 PostalMime.parse，但不持有附件二进制，减少内存占用与传输。
+ * @param {string} raw - 原始邮件内容 (EML 格式)
+ * @returns {Promise<{text:string, html:string, attachments:Array<object>}>}
+ */
+export async function parseEmailMeta(raw) {
+  if (!raw) return { text: '', html: '', attachments: [] };
+  const email = await PostalMime.parse(raw);
+  const attachments = (email.attachments || []).map((a, index) => {
+    const content = a.content;
+    let size = 0;
+    try {
+      if (content && typeof content.byteLength === 'number') size = content.byteLength;
+      else if (typeof content === 'string') size = content.length;
+    } catch (_) { size = 0; }
+    return {
+      index,
+      filename: a.filename || `attachment-${index + 1}`,
+      mimeType: a.mimeType || 'application/octet-stream',
+      disposition: a.disposition || 'attachment',
+      inline: a.disposition === 'inline',
+      contentId: a.contentId || null,
+      size
+    };
+  });
+  return { text: email.text || '', html: email.html || '', attachments };
+}
+
+/**
  * 从邮件主题、文本和HTML中智能提取验证码（4-8位数字）
  * @param {object} params - 提取参数对象
  * @param {string} params.subject - 邮件主题

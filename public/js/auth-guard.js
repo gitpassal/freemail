@@ -26,9 +26,11 @@ try{
       const mailboxes = fetch('/api/mailboxes?limit=10&offset=0', opts).then(r => r.ok ? r.json() : { list: [] }).then(data => save('mf:prefetch:mailboxes', Array.isArray(data) ? data : (data.list || []) )).catch(()=>{});
       const quota = fetch('/api/user/quota', opts).then(r => r.ok ? r.json() : null).then(data => { if (data) save('mf:prefetch:quota', data); }).catch(()=>{});
       const domains = fetch('/api/domains', opts).then(r => r.ok ? r.json() : []).then(list => { if (Array.isArray(list) && list.length) save('mf:prefetch:domains', list); }).catch(()=>{});
+      // 预取聚合收件箱首页，供 iOS 浮层冷启动秒开（gmail-inbox 读 mf:prefetch:inbox）
+      const inbox = fetch('/api/inbox?page=1&limit=20', opts).then(r => r.ok ? r.json() : { list: [] }).then(data => save('mf:prefetch:inbox', (data && data.list) || [])).catch(()=>{});
       // 不阻塞太久：最多等待 800ms 即跳转，其余继续后台完成（keepalive）
       await Promise.race([
-        Promise.all([mailboxes, quota, domains]),
+        Promise.all([mailboxes, quota, domains, inbox]),
         new Promise(res => setTimeout(res, 800))
       ]);
       clearTimeout(timeout);
