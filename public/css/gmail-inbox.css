@@ -345,14 +345,6 @@ html.is-pwa-preview .gi-reader .gi-r-sender-sub {
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
-/* 验证码块 */
-html.is-standalone .gi-reader .gi-r-code,
-html.is-pwa-preview .gi-reader .gi-r-code {
-  display: inline-block; margin-bottom: 14px; padding: 8px 14px;
-  background: var(--primary-light, rgba(0,122,255,0.1)); color: var(--primary, #007aff);
-  border-radius: 10px; font-weight: 700; font-size: 18px; letter-spacing: 2px; cursor: pointer;
-}
-
 /* 正文 iframe / pre */
 html.is-standalone .gi-reader .gi-r-body iframe,
 html.is-pwa-preview .gi-reader .gi-r-body iframe {
@@ -516,7 +508,7 @@ html.is-pwa-preview .gi-drawer-sub {
 }
 
 /* ============================================================
-   重设计精修（后置覆盖）：阅读页右滑入顶栏 / 衬线主题 / 写信 sheet / 抽屉橙
+   重设计精修（后置覆盖）：阅读页右滑入顶栏 / 衰线主题 / 写信 sheet / 抽屉橙
    ============================================================ */
 /* 阅读页顶栏：磨砂 + 发丝线 */
 html.is-standalone .gi-reader .gi-r-topbar,
@@ -544,17 +536,11 @@ html.is-pwa-preview .gi-reader .gi-r-star.is-on { color: var(--star, #f4b400); }
 /* 阅读页正文区：浅色页底 + 白卡正文 */
 html.is-standalone .gi-reader .gi-r-scroll,
 html.is-pwa-preview .gi-reader .gi-r-scroll { background: var(--bg, #f2f2f7); padding: 16px 20px calc(96px + var(--safe-area-bottom, 0px)); }
-/* 主题改衬线 */
+/* 主题改衰线 */
 html.is-standalone .gi-reader .gi-r-subject,
 html.is-pwa-preview .gi-reader .gi-r-subject {
   font-family: var(--font-serif); font-size: 24px; font-weight: 700;
   letter-spacing: -0.01em; line-height: 1.25; color: var(--label, #1c1c1e);
-}
-/* 验证码块用橙 */
-html.is-standalone .gi-reader .gi-r-code,
-html.is-pwa-preview .gi-reader .gi-r-code {
-  background: var(--accent-tint); color: var(--accent, #ff6633);
-  font-size: 22px; letter-spacing: 4px; padding: 12px 16px; border-radius: 12px;
 }
 html.is-standalone .gi-reader .gi-r-body iframe,
 html.is-pwa-preview .gi-reader .gi-r-body iframe { background: #fff; border-radius: 12px; }
@@ -596,7 +582,7 @@ html.is-pwa-preview .gi-compose .gi-c-send {
 html.is-standalone .gi-compose .gi-c-send:disabled,
 html.is-pwa-preview .gi-compose .gi-c-send:disabled { background: var(--secondary, #e5e5ea); color: var(--label-3, #c7c7cc); }
 
-/* 抽屉：标题衬线 + 橙选中 */
+/* 抽屉：标题衰线 + 橙选中 */
 html.is-standalone .gi-drawer .gi-drawer-title,
 html.is-pwa-preview .gi-drawer .gi-drawer-title { font-family: var(--font-serif); font-size: 20px; }
 html.is-standalone .gi-drawer .gi-drawer-item.is-active,
