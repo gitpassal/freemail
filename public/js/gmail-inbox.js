@@ -493,7 +493,7 @@
       return;
     }
     currentEmail = null;
-    // 先用列表行数据「出壳」（主题/发件人/头像/日期/验证码 + 正文骨架），避免整屏 Loading
+    // 先用列表行数据「出壳」（主题/发件人/头像/日期 + 正文骨架），避免整屏 Loading
     renderReaderShell(it || { id: id });
     reader.classList.add('is-open');
     pushLayer();
@@ -514,20 +514,17 @@
       reader.querySelector('.gi-r-scroll').innerHTML = '<div class="gi-empty">' + esc(tr('gmail.loadFail')) + '</div>';
     });
   }
-  // 用列表行数据先渲染阅读器骨架壳（主题/发件人/日期/验证码 + 正文骨架）
+  // 用列表行数据先渲染阅读器骨架壳（主题/发件人/日期 + 正文骨架）
   function renderReaderShell(row) {
     var scroll = reader.querySelector('.gi-r-scroll');
     var a = parseAddr(row.sender || '');
     var fromName = a.name || a.email || tr('gmail.unknownSender');
-    var codeHtml = row.verification_code ?
-      '<div class="gi-r-code" data-code="' + esc(row.verification_code) + '">' + esc(row.verification_code) + '</div>' : '';
     scroll.innerHTML =
       '<div class="gi-r-subject">' + esc(row.subject || tr('gmail.noSubject')) +
         (SHOW_ALIAS && row.mailbox_address ? '<span class="gi-alias-tag">' + esc(row.mailbox_address) + '</span>' : '') + '</div>' +
       '<div class="gi-r-sender">' + avatarHTML(row.sender || '') +
         '<div class="gi-r-sender-info"><div class="gi-r-sender-name">' + esc(fromName) + '</div>' +
         '<div class="gi-r-sender-sub">' + esc(fmtDateTime(row.received_at)) + '</div></div></div>' +
-      codeHtml +
       '<div class="gi-r-body"><div class="gi-skel gi-skel-body"><div class="gi-skel-line w90"></div><div class="gi-skel-line w80"></div><div class="gi-skel-line w60"></div><div class="gi-skel-line w85"></div></div></div>';
   }
   function hideReader() { if (reader) { reader.classList.remove('is-open'); reader.querySelector('.gi-more-menu').classList.remove('is-open'); } }
@@ -536,8 +533,6 @@
     var a = parseAddr(e.sender);
     var fromName = a.name || a.email || tr('gmail.unknownSender');
     var scroll = reader.querySelector('.gi-r-scroll');
-    var codeHtml = e.verification_code ?
-      '<div class="gi-r-code" data-code="' + esc(e.verification_code) + '">' + esc(e.verification_code) + '</div>' : '';
     var bodyHtml;
     if (e.html_content) {
       bodyHtml = '<div class="gi-r-body"><iframe class="gi-body-frame" sandbox="allow-same-origin allow-popups" style="height:60px"></iframe></div>';
@@ -562,15 +557,10 @@
       '<div class="gi-r-sender">' + avatarHTML(e.sender) +
         '<div class="gi-r-sender-info"><div class="gi-r-sender-name">' + esc(fromName) + '</div>' +
         '<div class="gi-r-sender-sub">' + esc(fmtDateTime(e.received_at)) + '</div></div></div>' +
-      codeHtml + bodyHtml + attHtml;
+      bodyHtml + attHtml;
 
     updateReaderStar();
 
-    // 验证码点击复制
-    var codeEl = scroll.querySelector('.gi-r-code');
-    if (codeEl) codeEl.addEventListener('click', function () {
-      try { navigator.clipboard.writeText(codeEl.getAttribute('data-code')); toast(codeEl.getAttribute('data-code'), 'success'); } catch (_) { }
-    });
     // iframe 正文渲染 + 高度自适应
     var ifr = scroll.querySelector('iframe.gi-body-frame');
     if (ifr) {
